@@ -5,7 +5,7 @@ React + Vite (TS) client for the NestJS auth/todo backend. Uses Redux Toolkit + 
 ## Quick start
 
 ```bash
-cd /Users/umytnuryagdiyev/Desktop/front/atlantis
+cd /atlantis
 yarn install
 yarn dev   # http://localhost:5173
 ```

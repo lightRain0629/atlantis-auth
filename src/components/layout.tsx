@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Loader2, LogOut } from "lucide-react";
 import React from "react";
+import LanguageSwitcher from "./language-switcher";
+import { useTranslation } from "react-i18next";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -18,6 +20,7 @@ const navLinks = [
 ];
 
 export default function Layout({ children }: LayoutProps) {
+  const { t } = useTranslation();
   const accessToken = useAppSelector((s) => s.auth.accessToken);
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,7 +33,7 @@ export default function Layout({ children }: LayoutProps) {
   const handleLogout = async () => {
     try {
       await logout().unwrap();
-      toast.success("Logged out");
+      toast.success(t("auth.loggedOut"));
     } catch (err) {
       // toast.error("Failed to logout");
     } finally {
@@ -46,7 +49,7 @@ export default function Layout({ children }: LayoutProps) {
             <span className="h-10 w-10 rounded-lg bg-primary text-primary-foreground grid place-items-center font-bold">
               A
             </span>
-            <span>Atlantis Auth</span>
+            <span>{t("app.name")}</span>
           </Link>
           <nav className="flex items-center gap-2 text-sm">
             {navLinks.map((link) => {
@@ -61,12 +64,13 @@ export default function Layout({ children }: LayoutProps) {
                     location.pathname === link.to && "bg-slate-900 text-white hover:bg-slate-900",
                   )}
                 >
-                  {link.label}
+                  {t(`nav.${link.label.toLowerCase()}`)}
                 </Link>
               );
             })}
           </nav>
           <div className="flex items-center gap-3">
+            <LanguageSwitcher />
             {isAuthenticated ? (
               <>
                 <div className="hidden sm:flex flex-col text-right text-xs text-muted-foreground">
@@ -80,15 +84,15 @@ export default function Layout({ children }: LayoutProps) {
                   className="flex items-center gap-2"
                 >
                   {isLoggingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
-                  Logout
+                  {t("layout.logout")}
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="ghost" onClick={() => navigate("/login")}>
-                  Login
+                  {t("layout.login")}
                 </Button>
-                <Button onClick={() => navigate("/register")}>Register</Button>
+                <Button onClick={() => navigate("/register")}>{t("layout.register")}</Button>
               </>
             )}
           </div>

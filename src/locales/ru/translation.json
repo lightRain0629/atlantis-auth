@@ -1,0 +1,187 @@
+{
+  "app": {
+    "name": "Atlantis Auth",
+    "tagline": "Песочница для авторизации"
+  },
+  "nav": {
+    "home": "Главная",
+    "todos": "Задачи",
+    "sessions": "Сессии",
+    "users": "Пользователи"
+  },
+  "layout": {
+    "login": "Войти",
+    "logout": "Выйти",
+    "register": "Регистрация"
+  },
+  "common": {
+    "refresh": "Обновить",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "close": "Закрыть",
+    "email": "Email",
+    "password": "Пароль",
+    "passwordRepeat": "Повторите пароль",
+    "newPassword": "Новый пароль",
+    "resetToken": "Токен сброса",
+    "searchPlaceholder": "Поиск",
+    "lang": "Язык",
+    "prev": "Назад",
+    "next": "Далее",
+    "pageOf": "Страница {{current}} из {{total}}",
+    "total": "Всего: {{count}}"
+  },
+  "home": {
+    "badge": "Готовый React-клиент",
+    "heroTitle": "Авторизация, сессии, задачи и администрирование — подключено к вашему NestJS API.",
+    "heroSubtitle": "UI на shadcn с Redux Toolkit + RTK Query, знает про refresh-токены, устройства и роли.",
+    "ctaLogin": "Войти",
+    "ctaRegister": "Создать аккаунт",
+    "ctaDocs": "Документация API",
+    "features": {
+      "authTitle": "Auth-флоу",
+      "authDesc": "Логин, регистрация, подтверждение email, соц. OAuth, сброс пароля, управление сессиями.",
+      "todosTitle": "Задачи",
+      "todosDesc": "Личный список задач: создание, изменение, завершение и мягкое удаление.",
+      "adminTitle": "Админ-инструменты",
+      "adminDesc": "Админы могут просматривать, менять роли или удалять пользователей."
+    },
+    "quickLinksTitle": "Быстрые ссылки",
+    "quickLinksDesc": "Начните с авторизации, затем перейдите к сессиям и задачам.",
+    "quickLinks": {
+      "register": "Регистрация и верификация email",
+      "login": "Логин с привязкой устройства",
+      "todos": "Управление задачами",
+      "sessions": "Просмотр сессий и отзыв токенов",
+      "users": "Администрирование пользователей"
+    }
+  },
+  "auth": {
+    "login": "Войти",
+    "register": "Регистрация",
+    "logout": "Выйти",
+    "loggedOut": "Вы вышли из системы"
+  },
+  "login": {
+    "title": "Вход",
+    "description": "Авторизуйтесь, чтобы управлять задачами и сессиями. Device ID генерируется автоматически для браузера.",
+    "button": "Войти",
+    "providerGoogle": "Войти через Google",
+    "providerYandex": "Войти через Yandex",
+    "createAccount": "Создать аккаунт",
+    "forgotPassword": "Забыли пароль?",
+    "welcome": "С возвращением!",
+    "error": "Не удалось войти",
+    "missingProvider": "Отсутствует провайдер или токен",
+    "oauthFail": "Не удалось завершить OAuth-вход"
+  },
+  "register": {
+    "title": "Создать аккаунт",
+    "description": "Мы отправим код подтверждения на вашу почту. Device ID генерируется автоматически для браузера.",
+    "button": "Зарегистрироваться",
+    "success": "Готово. Проверьте почту для OTP.",
+    "error": "Не удалось зарегистрироваться",
+    "loginPrompt": "Уже есть аккаунт? Войти",
+    "passwordsMismatch": "Пароли должны совпадать"
+  },
+  "forgotPassword": {
+    "title": "Забыли пароль",
+    "description": "Мы отправим токен сброса на вашу почту.",
+    "button": "Отправить токен",
+    "success": "Если email существует, мы отправили токен сброса.",
+    "error": "Не удалось запросить сброс"
+  },
+  "resetPassword": {
+    "title": "Сброс пароля",
+    "description": "Используйте токен из письма, чтобы задать новый пароль.",
+    "button": "Обновить пароль",
+    "success": "Пароль изменён. Выполните вход.",
+    "error": "Не удалось сбросить пароль",
+    "passwordsMismatch": "Пароли должны совпадать"
+  },
+  "verifyEmail": {
+    "title": "Подтверждение email",
+    "description": "Введите 6-значный код, который мы отправили на почту.",
+    "button": "Подтвердить",
+    "success": "Email подтверждён. Теперь можно войти.",
+    "error": "Не удалось подтвердить",
+    "labelCode": "Код из письма",
+    "resendPrompt": "Не получили код?",
+    "resend": "Отправить код снова",
+    "resendInfo": "OTP отправлен повторно (если email существует).",
+    "resendError": "Не удалось отправить код"
+  },
+  "todos": {
+    "heading": "Задачи",
+    "description": "Ваши личные задачи",
+    "titleLabel": "Название",
+    "titlePlaceholder": "Доделать UI авторизации",
+    "empty": "Задач нет. Добавьте первую.",
+    "add": "Добавить задачу",
+    "edit": "Редактировать задачу",
+    "updated": "Обновлено",
+    "markDone": "Отметить выполненной",
+    "markOpen": "Отметить открытой",
+    "searchPlaceholder": "Поиск по названию",
+    "save": "Сохранить задачу",
+    "createSuccess": "Задача добавлена",
+    "createError": "Не удалось создать задачу",
+    "titleRequired": "Название обязательно",
+    "updateSuccess": "Задача обновлена",
+    "updateError": "Не удалось обновить задачу",
+    "removeInfo": "Задача удалена",
+    "removeError": "Не удалось удалить задачу",
+    "loading": "Загружаем задачи...",
+    "newTitle": "Новая задача",
+    "newDescription": "Создайте задачу, чтобы вернуться к ней позже.",
+    "editDescription": "Обновите название и сохраните изменения."
+  },
+  "sessions": {
+    "title": "Активные сессии",
+    "refresh": "Обновить",
+    "listTitle": "Список сессий",
+    "listDescription": "Устройство, user-agent, IP и срок действия.",
+    "tip": "Подсказка",
+    "tipDescription": "Refresh-токены в HttpOnly cookies. Access-токены в Redux и localStorage для роутинга.",
+    "logoutOthers": "Выйти с других устройств",
+    "logoutAll": "Выйти везде",
+    "logoutCurrent": "Выйти здесь",
+    "loading": "Загружаем сессии...",
+    "none": "Сессий не найдено.",
+    "created": "Создана",
+    "expires": "Истекает",
+    "revokedOthers": "Отозвали {{count}} других сессий",
+    "revokedAll": "Отозвали {{count}} сессий",
+    "revokeError": "Не удалось отозвать сессии",
+    "revokeAllError": "Не удалось отозвать все сессии"
+  },
+  "users": {
+    "title": "Пользователи",
+    "description": "Просмотр и управление пользователями.",
+    "searchPlaceholder": "Поиск email",
+    "loading": "Загружаем пользователей...",
+    "empty": "Пользователи не найдены.",
+    "toggleAdmin": "Переключить админа",
+    "makeAdmin": "Назначить админом",
+    "removeAdmin": "Убрать админа",
+    "remove": "Удалить",
+    "updated": "Пользователь обновлён",
+    "updatedAt": "Обновлено",
+    "removed": "Пользователь удалён",
+    "updateError": "Не удалось обновить пользователя",
+    "removeError": "Не удалось удалить пользователя",
+    "isMe": "Вы",
+    "email": "Email",
+    "roles": "Роли"
+  },
+  "oauth": {
+    "failedTitle": "OAuth не удался",
+    "failedDescription": "Не получилось завершить OAuth. Попробуйте ещё раз.",
+    "backToLogin": "Назад к входу",
+    "finalizing": "Завершаем OAuth-сессию..."
+  },
+  "protected": {
+    "checkingSession": "Проверяем сессию...",
+    "checkingPermissions": "Проверяем права..."
+  }
+}

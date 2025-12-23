@@ -2,10 +2,12 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useMeQuery } from "@/services/api";
 import { Loader2 } from "lucide-react";
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = { children: ReactNode };
 
 export function RequireAuth({ children }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useMeQuery();
   const location = useLocation();
 
@@ -13,7 +15,7 @@ export function RequireAuth({ children }: Props) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center gap-2 text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin" />
-        <span>Checking session...</span>
+        <span>{t("protected.checkingSession")}</span>
       </div>
     );
   }
@@ -26,6 +28,7 @@ export function RequireAuth({ children }: Props) {
 }
 
 export function RequireAdmin({ children }: Props) {
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useMeQuery();
   const location = useLocation();
 
@@ -33,7 +36,7 @@ export function RequireAdmin({ children }: Props) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center gap-2 text-muted-foreground">
         <Loader2 className="h-5 w-5 animate-spin" />
-        <span>Checking permissions...</span>
+        <span>{t("protected.checkingPermissions")}</span>
       </div>
     );
   }

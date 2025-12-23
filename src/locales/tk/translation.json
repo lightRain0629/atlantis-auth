@@ -1,0 +1,187 @@
+{
+  "app": {
+    "name": "Atlantis Auth",
+    "tagline": "Howpsuz giriş meýdançasy"
+  },
+  "nav": {
+    "home": "Baş sahypa",
+    "todos": "Wazifalar",
+    "sessions": "Sessiyalar",
+    "users": "Ulanyjylar"
+  },
+  "layout": {
+    "login": "Giriş",
+    "logout": "Çykmak",
+    "register": "Hasap açmak"
+  },
+  "common": {
+    "refresh": "Täzele",
+    "save": "Ýatda sakla",
+    "cancel": "Ýatyr",
+    "close": "Ýap",
+    "email": "Email",
+    "password": "Parol",
+    "passwordRepeat": "Paroly gaýtala",
+    "newPassword": "Täze parol",
+    "resetToken": "Täzeden açyş tokeni",
+    "searchPlaceholder": "Gözleg",
+    "lang": "Dil",
+    "prev": "Yza",
+    "next": "Indiki",
+    "pageOf": "Sahypa {{current}} / {{total}}",
+    "total": "Jemi: {{count}}"
+  },
+  "home": {
+    "badge": "Backende taýýar React müşderisi",
+    "heroTitle": "Awtorizasiýa, sessiýalar, wezipeler we admin ulanyjylar — NestJS API-ňize bagly.",
+    "heroSubtitle": "Shadcn görnüşi, Redux Toolkit + RTK Query, refresh tokenler, enjamlar we rollar bilen işleşýär.",
+    "ctaLogin": "Giriş",
+    "ctaRegister": "Hasap açmak",
+    "ctaDocs": "API dokumenti",
+    "features": {
+      "authTitle": "Auth akymlary",
+      "authDesc": "Giriş, hasap açmak, email tassyk, sosial OAuth, paroly täzeden açmak, sessiýalary dolandyrmak.",
+      "todosTitle": "Wazifalar",
+      "todosDesc": "Şahsy wezipeler: döretmek, üýtgetmek, tamamlamak we ýumşak öçürmek.",
+      "adminTitle": "Admin gurallary",
+      "adminDesc": "Adminler ulanyjylary görüp biler, rollary üýtgedip biler ýa-da öçürip biler."
+    },
+    "quickLinksTitle": "Çalt salgylanmalar",
+    "quickLinksDesc": "Ilki awtorizasiýa, soň sessiýalar we wezipeler.",
+    "quickLinks": {
+      "register": "Hasap açmak we email tassyk",
+      "login": "Enjam bilen baglanyşykly giriş",
+      "todos": "Wazifalary dolandyrmak",
+      "sessions": "Sessialary görmek we yzyna almak",
+      "users": "Ulanyjylary dolandyrmak"
+    }
+  },
+  "auth": {
+    "login": "Giriş",
+    "register": "Hasap açmak",
+    "logout": "Çykmak",
+    "loggedOut": "Siz çykdyňyz"
+  },
+  "login": {
+    "title": "Giriş",
+    "description": "Wazifalara we sessiýalara gözegçilik etmek üçin giriň. Enjam ID brauzer üçin awtomatiki döredilýär.",
+    "button": "Giriş",
+    "providerGoogle": "Google bilen giriş",
+    "providerYandex": "Yandex bilen giriş",
+    "createAccount": "Hasap açmak",
+    "forgotPassword": "Paroly ýatdan çykardyňyzmy?",
+    "welcome": "Ýene hoş geldiňiz!",
+    "error": "Girmek başarmady",
+    "missingProvider": "Provider ýa-da token ýok",
+    "oauthFail": "OAuth girşi tamamlap bolmady"
+  },
+  "register": {
+    "title": "Hasap açmak",
+    "description": "Emailiňize tassyklama kody ugradylar. Enjam ID brauzer üçin awtomatiki döredilýär.",
+    "button": "Hasap aç",
+    "success": "Hasap açyldy. OTP üçin poçtany barlaň.",
+    "error": "Hasap açmak başarmady",
+    "loginPrompt": "Hasabyňyz barmy? Giriş",
+    "passwordsMismatch": "Parollar gabat gelmeli"
+  },
+  "forgotPassword": {
+    "title": "Paroly ýatdan çykardym",
+    "description": "Emailiňize täzeden açyş tokeni ugradyarys.",
+    "button": "Token ugradyň",
+    "success": "Email bar bolsa, token ugradyldy.",
+    "error": "Täzeden açmak haýyşyny ýerine ýetirip bolmady"
+  },
+  "resetPassword": {
+    "title": "Paroly täzeden açmak",
+    "description": "Täze parol gurmak üçin emaildäki tokeni ulanyň.",
+    "button": "Paroly täzeläň",
+    "success": "Parol üýtgedi. Indi giriň.",
+    "error": "Paroly täzeden açyp bolmady",
+    "passwordsMismatch": "Parollar gabat gelmeli"
+  },
+  "verifyEmail": {
+    "title": "Email tassykla",
+    "description": "Poçta ugradyan 6 sanly kody giriziň.",
+    "button": "Tassykla",
+    "success": "Email tassyklandy. Indi girip bilersiňiz.",
+    "error": "Tassyklap bolmady",
+    "labelCode": "Kod",
+    "resendPrompt": "Kod gelmedimi?",
+    "resend": "Kody gaýtadan ugradyň",
+    "resendInfo": "OTP gaýtadan ugradyldy (email bar bolsa).",
+    "resendError": "Kody ugratmak başarmady"
+  },
+  "todos": {
+    "heading": "Wazifalar",
+    "description": "Şahsy wezipeleriňiz",
+    "titleLabel": "At",
+    "titlePlaceholder": "Auth UI tamamlanylsyn",
+    "empty": "Wazifa ýok. Ilkinjiňizi goşuň.",
+    "add": "Wazifa goş",
+    "edit": "Wazifany üýtget",
+    "updated": "Täzelendi",
+    "markDone": "Tamamlanan diýip belläň",
+    "markOpen": "Açyk diýip belläň",
+    "searchPlaceholder": "Ady boýunça gözleg",
+    "save": "Wazifany sakla",
+    "createSuccess": "Wazifa goşuldy",
+    "createError": "Wazifa döretmek başarmady",
+    "titleRequired": "At hökmany",
+    "updateSuccess": "Wazifa täzelendi",
+    "updateError": "Wazifany täzeläp bolmady",
+    "removeInfo": "Wazifa aýryldy",
+    "removeError": "Wazifany aýyrmak başarmady",
+    "loading": "Wazifalar ýüklenýär...",
+    "newTitle": "Täze wazifa",
+    "newDescription": "Soňra ýerine ýetirmek üçin wezife dörediň.",
+    "editDescription": "Adyny täzeläň we üýtgetmeleri ýatda saklaň."
+  },
+  "sessions": {
+    "title": "Aktiw sessiýalar",
+    "refresh": "Täzele",
+    "listTitle": "Sessialaryň sanawy",
+    "listDescription": "Enjam, user-agent, IP we gutarýan wagty.",
+    "tip": "Maslahat",
+    "tipDescription": "Refresh tokenler HttpOnly cookies-de. Access tokenler Redux we localStorage-da marşrut üçin.",
+    "logoutOthers": "Beýleki enjamlardan çykyň",
+    "logoutAll": "Hemmesinden çykyň",
+    "logoutCurrent": "Şu ýerden çyk",
+    "loading": "Sessialar ýüklenýär...",
+    "none": "Sessia tapylmady.",
+    "created": "Döredildi",
+    "expires": "Gutarýar",
+    "revokedOthers": "{{count}} beýleki sessiýany ýatyrdyk",
+    "revokedAll": "{{count}} sessiýany ýatyrdyk",
+    "revokeError": "Sessialary ýatyrmak başarmady",
+    "revokeAllError": "Hemmesini ýatyrmak başarmady"
+  },
+  "users": {
+    "title": "Ulanyjylar",
+    "description": "Ulanyjylary görmek we dolandyrmak.",
+    "searchPlaceholder": "Email boýunça gözleg",
+    "loading": "Ulanyjylar ýüklenýär...",
+    "empty": "Ulanyjy tapylmady.",
+    "toggleAdmin": "Admin ýagdaýy",
+    "makeAdmin": "Admin et",
+    "removeAdmin": "Adminligi aýyr",
+    "remove": "Aýyr",
+    "updated": "Ulanyjy täzelendi",
+    "updatedAt": "Täzelendi",
+    "removed": "Ulanyjy aýryldy",
+    "updateError": "Ulanyjyny täzeläp bolmady",
+    "removeError": "Ulanyjyny aýyrmak başarmady",
+    "isMe": "Siz",
+    "email": "Email",
+    "roles": "Rollar"
+  },
+  "oauth": {
+    "failedTitle": "OAuth şowsuz",
+    "failedDescription": "OAuth tamamlanmady. Täzeden synap görüň.",
+    "backToLogin": "Giriş sahypasyna dolan",
+    "finalizing": "OAuth sessiýasy tamamlanýar..."
+  },
+  "protected": {
+    "checkingSession": "Sessia barlanýar...",
+    "checkingPermissions": "Rugsatlar barlanýar..."
+  }
+}

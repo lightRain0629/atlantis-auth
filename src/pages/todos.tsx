@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -17,8 +17,8 @@ import {
   useDeleteTodoMutation,
   useGetTodosQuery,
   useUpdateTodoMutation,
-  type TodoDto,
 } from "@/services/api";
+import type { TodoDto } from "@/services/types";
 import {
   Loader2,
   CheckCircle,
@@ -33,14 +33,21 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useDebouncedValue } from "@/lib/use-debounce";
+import { useTranslation } from "react-i18next";
 
-const schema = z.object({
-  title: z.string().min(1, "Title is required"),
-});
-
-type FormValues = z.infer<typeof schema>;
+type FormValues = {
+  title: string;
+};
 
 export default function TodosPage() {
+  const { t } = useTranslation();
+  const schema = useMemo(
+    () =>
+      z.object({
+        title: z.string().min(1, t("todos.titleRequired", { defaultValue: "Title is required" })),
+      }),
+    [t],
+  );
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search);
@@ -77,10 +84,10 @@ export default function TodosPage() {
     try {
       setOptimistic(true);
       await createTodo(values).unwrap();
-      toast.success("Todo added");
+      toast.success(t("todos.createSuccess"));
       closeCreate();
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to create todo");
+      toast.error(err?.data?.message ?? t("todos.createError"));
     } finally {
       setOptimistic(false);
     }
@@ -90,16 +97,16 @@ export default function TodosPage() {
     try {
       await updateTodo({ id, data: { isCompleted: !current } }).unwrap();
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to update todo");
+      toast.error(err?.data?.message ?? t("todos.updateError"));
     }
   };
 
   const removeTodo = async (id: string) => {
     try {
       await deleteTodo(id).unwrap();
-      toast.info("Todo removed");
+      toast.info(t("todos.removeInfo"));
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to remove todo");
+      toast.error(err?.data?.message ?? t("todos.removeError"));
     }
   };
 
@@ -123,10 +130,10 @@ export default function TodosPage() {
     if (!editing) return;
     try {
       await updateTodo({ id: editing.id, data: { title: editValue } }).unwrap();
-      toast.success("Todo updated");
+      toast.success(t("todos.updateSuccess"));
       closeEdit();
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to update todo");
+      toast.error(err?.data?.message ?? t("todos.updateError"));
     }
   };
 
@@ -135,8 +142,8 @@ export default function TodosPage() {
       <Card className="shadow-sm border-slate-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Todos</CardTitle>
-            <CardDescription>Your personal tasks</CardDescription>
+            <CardTitle>{t("todos.heading")}</CardTitle>
+            <CardDescription>{t("todos.description")}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <div className="relative">
@@ -148,17 +155,17 @@ export default function TodosPage() {
                   setPage(1);
                 }}
                 className="pl-7 w-44"
-                placeholder="Search title"
+                placeholder={t("todos.searchPlaceholder")}
                 aria-label="Search todos"
               />
             </div>
             <Button size="sm" onClick={openCreate}>
               <Plus className="h-4 w-4 mr-1 text-white" />
-              Add todo
+              {t("todos.add")}
             </Button>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               <RefreshCw className="h-4 w-4 mr-1" />
-              Refresh
+              {t("common.refresh")}
             </Button>
           </div>
         </CardHeader>
@@ -166,7 +173,7 @@ export default function TodosPage() {
           {(isLoading || isFetching) && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Loading todos...</span>
+              <span>{t("todos.loading")}</span>
             </div>
           )}
           <div className="grid gap-3">
@@ -188,18 +195,10 @@ export default function TodosPage() {
                         <CircleDashed className="h-5 w-5" />
                       )}
                     </button>
-                    <p
-                      className={
-                        todo.isCompleted
-                          ? "line-through text-muted-foreground"
-                          : ""
-                      }
-                    >
-                      {todo.title}
-                    </p>
+                    <p className={todo.isCompleted ? "line-through text-muted-foreground" : ""}>{todo.title}</p>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Updated {new Date(todo.updatedAt).toLocaleString()}
+                    {t("todos.updated")} {new Date(todo.updatedAt).toLocaleString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -209,14 +208,14 @@ export default function TodosPage() {
                     onClick={() => openEdit(todo)}
                   >
                     <Pencil className="h-4 w-4 mr-1" />
-                    Edit
+                    {t("todos.edit")}
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => toggleComplete(todo.id, todo.isCompleted)}
                   >
-                    Mark {todo.isCompleted ? "open" : "done"}
+                    {todo.isCompleted ? t("todos.markOpen") : t("todos.markDone")}
                   </Button>
                   <Button
                     variant="destructive"
@@ -230,14 +229,14 @@ export default function TodosPage() {
             ))}
             {todos.length === 0 && !isLoading && (
               <p className="text-muted-foreground text-sm">
-                No todos yet. Add your first task.
+                {t("todos.empty")}
               </p>
             )}
           </div>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div>
-              Page {data?.current_page ?? 1} of {data?.total_pages ?? 1} ·{" "}
-              {data?.count ?? 0} total
+              {t("common.pageOf", { current: data?.current_page ?? 1, total: data?.total_pages ?? 1 })} ·{" "}
+              {t("common.total", { count: data?.count ?? 0 })}
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -247,7 +246,7 @@ export default function TodosPage() {
                 disabled={!hasPrev || isFetching}
               >
                 <ChevronLeft className="h-4 w-4 mr-1" />
-                Prev
+                {t("common.prev", { defaultValue: "Prev" })}
               </Button>
               <Button
                 variant="outline"
@@ -255,7 +254,7 @@ export default function TodosPage() {
                 onClick={() => setPage((p) => p + 1)}
                 disabled={!hasNext || isFetching}
               >
-                Next
+                {t("common.next", { defaultValue: "Next" })}
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </div>
@@ -267,9 +266,9 @@ export default function TodosPage() {
           <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
             <div className="flex items-center justify-between border-b px-4 py-3">
               <div>
-                <h3 className="text-lg font-semibold">New todo</h3>
+                <h3 className="text-lg font-semibold">{t("todos.newTitle")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Create a task to track later.
+                  {t("todos.newDescription")}
                 </p>
               </div>
               <Button
@@ -278,7 +277,7 @@ export default function TodosPage() {
                 onClick={closeCreate}
                 disabled={isCreating || optimistic}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
             </div>
             <form
@@ -286,10 +285,10 @@ export default function TodosPage() {
               onSubmit={handleSubmit(onSubmit)}
             >
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">{t("todos.titleLabel")}</Label>
                 <Input
                   id="title"
-                  placeholder="Finish auth UI"
+                  placeholder={t("todos.titlePlaceholder")}
                   {...register("title")}
                   disabled={isCreating || optimistic}
                   autoFocus
@@ -305,13 +304,13 @@ export default function TodosPage() {
                   onClick={closeCreate}
                   disabled={isCreating || optimistic}
                 >
-                  Close
+                  {t("common.close")}
                 </Button>
                 <Button type="submit" disabled={isCreating || optimistic}>
                   {(isCreating || optimistic) && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Save todo
+                  {t("todos.save")}
                 </Button>
               </div>
             </form>
@@ -323,17 +322,17 @@ export default function TodosPage() {
           <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
             <div className="flex items-center justify-between border-b px-4 py-3">
               <div>
-                <h3 className="text-lg font-semibold">Edit todo</h3>
+                <h3 className="text-lg font-semibold">{t("todos.edit")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Update the title and save changes.
+                  {t("todos.editDescription")}
                 </p>
               </div>
               <Button variant="ghost" size="sm" onClick={closeEdit}>
-                Cancel
+                {t("common.cancel")}
               </Button>
             </div>
             <div className="space-y-3 px-4 py-4">
-              <Label htmlFor="edit-title">Title</Label>
+              <Label htmlFor="edit-title">{t("todos.titleLabel")}</Label>
               <Input
                 id="edit-title"
                 value={editValue}
@@ -346,7 +345,7 @@ export default function TodosPage() {
                   onClick={closeEdit}
                   disabled={isUpdating}
                 >
-                  Close
+                  {t("common.close")}
                 </Button>
                 <Button
                   onClick={saveEdit}
@@ -355,7 +354,7 @@ export default function TodosPage() {
                   {isUpdating && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Save
+                  {t("common.save")}
                 </Button>
               </div>
             </div>

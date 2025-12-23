@@ -6,15 +6,32 @@ import {
   useUpdateUserMutation,
   type UserDto,
 } from "@/services/api";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import { Loader2, Shield, Trash2, UserPlus2, ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
+import {
+  Loader2,
+  Shield,
+  Trash2,
+  UserPlus2,
+  ChevronLeft,
+  ChevronRight,
+  RefreshCw,
+} from "lucide-react";
 import { useDebouncedValue } from "@/lib/use-debounce";
+import { useAppSelector } from "@/hooks";
 
 export default function UsersPage() {
-  const { data: me } = useMeQuery();
+  const accessToken = useAppSelector((s) => s.auth.accessToken);
+
+  const { data: me } = useMeQuery(undefined, { skip: !accessToken });
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search);
@@ -59,7 +76,9 @@ export default function UsersPage() {
       <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold">Users</h1>
-          <p className="text-sm text-muted-foreground">Admins can view and manage all users.</p>
+          <p className="text-sm text-muted-foreground">
+            Admins can view and manage all users.
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
@@ -80,7 +99,9 @@ export default function UsersPage() {
       <Card>
         <CardHeader>
           <CardTitle>User list</CardTitle>
-          <CardDescription>Promote/demote admin role or delete users.</CardDescription>
+          <CardDescription>
+            Promote/demote admin role or delete users.
+          </CardDescription>
         </CardHeader>
         <CardContent className="divide-y">
           {isLoading && (
@@ -90,18 +111,25 @@ export default function UsersPage() {
             </div>
           )}
           {users.length === 0 && !isLoading && (
-            <p className="text-sm text-muted-foreground">No users match your search.</p>
+            <p className="text-sm text-muted-foreground">
+              No users match your search.
+            </p>
           )}
           {users.map((user) => {
             const isAdmin = user.roles.includes("ADMIN");
             const isSelf = user.id === me?.id;
             return (
-              <div key={user.id} className="flex flex-wrap items-center justify-between gap-3 py-4">
+              <div
+                key={user.id}
+                className="flex flex-wrap items-center justify-between gap-3 py-4"
+              >
                 <div>
                   <p className="font-medium">{user.email}</p>
                   <p className="text-xs text-muted-foreground">
                     Roles: {user.roles.join(", ")} · Updated:{" "}
-                    {user.updatedAt ? new Date(user.updatedAt).toLocaleString() : "—"}
+                    {user.updatedAt
+                      ? new Date(user.updatedAt).toLocaleString()
+                      : "—"}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -136,7 +164,8 @@ export default function UsersPage() {
           })}
           <div className="flex items-center justify-between pt-4 text-sm text-muted-foreground">
             <div>
-              Page {data?.current_page ?? 1} of {data?.total_pages ?? 1} · {data?.count ?? 0} total
+              Page {data?.current_page ?? 1} of {data?.total_pages ?? 1} ·{" "}
+              {data?.count ?? 0} total
             </div>
             <div className="flex items-center gap-2">
               <Button

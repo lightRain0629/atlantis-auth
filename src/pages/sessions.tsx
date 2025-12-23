@@ -4,16 +4,24 @@ import {
   useLogoutCurrentMutation,
   useLogoutOthersMutation,
 } from "@/services/api";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, Power, ShieldOff, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SessionsPage() {
   const { data, isLoading, refetch } = useListSessionsQuery();
-  const [logoutOthers, { isLoading: loggingOutOthers }] = useLogoutOthersMutation();
+  const [logoutOthers, { isLoading: loggingOutOthers }] =
+    useLogoutOthersMutation();
   const [logoutAll, { isLoading: loggingOutAll }] = useLogoutAllMutation();
-  const [logoutCurrent, { isLoading: loggingOutCurrent }] = useLogoutCurrentMutation();
+  const [logoutCurrent, { isLoading: loggingOutCurrent }] =
+    useLogoutCurrentMutation();
 
   const revokeOthers = async () => {
     try {
@@ -38,7 +46,7 @@ export default function SessionsPage() {
     try {
       await logoutCurrent().unwrap();
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to logout");
+      toast.error(err?.data?.message);
     }
   };
 
@@ -51,16 +59,32 @@ export default function SessionsPage() {
           Refresh
         </Button>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={revokeOthers} disabled={loggingOutOthers}>
-            {loggingOutOthers && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          <Button
+            variant="outline"
+            onClick={revokeOthers}
+            disabled={loggingOutOthers}
+          >
+            {loggingOutOthers && (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            )}
             Logout other devices
           </Button>
-          <Button variant="destructive" onClick={revokeAll} disabled={loggingOutAll}>
+          <Button
+            variant="destructive"
+            onClick={revokeAll}
+            disabled={loggingOutAll}
+          >
             {loggingOutAll && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             Logout all
           </Button>
-          <Button variant="outline" onClick={revokeCurrent} disabled={loggingOutCurrent}>
-            {loggingOutCurrent && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+          <Button
+            variant="outline"
+            onClick={revokeCurrent}
+            disabled={loggingOutCurrent}
+          >
+            {loggingOutCurrent && (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            )}
             <Power className="h-4 w-4 mr-1" />
             Logout current
           </Button>
@@ -69,7 +93,9 @@ export default function SessionsPage() {
       <Card>
         <CardHeader>
           <CardTitle>Sessions list</CardTitle>
-          <CardDescription>Includes device, user-agent, IP, and expiry.</CardDescription>
+          <CardDescription>
+            Includes device, user-agent, IP, and expiry.
+          </CardDescription>
         </CardHeader>
         <CardContent className="divide-y">
           {isLoading && (
@@ -78,9 +104,14 @@ export default function SessionsPage() {
               <span>Loading sessions...</span>
             </div>
           )}
-          {data?.sessions?.length === 0 && <p className="text-sm text-muted-foreground">No sessions found.</p>}
+          {data?.sessions?.length === 0 && (
+            <p className="text-sm text-muted-foreground">No sessions found.</p>
+          )}
           {data?.sessions?.map((session) => (
-            <div key={session.sessionId} className="flex flex-wrap items-start justify-between gap-2 py-3">
+            <div
+              key={session.sessionId}
+              className="flex flex-wrap items-start justify-between gap-2 py-3"
+            >
               <div className="space-y-1">
                 <p className="font-medium">
                   {session.device ?? "Unknown device"}{" "}
@@ -90,7 +121,9 @@ export default function SessionsPage() {
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-muted-foreground">{session.userAgent}</p>
+                <p className="text-xs text-muted-foreground">
+                  {session.userAgent}
+                </p>
                 <p className="text-xs text-muted-foreground">
                   IP: {session.ip ?? "—"} · DeviceId: {session.deviceId ?? "—"}
                 </p>
@@ -109,7 +142,8 @@ export default function SessionsPage() {
           <div>
             <CardTitle>Tip</CardTitle>
             <CardDescription>
-              Refresh tokens are stored in HttpOnly cookies. Access tokens stay in Redux and localStorage for routing.
+              Refresh tokens are stored in HttpOnly cookies. Access tokens stay
+              in Redux and localStorage for routing.
             </CardDescription>
           </div>
         </CardHeader>

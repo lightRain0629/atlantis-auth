@@ -2,7 +2,13 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -13,7 +19,18 @@ import {
   useUpdateTodoMutation,
   type TodoDto,
 } from "@/services/api";
-import { Loader2, CheckCircle, CircleDashed, Trash2, RefreshCw, Search, ChevronLeft, ChevronRight, Pencil } from "lucide-react";
+import {
+  Loader2,
+  CheckCircle,
+  CircleDashed,
+  Trash2,
+  RefreshCw,
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  Pencil,
+  Plus,
+} from "lucide-react";
 import { toast } from "sonner";
 import { useDebouncedValue } from "@/lib/use-debounce";
 
@@ -44,13 +61,24 @@ export default function TodosPage() {
     formState: { errors },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
   const [optimistic, setOptimistic] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const openCreate = () => {
+    reset();
+    setCreateOpen(true);
+  };
+
+  const closeCreate = () => {
+    reset();
+    setCreateOpen(false);
+  };
 
   const onSubmit = async (values: FormValues) => {
     try {
       setOptimistic(true);
       await createTodo(values).unwrap();
-      reset();
       toast.success("Todo added");
+      closeCreate();
     } catch (err: any) {
       toast.error(err?.data?.message ?? "Failed to create todo");
     } finally {
@@ -103,7 +131,7 @@ export default function TodosPage() {
   };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1.1fr,1fr]">
+    <div className="space-y-6">
       <Card className="shadow-sm border-slate-200">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
@@ -124,6 +152,10 @@ export default function TodosPage() {
                 aria-label="Search todos"
               />
             </div>
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="h-4 w-4 mr-1 text-white" />
+              Add todo
+            </Button>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               <RefreshCw className="h-4 w-4 mr-1" />
               Refresh
@@ -156,33 +188,56 @@ export default function TodosPage() {
                         <CircleDashed className="h-5 w-5" />
                       )}
                     </button>
-                    <p className={todo.isCompleted ? "line-through text-muted-foreground" : ""}>{todo.title}</p>
+                    <p
+                      className={
+                        todo.isCompleted
+                          ? "line-through text-muted-foreground"
+                          : ""
+                      }
+                    >
+                      {todo.title}
+                    </p>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     Updated {new Date(todo.updatedAt).toLocaleString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => openEdit(todo)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openEdit(todo)}
+                  >
                     <Pencil className="h-4 w-4 mr-1" />
                     Edit
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => toggleComplete(todo.id, todo.isCompleted)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toggleComplete(todo.id, todo.isCompleted)}
+                  >
                     Mark {todo.isCompleted ? "open" : "done"}
                   </Button>
-                  <Button variant="destructive" size="sm" onClick={() => removeTodo(todo.id)}>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => removeTodo(todo.id)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
             ))}
             {todos.length === 0 && !isLoading && (
-              <p className="text-muted-foreground text-sm">No todos yet. Add your first task.</p>
+              <p className="text-muted-foreground text-sm">
+                No todos yet. Add your first task.
+              </p>
             )}
           </div>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div>
-              Page {data?.current_page ?? 1} of {data?.total_pages ?? 1} · {data?.count ?? 0} total
+              Page {data?.current_page ?? 1} of {data?.total_pages ?? 1} ·{" "}
+              {data?.count ?? 0} total
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -207,32 +262,71 @@ export default function TodosPage() {
           </div>
         </CardContent>
       </Card>
-      <Card className="shadow-sm border-slate-200">
-        <CardHeader>
-          <CardTitle>Add a todo</CardTitle>
-          <CardDescription>Create a new item bound to your account.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input id="title" placeholder="Finish auth UI" {...register("title")} />
-              {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
+      {createOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
+          <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
+            <div className="flex items-center justify-between border-b px-4 py-3">
+              <div>
+                <h3 className="text-lg font-semibold">New todo</h3>
+                <p className="text-sm text-muted-foreground">
+                  Create a task to track later.
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={closeCreate}
+                disabled={isCreating || optimistic}
+              >
+                Cancel
+              </Button>
             </div>
-            <Button className="w-full" type="submit" disabled={isCreating || optimistic}>
-              {(isCreating || optimistic) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save todo
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            <form
+              className="space-y-3 px-4 py-4"
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  placeholder="Finish auth UI"
+                  {...register("title")}
+                  disabled={isCreating || optimistic}
+                  autoFocus
+                />
+                {errors.title && (
+                  <p className="text-sm text-red-500">{errors.title.message}</p>
+                )}
+              </div>
+              <div className="flex justify-end gap-2 pt-1">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={closeCreate}
+                  disabled={isCreating || optimistic}
+                >
+                  Close
+                </Button>
+                <Button type="submit" disabled={isCreating || optimistic}>
+                  {(isCreating || optimistic) && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Save todo
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       {editing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
           <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
             <div className="flex items-center justify-between border-b px-4 py-3">
               <div>
                 <h3 className="text-lg font-semibold">Edit todo</h3>
-                <p className="text-sm text-muted-foreground">Update the title and save changes.</p>
+                <p className="text-sm text-muted-foreground">
+                  Update the title and save changes.
+                </p>
               </div>
               <Button variant="ghost" size="sm" onClick={closeEdit}>
                 Cancel
@@ -247,11 +341,20 @@ export default function TodosPage() {
                 autoFocus
               />
               <div className="flex justify-end gap-2 pt-1">
-                <Button variant="outline" onClick={closeEdit} disabled={isUpdating}>
+                <Button
+                  variant="outline"
+                  onClick={closeEdit}
+                  disabled={isUpdating}
+                >
                   Close
                 </Button>
-                <Button onClick={saveEdit} disabled={isUpdating || !editValue.trim()}>
-                  {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Button
+                  onClick={saveEdit}
+                  disabled={isUpdating || !editValue.trim()}
+                >
+                  {isUpdating && (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  )}
                   Save
                 </Button>
               </div>

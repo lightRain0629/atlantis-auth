@@ -5,7 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { API_BASE_URL, useLoginMutation, useMeQuery } from "@/services/api";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -68,13 +74,28 @@ export default function LoginPage() {
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="email">{t("common.email")}</Label>
-              <Input id="email" placeholder="you@example.com" {...register("email")} />
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+              <Input
+                id="email"
+                placeholder="you@example.com"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">{t("common.password")}</Label>
-              <Input id="password" type="password" placeholder="••••••" {...register("password")} />
-              {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••"
+                {...register("password")}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
 
             <Button className="w-full" type="submit" disabled={isLoading}>
@@ -93,11 +114,19 @@ export default function LoginPage() {
           </div>
 
           <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
-            <Button variant="ghost" className="px-0 text-primary" onClick={() => navigate("/register")}>
+            <Button
+              variant="ghost"
+              className="px-0 text-primary"
+              onClick={() => navigate("/register")}
+            >
               {t("login.createAccount")}
             </Button>
             <span>·</span>
-            <Button variant="ghost" className="px-0 text-primary" onClick={() => navigate("/forgot-password")}>
+            <Button
+              variant="ghost"
+              className="px-0 text-primary"
+              onClick={() => navigate("/forgot-password")}
+            >
               {t("login.forgotPassword")}
             </Button>
           </div>

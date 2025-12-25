@@ -21,14 +21,19 @@ export const usersApi = api.injectEndpoints({
       providesTags: (result) =>
         result
           ? [
-              ...result.results.map(({ id }) => ({ type: "User" as const, id })),
+              ...result.results.map(({ id }) => ({
+                type: "User" as const,
+                id,
+              })),
               { type: "User" as const, id: "LIST" },
             ]
           : [{ type: "User" as const, id: "LIST" }],
     }),
     getUser: builder.query<UserDto, string>({
       query: (idOrEmail) => ({ url: `/user/${idOrEmail}`, method: "GET" }),
-      providesTags: (_result, _err, idOrEmail) => [{ type: "User", id: idOrEmail }],
+      providesTags: (_result, _err, idOrEmail) => [
+        { type: "User", id: idOrEmail },
+      ],
     }),
     updateUser: builder.mutation<UserDto, Partial<UserDto>>({
       query: (body) => ({ url: "/user", method: "PUT", body }),

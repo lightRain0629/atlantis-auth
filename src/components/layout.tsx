@@ -45,7 +45,10 @@ export default function Layout({ children }: LayoutProps) {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
       <header className="border-b bg-white/80 backdrop-blur">
         <div className="container flex items-center justify-between py-4 gap-4">
-          <Link to="/" className="flex items-center gap-2 font-semibold text-lg">
+          <Link
+            to="/"
+            className="flex items-center gap-2 font-semibold text-lg"
+          >
             <span className="h-10 w-10 rounded-lg bg-primary text-primary-foreground grid place-items-center font-bold">
               A
             </span>
@@ -61,7 +64,8 @@ export default function Layout({ children }: LayoutProps) {
                   to={link.to}
                   className={cn(
                     "rounded-md px-3 py-2 transition hover:bg-slate-100",
-                    location.pathname === link.to && "bg-slate-900 text-white hover:bg-slate-900",
+                    location.pathname === link.to &&
+                      "bg-slate-900 text-white hover:bg-slate-900"
                   )}
                 >
                   {t(`nav.${link.label.toLowerCase()}`)}
@@ -75,7 +79,11 @@ export default function Layout({ children }: LayoutProps) {
               <>
                 <div className="hidden sm:flex flex-col text-right text-xs text-muted-foreground">
                   <span>{me?.email}</span>
-                  {me?.roles && <span className="uppercase tracking-wide">{me.roles.join(", ")}</span>}
+                  {me?.roles && (
+                    <span className="uppercase tracking-wide">
+                      {me.roles.join(", ")}
+                    </span>
+                  )}
                 </div>
                 <Button
                   variant="outline"
@@ -83,7 +91,11 @@ export default function Layout({ children }: LayoutProps) {
                   disabled={isLoggingOut}
                   className="flex items-center gap-2"
                 >
-                  {isLoggingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
+                  {isLoggingOut ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <LogOut className="h-4 w-4" />
+                  )}
                   {t("layout.logout")}
                 </Button>
               </>
@@ -92,7 +104,9 @@ export default function Layout({ children }: LayoutProps) {
                 <Button variant="ghost" onClick={() => navigate("/login")}>
                   {t("layout.login")}
                 </Button>
-                <Button onClick={() => navigate("/register")}>{t("layout.register")}</Button>
+                <Button onClick={() => navigate("/register")}>
+                  {t("layout.register")}
+                </Button>
               </>
             )}
           </div>

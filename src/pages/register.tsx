@@ -5,7 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useRegisterMutation } from "@/services/api";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +34,7 @@ export default function RegisterPage() {
         path: ["passwordRepeat"],
         message: t("register.passwordsMismatch"),
       }),
-    [t],
+    [t]
   );
   const navigate = useNavigate();
   const [registerUser, { isLoading, isSuccess }] = useRegisterMutation();
@@ -66,25 +72,55 @@ export default function RegisterPage() {
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="email">{t("common.email")}</Label>
-              <Input id="email" placeholder="you@example.com" {...register("email")} />
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+              <Input
+                id="email"
+                placeholder="you@example.com"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">{t("common.password")}</Label>
-              <Input id="password" type="password" placeholder="••••••" {...register("password")} />
-              {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••"
+                {...register("password")}
+              />
+              {errors.password && (
+                <p className="text-sm text-red-500">
+                  {errors.password.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="passwordRepeat">{t("common.passwordRepeat")}</Label>
-              <Input id="passwordRepeat" type="password" placeholder="••••••" {...register("passwordRepeat")} />
-              {errors.passwordRepeat && <p className="text-sm text-red-500">{errors.passwordRepeat.message}</p>}
+              <Label htmlFor="passwordRepeat">
+                {t("common.passwordRepeat")}
+              </Label>
+              <Input
+                id="passwordRepeat"
+                type="password"
+                placeholder="••••••"
+                {...register("passwordRepeat")}
+              />
+              {errors.passwordRepeat && (
+                <p className="text-sm text-red-500">
+                  {errors.passwordRepeat.message}
+                </p>
+              )}
             </div>
             <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t("register.button")}
             </Button>
           </form>
-          <Button variant="ghost" className="px-0 text-primary" onClick={() => navigate("/login")}>
+          <Button
+            variant="ghost"
+            className="px-0 text-primary"
+            onClick={() => navigate("/login")}
+          >
             {t("register.loginPrompt")}
           </Button>
         </CardContent>

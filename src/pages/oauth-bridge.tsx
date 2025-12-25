@@ -78,9 +78,7 @@ export default function OAuthBridgePage() {
             <ShieldCheck className="h-6 w-6 text-red-600" />
             <div>
               <CardTitle>{t("oauth.failedTitle")}</CardTitle>
-              <CardDescription>
-                {t("oauth.failedDescription")}
-              </CardDescription>
+              <CardDescription>{t("oauth.failedDescription")}</CardDescription>
             </div>
           </CardHeader>
           <CardContent>

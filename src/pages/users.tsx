@@ -111,9 +111,7 @@ export default function UsersPage() {
             </div>
           )}
           {users.length === 0 && !isLoading && (
-            <p className="text-sm text-muted-foreground">
-              {t("users.empty")}
-            </p>
+            <p className="text-sm text-muted-foreground">{t("users.empty")}</p>
           )}
           {users.map((user) => {
             const isAdmin = user.roles.includes("ADMIN");

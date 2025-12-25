@@ -5,7 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useResendOtpMutation, useVerifyEmailMutation } from "@/services/api";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -68,13 +74,28 @@ export default function VerifyEmailPage() {
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="email">{t("common.email")}</Label>
-              <Input id="email" placeholder="you@example.com" {...register("email")} />
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+              <Input
+                id="email"
+                placeholder="you@example.com"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="code">{t("verifyEmail.labelCode", { defaultValue: "OTP code" })}</Label>
-              <Input id="code" placeholder="123456" maxLength={6} {...register("code")} />
-              {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>}
+              <Label htmlFor="code">
+                {t("verifyEmail.labelCode", { defaultValue: "OTP code" })}
+              </Label>
+              <Input
+                id="code"
+                placeholder="123456"
+                maxLength={6}
+                {...register("code")}
+              />
+              {errors.code && (
+                <p className="text-sm text-red-500">{errors.code.message}</p>
+              )}
             </div>
             <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -83,7 +104,11 @@ export default function VerifyEmailPage() {
           </form>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <span>{t("verifyEmail.resendPrompt")}</span>
-            <Button variant="ghost" onClick={handleResend} disabled={isResending}>
+            <Button
+              variant="ghost"
+              onClick={handleResend}
+              disabled={isResending}
+            >
               {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t("verifyEmail.resend")}
             </Button>

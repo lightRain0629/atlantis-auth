@@ -1,6 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ShieldCheck, ListChecks, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -45,7 +51,11 @@ export default function HomePage() {
               <Link to="/register">{t("home.ctaRegister")}</Link>
             </Button>
             <Button asChild variant="ghost" size="lg">
-              <a href="http://localhost:3000/api/docs" target="_blank" rel="noreferrer">
+              <a
+                href="http://localhost:3000/api/docs"
+                target="_blank"
+                rel="noreferrer"
+              >
                 {t("home.ctaDocs")}
               </a>
             </Button>
@@ -73,19 +83,34 @@ export default function HomePage() {
           <CardDescription>{t("home.quickLinksDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/register">
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/register"
+          >
             {t("home.quickLinks.register")}
           </Link>
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/login">
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/login"
+          >
             {t("home.quickLinks.login")}
           </Link>
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/todos">
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/todos"
+          >
             {t("home.quickLinks.todos")}
           </Link>
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/sessions">
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/sessions"
+          >
             {t("home.quickLinks.sessions")}
           </Link>
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/users">
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/users"
+          >
             {t("home.quickLinks.users")}
           </Link>
         </CardContent>

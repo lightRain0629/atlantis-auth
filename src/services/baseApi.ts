@@ -11,7 +11,8 @@ import { getDeviceId } from "@/lib/device-id";
 import type { TokensResponse } from "./types";
 
 const ENV_BASE_URL = import.meta.env?.VITE_API_BASE_URL;
-export const API_BASE_URL = (ENV_BASE_URL ?? "http://localhost:3000/api") as string;
+export const API_BASE_URL = (ENV_BASE_URL ??
+  "http://localhost:3000/api") as string;
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: API_BASE_URL,
@@ -30,17 +31,17 @@ const rawBaseQuery = fetchBaseQuery({
   },
 });
 
-const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
-  args,
-  apiCtx,
-  extraOptions,
-) => {
+const baseQueryWithReauth: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, apiCtx, extraOptions) => {
   let result = await rawBaseQuery(args, apiCtx, extraOptions);
   if (result.error && result.error.status === 401) {
     const refreshResult = await rawBaseQuery(
       { url: "/auth/refresh-tokens", method: "GET" },
       apiCtx,
-      extraOptions,
+      extraOptions
     );
     if (refreshResult.data && typeof refreshResult.data === "object") {
       const tokens = refreshResult.data as TokensResponse;

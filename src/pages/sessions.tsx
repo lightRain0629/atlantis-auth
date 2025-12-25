@@ -95,9 +95,7 @@ export default function SessionsPage() {
       <Card>
         <CardHeader>
           <CardTitle>{t("sessions.listTitle")}</CardTitle>
-          <CardDescription>
-            {t("sessions.listDescription")}
-          </CardDescription>
+          <CardDescription>{t("sessions.listDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="divide-y">
           {isLoading && (
@@ -107,7 +105,9 @@ export default function SessionsPage() {
             </div>
           )}
           {data?.sessions?.length === 0 && (
-            <p className="text-sm text-muted-foreground">{t("sessions.none")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("sessions.none")}
+            </p>
           )}
           {data?.sessions?.map((session) => (
             <div
@@ -136,24 +136,15 @@ export default function SessionsPage() {
                   {new Date(session.createdAt).toLocaleString()}
                 </p>
                 <p>
-                  {t("sessions.expires")}: {new Date(session.exp).toLocaleString()}
+                  {t("sessions.expires")}:{" "}
+                  {new Date(session.exp).toLocaleString()}
                 </p>
               </div>
             </div>
           ))}
         </CardContent>
       </Card>
-      <Card className="border-amber-200 bg-amber-50">
-        <CardHeader className="flex flex-row items-center gap-3">
-          <ShieldOff className="h-5 w-5 text-amber-600" />
-          <div>
-            <CardTitle>{t("sessions.tip")}</CardTitle>
-            <CardDescription>
-              {t("sessions.tipDescription")}
-            </CardDescription>
-          </div>
-        </CardHeader>
-      </Card>
+
     </div>
   );
 }

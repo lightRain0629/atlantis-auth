@@ -1,4 +1,4 @@
-import { clearCredentials, setCredentials } from "@/features/auth/authSlice";
+import { setCredentials } from "@/features/auth/authSlice";
 import { getDeviceId } from "@/lib/device-id";
 import { api } from "../baseApi";
 import type { TokensResponse, UserDto } from "../types";
@@ -6,7 +6,10 @@ import type { TokensResponse, UserDto } from "../types";
 export const authApi = api.injectEndpoints({
   overrideExisting: false,
   endpoints: (builder) => ({
-    login: builder.mutation<TokensResponse, { email: string; password: string }>({
+    login: builder.mutation<
+      TokensResponse,
+      { email: string; password: string }
+    >({
       query: (body) => ({
         url: "/auth/login",
         method: "POST",
@@ -21,14 +24,20 @@ export const authApi = api.injectEndpoints({
         }
       },
     }),
-    register: builder.mutation<UserDto, { email: string; password: string; passwordRepeat: string }>({
+    register: builder.mutation<
+      UserDto,
+      { email: string; password: string; passwordRepeat: string }
+    >({
       query: (body) => ({
         url: "/auth/register",
         method: "POST",
         body: { ...body, deviceId: getDeviceId() },
       }),
     }),
-    verifyEmail: builder.mutation<{ message: string }, { email: string; code: string }>({
+    verifyEmail: builder.mutation<
+      { message: string },
+      { email: string; code: string }
+    >({
       query: (body) => ({
         url: "/auth/verify-email",
         method: "POST",
@@ -49,7 +58,10 @@ export const authApi = api.injectEndpoints({
         body,
       }),
     }),
-    resetPassword: builder.mutation<{ message: string }, { token: string; password: string; passwordRepeat: string }>({
+    resetPassword: builder.mutation<
+      { message: string },
+      { token: string; password: string; passwordRepeat: string }
+    >({
       query: (body) => ({
         url: "/auth/reset-password",
         method: "POST",

@@ -1,7 +1,13 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -41,15 +47,23 @@ export default function ForgotPasswordPage() {
     <div className="max-w-xl mx-auto">
       <Card className="shadow-md border-slate-200">
         <CardHeader>
-          <CardTitle className="text-2xl">{t("forgotPassword.title")}</CardTitle>
+          <CardTitle className="text-2xl">
+            {t("forgotPassword.title")}
+          </CardTitle>
           <CardDescription>{t("forgotPassword.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="email">{t("common.email")}</Label>
-              <Input id="email" placeholder="you@example.com" {...register("email")} />
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+              <Input
+                id="email"
+                placeholder="you@example.com"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
             <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

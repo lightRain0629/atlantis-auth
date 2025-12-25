@@ -44,9 +44,14 @@ export default function TodosPage() {
   const schema = useMemo(
     () =>
       z.object({
-        title: z.string().min(1, t("todos.titleRequired", { defaultValue: "Title is required" })),
+        title: z
+          .string()
+          .min(
+            1,
+            t("todos.titleRequired", { defaultValue: "Title is required" })
+          ),
       }),
-    [t],
+    [t]
   );
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -195,10 +200,19 @@ export default function TodosPage() {
                         <CircleDashed className="h-5 w-5" />
                       )}
                     </button>
-                    <p className={todo.isCompleted ? "line-through text-muted-foreground" : ""}>{todo.title}</p>
+                    <p
+                      className={
+                        todo.isCompleted
+                          ? "line-through text-muted-foreground"
+                          : ""
+                      }
+                    >
+                      {todo.title}
+                    </p>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {t("todos.updated")} {new Date(todo.updatedAt).toLocaleString()}
+                    {t("todos.updated")}{" "}
+                    {new Date(todo.updatedAt).toLocaleString()}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -215,7 +229,9 @@ export default function TodosPage() {
                     size="sm"
                     onClick={() => toggleComplete(todo.id, todo.isCompleted)}
                   >
-                    {todo.isCompleted ? t("todos.markOpen") : t("todos.markDone")}
+                    {todo.isCompleted
+                      ? t("todos.markOpen")
+                      : t("todos.markDone")}
                   </Button>
                   <Button
                     variant="destructive"
@@ -235,8 +251,11 @@ export default function TodosPage() {
           </div>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
             <div>
-              {t("common.pageOf", { current: data?.current_page ?? 1, total: data?.total_pages ?? 1 })} ·{" "}
-              {t("common.total", { count: data?.count ?? 0 })}
+              {t("common.pageOf", {
+                current: data?.current_page ?? 1,
+                total: data?.total_pages ?? 1,
+              })}{" "}
+              · {t("common.total", { count: data?.count ?? 0 })}
             </div>
             <div className="flex items-center gap-2">
               <Button

@@ -29,7 +29,10 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <label className="flex items-center gap-2 text-sm text-muted-foreground" aria-label="Language selector">
+    <label
+      className="flex items-center gap-2 text-sm text-muted-foreground"
+      aria-label="Language selector"
+    >
       <span>{t("common.lang")}</span>
       <select
         value={locale}

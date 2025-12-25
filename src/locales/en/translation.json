@@ -12,7 +12,9 @@
   "layout": {
     "login": "Login",
     "logout": "Logout",
-    "register": "Register"
+    "register": "Register",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "common": {
     "refresh": "Refresh",

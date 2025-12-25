@@ -12,7 +12,9 @@
   "layout": {
     "login": "Войти",
     "logout": "Выйти",
-    "register": "Регистрация"
+    "register": "Регистрация",
+    "openMenu": "Открыть меню",
+    "closeMenu": "Закрыть меню"
   },
   "common": {
     "refresh": "Обновить",

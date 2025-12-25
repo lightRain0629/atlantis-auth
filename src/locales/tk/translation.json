@@ -12,7 +12,9 @@
   "layout": {
     "login": "Giriş",
     "logout": "Çykmak",
-    "register": "Hasap açmak"
+    "register": "Hasap açmak",
+    "openMenu": "Menýuny aç",
+    "closeMenu": "Menýuny ýap"
   },
   "common": {
     "refresh": "Täzele",

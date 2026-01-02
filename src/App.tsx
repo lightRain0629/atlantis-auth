@@ -11,6 +11,7 @@ import SessionsPage from "./pages/sessions";
 import UsersPage from "./pages/users";
 import HomePage from "./pages/home";
 import OAuthBridgePage from "./pages/oauth-bridge";
+import FinancePage from "./pages/finance";
 import { RequireAdmin, RequireAuth } from "./components/protected-route";
 
 function App() {
@@ -26,6 +27,14 @@ function App() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/oauth/:provider" element={<OAuthBridgePage />} />
 
+          <Route
+            path="/finance"
+            element={
+              <RequireAuth>
+                <FinancePage />
+              </RequireAuth>
+            }
+          />
           <Route
             path="/todos"
             element={

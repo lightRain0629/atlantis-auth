@@ -15,6 +15,7 @@ type LayoutProps = {
 };
 
 const navLinks = [
+  { to: "/finance", label: "Finance", auth: true },
   { to: "/todos", label: "Todos", auth: true },
   { to: "/sessions", label: "Sessions", auth: true },
   { to: "/users", label: "Users", admin: true },

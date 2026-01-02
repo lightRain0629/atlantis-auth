@@ -64,7 +64,8 @@ export default function TodosPage() {
     query: debouncedSearch || undefined,
   });
   const [createTodo, { isLoading: isCreating }] = useCreateTodoMutation();
-  const [updateTodo, { isLoading: isUpdating }] = useUpdateTodoMutation();
+  const [updateTodo, { isLoading: isUpdating, originalArgs: updateArgs }] =
+    useUpdateTodoMutation();
   const [deleteTodo] = useDeleteTodoMutation();
   const {
     register,
@@ -229,6 +230,9 @@ export default function TodosPage() {
                     size="sm"
                     onClick={() => toggleComplete(todo.id, todo.isCompleted)}
                   >
+                    {isUpdating && updateArgs?.id === todo.id && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
                     {todo.isCompleted
                       ? t("todos.markOpen")
                       : t("todos.markDone")}

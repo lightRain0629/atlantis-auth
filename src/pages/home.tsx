@@ -1,24 +1,32 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ShieldCheck, ListChecks, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const features = [
     {
       icon: ShieldCheck,
-      title: "Auth flows",
-      description: "Login, register, email verification, social OAuth, password reset, sessions management.",
+      title: t("home.features.authTitle"),
+      description: t("home.features.authDesc"),
     },
     {
       icon: ListChecks,
-      title: "Todos",
-      description: "Personal todo list with create, update, complete, and soft delete.",
+      title: t("home.features.todosTitle"),
+      description: t("home.features.todosDesc"),
     },
     {
       icon: Users,
-      title: "Admin tools",
-      description: "Admins can browse, update roles, or remove users.",
+      title: t("home.features.adminTitle"),
+      description: t("home.features.adminDesc"),
     },
   ];
 
@@ -27,24 +35,28 @@ export default function HomePage() {
       <div className="space-y-8">
         <div className="space-y-4">
           <p className="rounded-full bg-slate-900 text-white inline-flex px-4 py-1 text-xs uppercase tracking-wide">
-            Backend-ready React client
+            {t("home.badge")}
           </p>
           <h1 className="text-4xl sm:text-5xl font-semibold leading-tight">
-            Auth, sessions, todos, and admin users—wired to your NestJS API.
+            {t("home.heroTitle")}
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            Shadcn-styled UI with Redux Toolkit + RTK Query, aware of refresh tokens, devices, and roles.
+            {t("home.heroSubtitle")}
           </p>
           <div className="flex flex-wrap gap-3">
             <Button asChild size="lg">
-              <Link to="/login">Login</Link>
+              <Link to="/login">{t("home.ctaLogin")}</Link>
             </Button>
             <Button asChild variant="outline" size="lg">
-              <Link to="/register">Create account</Link>
+              <Link to="/register">{t("home.ctaRegister")}</Link>
             </Button>
             <Button asChild variant="ghost" size="lg">
-              <a href="http://localhost:3000/api/docs" target="_blank" rel="noreferrer">
-                Backend docs
+              <a
+                href="http://localhost:3000/api/docs"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {t("home.ctaDocs")}
               </a>
             </Button>
           </div>
@@ -67,24 +79,39 @@ export default function HomePage() {
       </div>
       <Card className="self-start border-slate-200 shadow-md">
         <CardHeader>
-          <CardTitle>Quick links</CardTitle>
-          <CardDescription>Start with auth, then manage sessions and todos.</CardDescription>
+          <CardTitle>{t("home.quickLinksTitle")}</CardTitle>
+          <CardDescription>{t("home.quickLinksDesc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/register">
-            Register & verify email
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/register"
+          >
+            {t("home.quickLinks.register")}
           </Link>
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/login">
-            Login with device binding
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/login"
+          >
+            {t("home.quickLinks.login")}
           </Link>
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/todos">
-            Manage todos
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/todos"
+          >
+            {t("home.quickLinks.todos")}
           </Link>
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/sessions">
-            Inspect sessions & revoke tokens
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/sessions"
+          >
+            {t("home.quickLinks.sessions")}
           </Link>
-          <Link className="block rounded-md border px-4 py-3 hover:bg-slate-50" to="/users">
-            Admin users
+          <Link
+            className="block rounded-md border px-4 py-3 hover:bg-slate-50"
+            to="/users"
+          >
+            {t("home.quickLinks.users")}
           </Link>
         </CardContent>
       </Card>

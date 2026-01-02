@@ -10,9 +10,11 @@ import {
 } from "@/components/ui/card";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { API_BASE_URL, type TokensResponse } from "@/services/api";
+import { API_BASE_URL } from "@/services/api";
+import type { TokensResponse } from "@/services/types";
 import { useAppDispatch } from "@/hooks";
 import { setCredentials } from "@/features/auth/authSlice";
+import { useTranslation } from "react-i18next";
 
 const providerMap: Record<string, "google" | "yandex"> = {
   google: "google",
@@ -20,6 +22,7 @@ const providerMap: Record<string, "google" | "yandex"> = {
 };
 
 export default function OAuthBridgePage() {
+  const { t } = useTranslation();
   const { provider } = useParams<{ provider: string }>();
   const [params] = useSearchParams();
   const navigate = useNavigate();
@@ -35,7 +38,7 @@ export default function OAuthBridgePage() {
       hasExchanged.current = true;
       if (!token || !providerKey) {
         setStatus("error");
-        toast.error("Missing provider or token");
+        toast.error(t("login.missingProvider"));
         return;
       }
       try {
@@ -53,17 +56,15 @@ export default function OAuthBridgePage() {
           throw new Error("No tokens returned");
         }
         dispatch(setCredentials(data));
-        toast.success("Signed in via OAuth");
-        console.log("OAuth exchange successful", data);
+        toast.success(t("login.welcome"));
         navigate("/todos", { replace: true });
       } catch (error: any) {
-        console.error("OAuth exchange failed", error);
         setStatus("error");
-        toast.error("Failed to finish OAuth login");
+        toast.error(t("login.oauthFail"));
       }
     };
     exchange();
-  }, [dispatch, navigate, providerKey, token]);
+  }, [dispatch, navigate, providerKey, t, token]);
 
   const retry = () => {
     navigate("/login");
@@ -76,14 +77,12 @@ export default function OAuthBridgePage() {
           <CardHeader className="flex flex-row items-center gap-3">
             <ShieldCheck className="h-6 w-6 text-red-600" />
             <div>
-              <CardTitle>OAuth failed</CardTitle>
-              <CardDescription>
-                We could not complete the OAuth flow. Please try again.
-              </CardDescription>
+              <CardTitle>{t("oauth.failedTitle")}</CardTitle>
+              <CardDescription>{t("oauth.failedDescription")}</CardDescription>
             </div>
           </CardHeader>
           <CardContent>
-            <Button onClick={retry}>Back to login</Button>
+            <Button onClick={retry}>{t("oauth.backToLogin")}</Button>
           </CardContent>
         </Card>
       </div>
@@ -93,7 +92,7 @@ export default function OAuthBridgePage() {
   return (
     <div className="flex min-h-[60vh] items-center justify-center gap-3 text-muted-foreground">
       <Loader2 className="h-5 w-5 animate-spin" />
-      <span>Finalizing OAuth session...</span>
+      <span>{t("oauth.finalizing")}</span>
     </div>
   );
 }

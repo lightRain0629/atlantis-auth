@@ -12,10 +12,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Power, ShieldOff, RefreshCw } from "lucide-react";
+import { Loader2, Power, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 export default function SessionsPage() {
+  const { t } = useTranslation();
   const { data, isLoading, refetch } = useListSessionsQuery();
   const [logoutOthers, { isLoading: loggingOutOthers }] =
     useLogoutOthersMutation();
@@ -26,19 +28,19 @@ export default function SessionsPage() {
   const revokeOthers = async () => {
     try {
       const res = await logoutOthers().unwrap();
-      toast.success(`Revoked ${res.revoked} other sessions`);
+      toast.success(t("sessions.revokedOthers", { count: res.revoked }));
       refetch();
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to revoke sessions");
+      toast.error(err?.data?.message ?? t("sessions.revokeError"));
     }
   };
 
   const revokeAll = async () => {
     try {
       const res = await logoutAll().unwrap();
-      toast.success(`Revoked ${res.revoked} sessions`);
+      toast.success(t("sessions.revokedAll", { count: res.revoked }));
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to revoke all sessions");
+      toast.error(err?.data?.message ?? t("sessions.revokeAllError"));
     }
   };
 
@@ -53,10 +55,10 @@ export default function SessionsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold">Active sessions</h1>
+        <h1 className="text-2xl font-semibold">{t("sessions.title")}</h1>
         <Button variant="outline" size="sm" onClick={() => refetch()}>
           <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
+          {t("common.refresh")}
         </Button>
         <div className="flex gap-2">
           <Button
@@ -67,7 +69,7 @@ export default function SessionsPage() {
             {loggingOutOthers && (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             )}
-            Logout other devices
+            {t("sessions.logoutOthers")}
           </Button>
           <Button
             variant="destructive"
@@ -75,7 +77,7 @@ export default function SessionsPage() {
             disabled={loggingOutAll}
           >
             {loggingOutAll && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            Logout all
+            {t("sessions.logoutAll")}
           </Button>
           <Button
             variant="outline"
@@ -86,26 +88,26 @@ export default function SessionsPage() {
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             )}
             <Power className="h-4 w-4 mr-1" />
-            Logout current
+            {t("sessions.logoutCurrent")}
           </Button>
         </div>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Sessions list</CardTitle>
-          <CardDescription>
-            Includes device, user-agent, IP, and expiry.
-          </CardDescription>
+          <CardTitle>{t("sessions.listTitle")}</CardTitle>
+          <CardDescription>{t("sessions.listDescription")}</CardDescription>
         </CardHeader>
         <CardContent className="divide-y">
           {isLoading && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Loading sessions...</span>
+              <span>{t("sessions.loading")}</span>
             </div>
           )}
           {data?.sessions?.length === 0 && (
-            <p className="text-sm text-muted-foreground">No sessions found.</p>
+            <p className="text-sm text-muted-foreground">
+              {t("sessions.none")}
+            </p>
           )}
           {data?.sessions?.map((session) => (
             <div
@@ -129,25 +131,20 @@ export default function SessionsPage() {
                 </p>
               </div>
               <div className="text-right text-xs text-muted-foreground">
-                <p>Created: {new Date(session.createdAt).toLocaleString()}</p>
-                <p>Expires: {new Date(session.exp).toLocaleString()}</p>
+                <p>
+                  {t("sessions.created")}:{" "}
+                  {new Date(session.createdAt).toLocaleString()}
+                </p>
+                <p>
+                  {t("sessions.expires")}:{" "}
+                  {new Date(session.exp).toLocaleString()}
+                </p>
               </div>
             </div>
           ))}
         </CardContent>
       </Card>
-      <Card className="border-amber-200 bg-amber-50">
-        <CardHeader className="flex flex-row items-center gap-3">
-          <ShieldOff className="h-5 w-5 text-amber-600" />
-          <div>
-            <CardTitle>Tip</CardTitle>
-            <CardDescription>
-              Refresh tokens are stored in HttpOnly cookies. Access tokens stay
-              in Redux and localStorage for routing.
-            </CardDescription>
-          </div>
-        </CardHeader>
-      </Card>
+
     </div>
   );
 }

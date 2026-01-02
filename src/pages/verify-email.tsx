@@ -5,11 +5,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useResendOtpMutation, useVerifyEmailMutation } from "@/services/api";
 import { toast } from "sonner";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const schema = z.object({
   email: z.string().email(),
@@ -19,6 +26,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export default function VerifyEmailPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [verify, { isLoading }] = useVerifyEmailMutation();
@@ -38,10 +46,10 @@ export default function VerifyEmailPage() {
   const onSubmit = async (values: FormValues) => {
     try {
       await verify(values).unwrap();
-      toast.success("Email verified. You can login now.");
+      toast.success(t("verifyEmail.success"));
       navigate("/login");
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to verify");
+      toast.error(err?.data?.message ?? t("verifyEmail.error"));
     }
   };
 
@@ -49,9 +57,9 @@ export default function VerifyEmailPage() {
     try {
       const email = params.get("email") || "";
       await resend({ email: email || "" }).unwrap();
-      toast.info("OTP sent again (if email exists).");
+      toast.info(t("verifyEmail.resendInfo"));
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Cannot resend code");
+      toast.error(err?.data?.message ?? t("verifyEmail.resendError"));
     }
   };
 
@@ -59,31 +67,50 @@ export default function VerifyEmailPage() {
     <div className="max-w-xl mx-auto">
       <Card className="shadow-md border-slate-200">
         <CardHeader>
-          <CardTitle className="text-2xl">Verify email</CardTitle>
-          <CardDescription>Enter the 6-digit code we sent to your inbox.</CardDescription>
+          <CardTitle className="text-2xl">{t("verifyEmail.title")}</CardTitle>
+          <CardDescription>{t("verifyEmail.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" placeholder="you@example.com" {...register("email")} />
-              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+              <Label htmlFor="email">{t("common.email")}</Label>
+              <Input
+                id="email"
+                placeholder="you@example.com"
+                {...register("email")}
+              />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="code">OTP code</Label>
-              <Input id="code" placeholder="123456" maxLength={6} {...register("code")} />
-              {errors.code && <p className="text-sm text-red-500">{errors.code.message}</p>}
+              <Label htmlFor="code">
+                {t("verifyEmail.labelCode", { defaultValue: "OTP code" })}
+              </Label>
+              <Input
+                id="code"
+                placeholder="123456"
+                maxLength={6}
+                {...register("code")}
+              />
+              {errors.code && (
+                <p className="text-sm text-red-500">{errors.code.message}</p>
+              )}
             </div>
             <Button className="w-full" type="submit" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Verify
+              {t("verifyEmail.button")}
             </Button>
           </form>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>Didn&apos;t get the code?</span>
-            <Button variant="ghost" onClick={handleResend} disabled={isResending}>
+            <span>{t("verifyEmail.resendPrompt")}</span>
+            <Button
+              variant="ghost"
+              onClick={handleResend}
+              disabled={isResending}
+            >
               {isResending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Resend OTP
+              {t("verifyEmail.resend")}
             </Button>
           </div>
         </CardContent>

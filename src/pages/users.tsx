@@ -4,8 +4,8 @@ import {
   useGetUsersQuery,
   useMeQuery,
   useUpdateUserMutation,
-  type UserDto,
 } from "@/services/api";
+import type { UserDto } from "@/services/types";
 import {
   Card,
   CardContent,
@@ -27,8 +27,10 @@ import {
 } from "lucide-react";
 import { useDebouncedValue } from "@/lib/use-debounce";
 import { useAppSelector } from "@/hooks";
+import { useTranslation } from "react-i18next";
 
 export default function UsersPage() {
+  const { t } = useTranslation();
   const accessToken = useAppSelector((s) => s.auth.accessToken);
 
   const { data: me } = useMeQuery(undefined, { skip: !accessToken });
@@ -54,20 +56,20 @@ export default function UsersPage() {
     const roles = isAdmin ? ["USER"] : ["ADMIN", "USER"];
     try {
       await updateUser({ id: user.id, email: user.email, roles }).unwrap();
-      toast.success(`Updated roles for ${user.email}`);
+      toast.success(t("users.updated", { email: user.email }));
       refetch();
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to update roles");
+      toast.error(err?.data?.message ?? t("users.updateError"));
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
       await deleteUser(id).unwrap();
-      toast.success("User removed");
+      toast.success(t("users.removed"));
       refetch();
     } catch (err: any) {
-      toast.error(err?.data?.message ?? "Failed to delete user");
+      toast.error(err?.data?.message ?? t("users.removeError"));
     }
   };
 
@@ -75,14 +77,14 @@ export default function UsersPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">Users</h1>
+          <h1 className="text-2xl font-semibold">{t("users.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Admins can view and manage all users.
+            {t("users.description")}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Input
-            placeholder="Search by email"
+            placeholder={t("users.searchPlaceholder")}
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -92,28 +94,24 @@ export default function UsersPage() {
           />
           <Button variant="outline" size="sm" onClick={() => refetch()}>
             <RefreshCw className="h-4 w-4 mr-1" />
-            Refresh
+            {t("common.refresh")}
           </Button>
         </div>
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>User list</CardTitle>
-          <CardDescription>
-            Promote/demote admin role or delete users.
-          </CardDescription>
+          <CardTitle>{t("users.title")}</CardTitle>
+          <CardDescription>{t("users.description")}</CardDescription>
         </CardHeader>
         <CardContent className="divide-y">
           {isLoading && (
             <div className="flex items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              <span>Loading users...</span>
+              <span>{t("users.loading")}</span>
             </div>
           )}
           {users.length === 0 && !isLoading && (
-            <p className="text-sm text-muted-foreground">
-              No users match your search.
-            </p>
+            <p className="text-sm text-muted-foreground">{t("users.empty")}</p>
           )}
           {users.map((user) => {
             const isAdmin = user.roles.includes("ADMIN");
@@ -126,7 +124,8 @@ export default function UsersPage() {
                 <div>
                   <p className="font-medium">{user.email}</p>
                   <p className="text-xs text-muted-foreground">
-                    Roles: {user.roles.join(", ")} · Updated:{" "}
+                    {t("users.roles")}: {user.roles.join(", ")} ·{" "}
+                    {t("users.updatedAt")}:{" "}
                     {user.updatedAt
                       ? new Date(user.updatedAt).toLocaleString()
                       : "—"}
@@ -141,12 +140,12 @@ export default function UsersPage() {
                     {isAdmin ? (
                       <>
                         <Shield className="h-4 w-4 mr-2" />
-                        Remove admin
+                        {t("users.removeAdmin")}
                       </>
                     ) : (
                       <>
                         <UserPlus2 className="h-4 w-4 mr-2" />
-                        Make admin
+                        {t("users.makeAdmin")}
                       </>
                     )}
                   </Button>
@@ -156,7 +155,7 @@ export default function UsersPage() {
                     disabled={deleting || isSelf}
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
+                    {t("users.remove")}
                   </Button>
                 </div>
               </div>
@@ -164,8 +163,11 @@ export default function UsersPage() {
           })}
           <div className="flex items-center justify-between pt-4 text-sm text-muted-foreground">
             <div>
-              Page {data?.current_page ?? 1} of {data?.total_pages ?? 1} ·{" "}
-              {data?.count ?? 0} total
+              {t("common.pageOf", {
+                current: data?.current_page ?? 1,
+                total: data?.total_pages ?? 1,
+              })}{" "}
+              · {t("common.total", { count: data?.count ?? 0 })}
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -175,7 +177,7 @@ export default function UsersPage() {
                 disabled={!hasPrev || isFetching}
               >
                 <ChevronLeft className="h-4 w-4 mr-1" />
-                Prev
+                {t("common.prev")}
               </Button>
               <Button
                 variant="outline"
@@ -183,7 +185,7 @@ export default function UsersPage() {
                 onClick={() => setPage((p) => p + 1)}
                 disabled={!hasNext || isFetching}
               >
-                Next
+                {t("common.next")}
                 <ChevronRight className="h-4 w-4 ml-1" />
               </Button>
             </div>

@@ -1,0 +1,189 @@
+{
+  "app": {
+    "name": "Atlantis Auth",
+    "tagline": "Secure auth playground"
+  },
+  "nav": {
+    "home": "Home",
+    "todos": "Todos",
+    "sessions": "Sessions",
+    "users": "Users"
+  },
+  "layout": {
+    "login": "Login",
+    "logout": "Logout",
+    "register": "Register",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "common": {
+    "refresh": "Refresh",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "email": "Email",
+    "password": "Password",
+    "passwordRepeat": "Repeat password",
+    "newPassword": "New password",
+    "resetToken": "Reset token",
+    "searchPlaceholder": "Search",
+    "lang": "Lang",
+    "prev": "Prev",
+    "next": "Next",
+    "pageOf": "Page {{current}} of {{total}}",
+    "total": "{{count}} total"
+  },
+  "home": {
+    "badge": "Backend-ready React client",
+    "heroTitle": "Auth, sessions, todos, and admin users—wired to your NestJS API.",
+    "heroSubtitle": "Shadcn-styled UI with Redux Toolkit + RTK Query, aware of refresh tokens, devices, and roles.",
+    "ctaLogin": "Login",
+    "ctaRegister": "Create account",
+    "ctaDocs": "Backend docs",
+    "features": {
+      "authTitle": "Auth flows",
+      "authDesc": "Login, register, email verification, social OAuth, password reset, sessions management.",
+      "todosTitle": "Todos",
+      "todosDesc": "Personal todo list with create, update, complete, and soft delete.",
+      "adminTitle": "Admin tools",
+      "adminDesc": "Admins can browse, update roles, or remove users."
+    },
+    "quickLinksTitle": "Quick links",
+    "quickLinksDesc": "Start with auth, then manage sessions and todos.",
+    "quickLinks": {
+      "register": "Register & verify email",
+      "login": "Login with device binding",
+      "todos": "Manage todos",
+      "sessions": "Inspect sessions & revoke tokens",
+      "users": "Admin users"
+    }
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "loggedOut": "Logged out"
+  },
+  "login": {
+    "title": "Login",
+    "description": "Authenticate to manage todos and sessions. Device ID is generated automatically per browser.",
+    "button": "Login",
+    "providerGoogle": "Login with Google",
+    "providerYandex": "Login with Yandex",
+    "createAccount": "Create account",
+    "forgotPassword": "Forgot password?",
+    "welcome": "Welcome back!",
+    "error": "Failed to login",
+    "missingProvider": "Missing provider or token",
+    "oauthFail": "Failed to finish OAuth login"
+  },
+  "register": {
+    "title": "Create account",
+    "description": "We will send a verification code to your email. Device ID is generated automatically per browser.",
+    "button": "Register",
+    "success": "Registered. Check your email for OTP.",
+    "error": "Failed to register",
+    "loginPrompt": "Already have an account? Login",
+    "passwordsMismatch": "Passwords must match"
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "description": "We will send a reset token to your email.",
+    "button": "Send reset token",
+    "success": "If the email exists, we sent a reset token.",
+    "error": "Failed to request reset"
+  },
+  "resetPassword": {
+    "title": "Reset password",
+    "description": "Use the token from your email to set a new password.",
+    "button": "Update password",
+    "success": "Password changed. Please login.",
+    "error": "Failed to reset password",
+    "passwordsMismatch": "Passwords must match"
+  },
+  "verifyEmail": {
+    "title": "Verify email",
+    "description": "Enter the 6-digit code we sent to your inbox.",
+    "button": "Verify",
+    "success": "Email verified. You can login now.",
+    "error": "Failed to verify",
+    "labelCode": "OTP code",
+    "resendPrompt": "Didn't get the code?",
+    "resend": "Resend OTP",
+    "resendInfo": "OTP sent again (if email exists).",
+    "resendError": "Cannot resend code"
+  },
+  "todos": {
+    "heading": "Todos",
+    "description": "Your personal tasks",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Finish auth UI",
+    "empty": "No todos yet. Add your first task.",
+    "add": "Add todo",
+    "edit": "Edit todo",
+    "updated": "Updated",
+    "markDone": "Mark done",
+    "markOpen": "Mark open",
+    "searchPlaceholder": "Search title",
+    "save": "Save todo",
+    "createSuccess": "Todo added",
+    "createError": "Failed to create todo",
+    "titleRequired": "Title is required",
+    "updateSuccess": "Todo updated",
+    "updateError": "Failed to update todo",
+    "removeInfo": "Todo removed",
+    "removeError": "Failed to remove todo",
+    "loading": "Loading todos...",
+    "newTitle": "New todo",
+    "newDescription": "Create a task to track later.",
+    "editDescription": "Update the title and save changes."
+  },
+  "sessions": {
+    "title": "Active sessions",
+    "refresh": "Refresh",
+    "listTitle": "Sessions list",
+    "listDescription": "Includes device, user-agent, IP, and expiry.",
+    "tip": "Tip",
+    "tipDescription": "Refresh tokens are stored in HttpOnly cookies. Access tokens stay in Redux and localStorage for routing.",
+    "logoutOthers": "Logout other devices",
+    "logoutAll": "Logout all",
+    "logoutCurrent": "Logout current",
+    "loading": "Loading sessions...",
+    "none": "No sessions found.",
+    "created": "Created",
+    "expires": "Expires",
+    "revokedOthers": "Revoked {{count}} other sessions",
+    "revokedAll": "Revoked {{count}} sessions",
+    "revokeError": "Failed to revoke sessions",
+    "revokeAllError": "Failed to revoke all sessions"
+  },
+  "users": {
+    "title": "Users",
+    "description": "Browse and manage users.",
+    "searchPlaceholder": "Search email",
+    "loading": "Loading users...",
+    "empty": "No users found.",
+    "toggleAdmin": "Toggle admin",
+    "makeAdmin": "Make admin",
+    "removeAdmin": "Remove admin",
+    "remove": "Remove",
+    "updated": "User updated",
+    "updatedAt": "Updated",
+    "removed": "User removed",
+    "updateError": "Failed to update user",
+    "removeError": "Failed to remove user",
+    "isMe": "You",
+    "email": "Email",
+    "roles": "Roles"
+  },
+  "oauth": {
+    "failedTitle": "OAuth failed",
+    "failedDescription": "We could not complete the OAuth flow. Please try again.",
+    "backToLogin": "Back to login",
+    "finalizing": "Finalizing OAuth session..."
+  },
+  "protected": {
+    "checkingSession": "Checking session...",
+    "checkingPermissions": "Checking permissions..."
+  }
+}

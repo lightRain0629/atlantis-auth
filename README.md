@@ -1,4 +1,4 @@
-# Atlantis Auth
+# Atlantis
 
 React + Vite (TS) client for the NestJS auth/todo backend. Uses Redux Toolkit + RTK Query, Tailwind (shadcn-style components), and React Router.
 

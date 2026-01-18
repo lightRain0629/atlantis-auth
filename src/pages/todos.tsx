@@ -166,12 +166,12 @@ export default function TodosPage() {
               />
             </div>
             <Button size="sm" onClick={openCreate}>
-              <Plus className="h-4 w-4 mr-1 text-white" />
-              {t("todos.add")}
+              <Plus className="h-4 w-4 sm:mr-1 text-white" />
+              <span className="hidden sm:inline">{t("todos.add")}</span>
             </Button>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
-              <RefreshCw className="h-4 w-4 mr-1" />
-              {t("common.refresh")}
+              <RefreshCw className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">{t("common.refresh")}</span>
             </Button>
           </div>
         </CardHeader>

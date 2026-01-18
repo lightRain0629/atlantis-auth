@@ -12,7 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, Power, RefreshCw } from "lucide-react";
+import { Loader2, Power, RefreshCw, LogOut, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 
@@ -57,38 +57,48 @@ export default function SessionsPage() {
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="text-2xl font-semibold">{t("sessions.title")}</h1>
         <Button variant="outline" size="sm" onClick={() => refetch()}>
-          <RefreshCw className="h-4 w-4 mr-2" />
-          {t("common.refresh")}
+          <RefreshCw className="h-4 w-4 sm:mr-1" />
+          <span className="hidden sm:inline">{t("common.refresh")}</span>
         </Button>
         <div className="flex gap-2">
           <Button
             variant="outline"
+            size="sm"
             onClick={revokeOthers}
             disabled={loggingOutOthers}
           >
-            {loggingOutOthers && (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            {loggingOutOthers ? (
+              <Loader2 className="h-4 w-4 sm:mr-1 animate-spin" />
+            ) : (
+              <LogOut className="h-4 w-4 sm:mr-1" />
             )}
-            {t("sessions.logoutOthers")}
+            <span className="hidden sm:inline">{t("sessions.logoutOthers")}</span>
           </Button>
           <Button
             variant="destructive"
+            size="sm"
             onClick={revokeAll}
             disabled={loggingOutAll}
           >
-            {loggingOutAll && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            {t("sessions.logoutAll")}
+            {loggingOutAll ? (
+              <Loader2 className="h-4 w-4 sm:mr-1 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4 sm:mr-1" />
+            )}
+            <span className="hidden sm:inline">{t("sessions.logoutAll")}</span>
           </Button>
           <Button
             variant="outline"
+            size="sm"
             onClick={revokeCurrent}
             disabled={loggingOutCurrent}
           >
-            {loggingOutCurrent && (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            {loggingOutCurrent ? (
+              <Loader2 className="h-4 w-4 sm:mr-1 animate-spin" />
+            ) : (
+              <Power className="h-4 w-4 sm:mr-1" />
             )}
-            <Power className="h-4 w-4 mr-1" />
-            {t("sessions.logoutCurrent")}
+            <span className="hidden sm:inline">{t("sessions.logoutCurrent")}</span>
           </Button>
         </div>
       </div>

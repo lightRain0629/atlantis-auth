@@ -1300,10 +1300,22 @@ export default function FinancePage() {
         <CardContent>
           <Tabs defaultValue="summary" className="w-full">
             <TabsList className="grid w-full grid-cols-4 mb-6">
-              <TabsTrigger value="summary">{t("finance.summary")}</TabsTrigger>
-              <TabsTrigger value="records">{t("finance.records")}</TabsTrigger>
-              <TabsTrigger value="categories">{t("finance.categories")}</TabsTrigger>
-              <TabsTrigger value="conversions">{t("finance.conversions")}</TabsTrigger>
+              <TabsTrigger value="summary">
+                <PieChart className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">{t("finance.summary")}</span>
+              </TabsTrigger>
+              <TabsTrigger value="records">
+                <DollarSign className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">{t("finance.records")}</span>
+              </TabsTrigger>
+              <TabsTrigger value="categories">
+                <Archive className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">{t("finance.categories")}</span>
+              </TabsTrigger>
+              <TabsTrigger value="conversions">
+                <ArrowRightLeft className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">{t("finance.conversions")}</span>
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="summary">
               <SummaryTab />

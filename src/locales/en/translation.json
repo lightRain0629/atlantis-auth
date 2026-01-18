@@ -35,28 +35,28 @@
     "total": "{{count}} total"
   },
   "home": {
-    "badge": "Backend-ready React client",
-    "heroTitle": "Auth, sessions, todos, and admin users—wired to your NestJS API.",
-    "heroSubtitle": "Shadcn-styled UI with Redux Toolkit + RTK Query, aware of refresh tokens, devices, and roles.",
+    "badge": "Your finances under control",
+    "heroTitle": "Manage your finances, tasks, and account security in one place",
+    "heroSubtitle": "A simple and convenient tool for tracking income, expenses, and personal tasks",
     "ctaLogin": "Login",
     "ctaRegister": "Create account",
-    "ctaDocs": "Backend docs",
+    "ctaDocs": "Documentation",
     "features": {
-      "authTitle": "Auth flows",
-      "authDesc": "Login, register, email verification, social OAuth, password reset, sessions management.",
-      "todosTitle": "Todos",
-      "todosDesc": "Personal todo list with create, update, complete, and soft delete.",
-      "adminTitle": "Admin tools",
-      "adminDesc": "Admins can browse, update roles, or remove users."
+      "authTitle": "Secure login",
+      "authDesc": "Sign in via email or social networks. Email verification and password recovery.",
+      "todosTitle": "Task list",
+      "todosDesc": "Keep a personal to-do list: create, edit, and mark tasks as complete.",
+      "adminTitle": "Account management",
+      "adminDesc": "Full control over your profile and security settings."
     },
-    "quickLinksTitle": "Quick links",
-    "quickLinksDesc": "Start with auth, then manage sessions and todos.",
+    "quickLinksTitle": "Get started",
+    "quickLinksDesc": "Sign in and start tracking your finances",
     "quickLinks": {
-      "register": "Register & verify email",
-      "login": "Login with device binding",
-      "todos": "Manage todos",
-      "sessions": "Inspect sessions & revoke tokens",
-      "users": "Admin users"
+      "register": "Create account",
+      "login": "Sign in",
+      "todos": "My tasks",
+      "sessions": "Active devices",
+      "users": "Profile settings"
     }
   },
   "auth": {
@@ -67,7 +67,7 @@
   },
   "login": {
     "title": "Login",
-    "description": "Authenticate to manage todos and sessions. Device ID is generated automatically per browser.",
+    "description": "Sign in to manage your finances and tasks.",
     "button": "Login",
     "providerGoogle": "Login with Google",
     "providerYandex": "Login with Yandex",
@@ -80,7 +80,7 @@
   },
   "register": {
     "title": "Create account",
-    "description": "We will send a verification code to your email. Device ID is generated automatically per browser.",
+    "description": "We will send a verification code to your email.",
     "button": "Register",
     "success": "Registered. Check your email for OTP.",
     "error": "Failed to register",
@@ -145,7 +145,7 @@
     "listTitle": "Sessions list",
     "listDescription": "Includes device, user-agent, IP, and expiry.",
     "tip": "Tip",
-    "tipDescription": "Refresh tokens are stored in HttpOnly cookies. Access tokens stay in Redux and localStorage for routing.",
+    "tipDescription": "This shows all devices where you are currently signed in to your account.",
     "logoutOthers": "Logout other devices",
     "logoutAll": "Logout all",
     "logoutCurrent": "Logout current",

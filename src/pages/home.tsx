@@ -50,15 +50,6 @@ export default function HomePage() {
             <Button asChild variant="outline" size="lg">
               <Link to="/register">{t("home.ctaRegister")}</Link>
             </Button>
-            <Button asChild variant="ghost" size="lg">
-              <a
-                href="http://localhost:3000/api/docs"
-                target="_blank"
-                rel="noreferrer"
-              >
-                {t("home.ctaDocs")}
-              </a>
-            </Button>
           </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">

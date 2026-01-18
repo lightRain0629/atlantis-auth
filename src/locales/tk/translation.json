@@ -35,28 +35,28 @@
     "total": "Jemi: {{count}}"
   },
   "home": {
-    "badge": "Backende taýýar React müşderisi",
-    "heroTitle": "Awtorizasiýa, sessiýalar, wezipeler we admin ulanyjylar — NestJS API-ňize bagly.",
-    "heroSubtitle": "Shadcn görnüşi, Redux Toolkit + RTK Query, refresh tokenler, enjamlar we rollar bilen işleşýär.",
+    "badge": "Maliýäňiz gözegçilikde",
+    "heroTitle": "Maliýäňizi, wezipeleriňizi we hasap howpsuzlygyňyzy bir ýerden dolandyryň",
+    "heroSubtitle": "Girdejileri, çykdajylary we şahsy wezipeleri yzarlamak üçin ýönekeý we amatly gural",
     "ctaLogin": "Giriş",
     "ctaRegister": "Hasap açmak",
-    "ctaDocs": "API dokumenti",
+    "ctaDocs": "Resminama",
     "features": {
-      "authTitle": "Auth akymlary",
-      "authDesc": "Giriş, hasap açmak, email tassyk, sosial OAuth, paroly täzeden açmak, sessiýalary dolandyrmak.",
-      "todosTitle": "Wazifalar",
-      "todosDesc": "Şahsy wezipeler: döretmek, üýtgetmek, tamamlamak we ýumşak öçürmek.",
-      "adminTitle": "Admin gurallary",
-      "adminDesc": "Adminler ulanyjylary görüp biler, rollary üýtgedip biler ýa-da öçürip biler."
+      "authTitle": "Howpsuz giriş",
+      "authDesc": "Email ýa-da sosial torlary arkaly giriň. Email tassyklamasy we parol dikeltmek.",
+      "todosTitle": "Wazifalar sanawy",
+      "todosDesc": "Şahsy wezipe sanawyny ýöretmek: döretmek, üýtgetmek we tamamlanan diýip bellemek.",
+      "adminTitle": "Hasap dolandyryşy",
+      "adminDesc": "Profil we howpsuzlyk sazlamalaryňyza doly gözegçilik."
     },
-    "quickLinksTitle": "Çalt salgylanmalar",
-    "quickLinksDesc": "Ilki awtorizasiýa, soň sessiýalar we wezipeler.",
+    "quickLinksTitle": "Başlaň",
+    "quickLinksDesc": "Giriň we maliýäňizi yzarlamaga başlaň",
     "quickLinks": {
-      "register": "Hasap açmak we email tassyk",
-      "login": "Enjam bilen baglanyşykly giriş",
-      "todos": "Wazifalary dolandyrmak",
-      "sessions": "Sessialary görmek we yzyna almak",
-      "users": "Ulanyjylary dolandyrmak"
+      "register": "Hasap açmak",
+      "login": "Giriş",
+      "todos": "Wazifalarym",
+      "sessions": "Aktiw enjamlar",
+      "users": "Profil sazlamalary"
     }
   },
   "auth": {
@@ -67,7 +67,7 @@
   },
   "login": {
     "title": "Giriş",
-    "description": "Wazifalara we sessiýalara gözegçilik etmek üçin giriň. Enjam ID brauzer üçin awtomatiki döredilýär.",
+    "description": "Maliýäňizi we wezipeleriňizi dolandyrmak üçin giriň.",
     "button": "Giriş",
     "providerGoogle": "Google bilen giriş",
     "providerYandex": "Yandex bilen giriş",
@@ -80,7 +80,7 @@
   },
   "register": {
     "title": "Hasap açmak",
-    "description": "Emailiňize tassyklama kody ugradylar. Enjam ID brauzer üçin awtomatiki döredilýär.",
+    "description": "Emailiňize tassyklama kody ugradylar.",
     "button": "Hasap aç",
     "success": "Hasap açyldy. OTP üçin poçtany barlaň.",
     "error": "Hasap açmak başarmady",
@@ -145,7 +145,7 @@
     "listTitle": "Sessialaryň sanawy",
     "listDescription": "Enjam, user-agent, IP we gutarýan wagty.",
     "tip": "Maslahat",
-    "tipDescription": "Refresh tokenler HttpOnly cookies-de. Access tokenler Redux we localStorage-da marşrut üçin.",
+    "tipDescription": "Bu ýerde hasabyňyza giren ähli enjamlar görkezilýär.",
     "logoutOthers": "Beýleki enjamlardan çykyň",
     "logoutAll": "Hemmesinden çykyň",
     "logoutCurrent": "Şu ýerden çyk",

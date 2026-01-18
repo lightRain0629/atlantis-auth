@@ -414,51 +414,49 @@ function RecordsTab() {
         {records.map((record) => (
           <div
             key={record.id}
-            className="flex items-center justify-between rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm"
+            className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm"
           >
-            <div className="flex items-center gap-3">
-              <div
-                className={`p-2 rounded-full ${
-                  record.type === "INCOME" ? "bg-green-100" : "bg-red-100"
-                }`}
-              >
-                {record.type === "INCOME" ? (
-                  <TrendingUp className="h-4 w-4 text-green-600" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-600" />
-                )}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`font-semibold ${
-                      record.type === "INCOME" ? "text-green-600" : "text-red-600"
-                    }`}
-                  >
-                    {record.type === "INCOME" ? "+" : "-"}
-                    {formatMoney(record.amount, record.currency)}
-                  </span>
-                  {record.article && (
-                    <span
-                      className="px-2 py-0.5 text-xs rounded-full"
-                      style={{
-                        backgroundColor: record.article.color
-                          ? `${record.article.color}20`
-                          : "#f1f5f9",
-                        color: record.article.color || "#64748b",
-                      }}
-                    >
-                      {record.article.name}
-                    </span>
+            <div className="flex flex-col gap-1 min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`p-1.5 rounded-full flex-shrink-0 ${
+                    record.type === "INCOME" ? "bg-green-100" : "bg-red-100"
+                  }`}
+                >
+                  {record.type === "INCOME" ? (
+                    <TrendingUp className="h-4 w-4 text-green-600" />
+                  ) : (
+                    <TrendingDown className="h-4 w-4 text-red-600" />
                   )}
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  {formatDate(record.operationDate)}
-                  {record.remark && ` · ${record.remark}`}
-                </div>
+                <span
+                  className={`font-semibold ${
+                    record.type === "INCOME" ? "text-green-600" : "text-red-600"
+                  }`}
+                >
+                  {record.type === "INCOME" ? "+" : "-"}
+                  {formatMoney(record.amount, record.currency)}
+                </span>
+                {record.article && (
+                  <span
+                    className="px-2 py-0.5 text-xs rounded-full"
+                    style={{
+                      backgroundColor: record.article.color
+                        ? `${record.article.color}20`
+                        : "#f1f5f9",
+                      color: record.article.color || "#64748b",
+                    }}
+                  >
+                    {record.article.name}
+                  </span>
+                )}
               </div>
+              <p className="text-xs text-muted-foreground">
+                {formatDate(record.operationDate)}
+                {record.remark && ` · ${record.remark}`}
+              </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Button variant="outline" size="sm" onClick={() => openEdit(record)}>
                 <Pencil className="h-4 w-4" />
               </Button>

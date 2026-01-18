@@ -186,12 +186,12 @@ export default function TodosPage() {
             {todos.map((todo) => (
               <div
                 key={todo.id}
-                className="flex items-start justify-between rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm"
+                className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm"
               >
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-1 min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <button
-                      className="text-primary"
+                      className="text-primary flex-shrink-0"
                       onClick={() => toggleComplete(todo.id, todo.isCompleted)}
                       aria-label="Toggle complete"
                     >
@@ -202,11 +202,11 @@ export default function TodosPage() {
                       )}
                     </button>
                     <p
-                      className={
+                      className={`break-words ${
                         todo.isCompleted
                           ? "line-through text-muted-foreground"
                           : ""
-                      }
+                      }`}
                     >
                       {todo.title}
                     </p>
@@ -216,26 +216,26 @@ export default function TodosPage() {
                     {new Date(todo.updatedAt).toLocaleString()}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => openEdit(todo)}
                   >
-                    <Pencil className="h-4 w-4 mr-1" />
-                    {t("todos.edit")}
+                    <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => toggleComplete(todo.id, todo.isCompleted)}
                   >
-                    {isUpdating && updateArgs?.id === todo.id && (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {isUpdating && updateArgs?.id === todo.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : todo.isCompleted ? (
+                      <CircleDashed className="h-4 w-4" />
+                    ) : (
+                      <CheckCircle className="h-4 w-4" />
                     )}
-                    {todo.isCompleted
-                      ? t("todos.markOpen")
-                      : t("todos.markDone")}
                   </Button>
                   <Button
                     variant="destructive"

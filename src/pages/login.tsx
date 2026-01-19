@@ -99,7 +99,7 @@ export default function LoginPage() {
             </div>
 
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />}
               {t("login.button")}
             </Button>
           </form>

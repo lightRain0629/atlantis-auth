@@ -48,10 +48,10 @@ export default function TodosPage() {
           .string()
           .min(
             1,
-            t("todos.titleRequired", { defaultValue: "Title is required" })
+            t("todos.titleRequired", { defaultValue: "Title is required" }),
           ),
       }),
-    [t]
+    [t],
   );
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -165,9 +165,11 @@ export default function TodosPage() {
                 aria-label="Search todos"
               />
             </div>
-            <Button size="sm" onClick={openCreate}>
+            <Button size="sm" className="text-white" onClick={openCreate}>
               <Plus className="h-4 w-4 sm:mr-1 text-white" />
-              <span className="hidden sm:inline">{t("todos.add")}</span>
+              <span className="hidden sm:inline text-white">
+                {t("todos.add")}
+              </span>
             </Button>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
               <RefreshCw className="h-4 w-4 sm:mr-1" />

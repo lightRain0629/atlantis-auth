@@ -66,7 +66,7 @@ export default function ForgotPasswordPage() {
               )}
             </div>
             <Button className="w-full" type="submit" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />}
               {t("forgotPassword.button")}
             </Button>
           </form>

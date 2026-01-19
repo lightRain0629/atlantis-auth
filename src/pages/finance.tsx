@@ -393,7 +393,7 @@ function RecordsTab() {
         </div>
         <div className="flex items-center gap-2">
           <Button size="sm" onClick={openCreate}>
-            <Plus className="h-4 w-4 mr-1" />
+            <Plus className="h-4 w-4 mr-1 text-white" />
             {t("finance.addRecord")}
           </Button>
           <Button variant="outline" size="sm" onClick={() => refetch()}>
@@ -821,7 +821,7 @@ function CategoriesTab() {
         </div>
         <div className="flex items-center gap-2">
           <Button size="sm" onClick={openCreate}>
-            <Plus className="h-4 w-4 mr-1" />
+            <Plus className="h-4 w-4 mr-1 text-white" />
             {t("finance.addCategory")}
           </Button>
           <Button variant="outline" size="sm" onClick={() => refetch()}>
@@ -1026,11 +1026,11 @@ function ConversionsTab() {
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-2">
         <Button size="sm" onClick={() => setRateOpen(true)}>
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="h-4 w-4 mr-1 text-white" />
           {t("finance.addRate")}
         </Button>
         <Button size="sm" onClick={() => setConversionOpen(true)}>
-          <ArrowRightLeft className="h-4 w-4 mr-1" />
+          <ArrowRightLeft className="h-4 w-4 mr-1 text-white" />
           {t("finance.convertCurrency")}
         </Button>
         <Button variant="outline" size="sm" onClick={() => refetch()}>

@@ -284,7 +284,7 @@ function RecordsTab() {
     defaultValues: {
       type: "EXPENSE" as FinanceRecordType,
       amount: "",
-      currency: "USD",
+      currency: "TMT",
       articleId: "",
       remark: "",
       operationDate: toDateInputValue(new Date().toISOString()),
@@ -301,7 +301,7 @@ function RecordsTab() {
     reset({
       type: "EXPENSE",
       amount: "",
-      currency: "USD",
+      currency: "TMT",
       articleId: "",
       remark: "",
       operationDate: toDateInputValue(new Date().toISOString()),
@@ -969,7 +969,7 @@ function ConversionsTab() {
     resolver: zodResolver(rateSchema),
     defaultValues: {
       baseCurrency: "USD",
-      quoteCurrency: "EUR",
+      quoteCurrency: "TMT",
       rate: "",
       effectiveAt: toDateInputValue(new Date().toISOString()),
     },
@@ -980,7 +980,7 @@ function ConversionsTab() {
     defaultValues: {
       fromAmount: "",
       fromCurrency: "USD",
-      toCurrency: "EUR",
+      toCurrency: "TMT",
       operationDate: toDateInputValue(new Date().toISOString()),
       remark: "",
     },

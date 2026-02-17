@@ -267,6 +267,11 @@
     "conversionDeleted": "Conversion deleted",
     "conversionDeleteError": "Failed to delete conversion",
     "conversionHistory": "Conversion History",
-    "noConversions": "No conversions found."
+    "noConversions": "No conversions found.",
+    "charts": "Charts",
+    "expensesByCategory": "Expenses by Category",
+    "incomeByCategory": "Income by Category",
+    "total": "Total",
+    "noChartData": "No data for the selected period"
   }
 }

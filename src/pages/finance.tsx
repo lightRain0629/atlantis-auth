@@ -27,13 +27,23 @@ import {
   useCreateConversionMutation,
   useDeleteConversionMutation,
   useGetSummaryQuery,
+  useGetExpenseChartQuery,
+  useGetIncomeChartQuery,
 } from "@/services/api";
 import type {
   FinanceArticle,
   FinanceRecord,
   FinanceArticleKind,
   FinanceRecordType,
+  ChartItem,
 } from "@/services/types";
+import {
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import {
   Loader2,
   Plus,
@@ -49,6 +59,7 @@ import {
   Archive,
   DollarSign,
   PieChart,
+  BarChart3,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useDebouncedValue } from "@/lib/use-debounce";
@@ -1281,6 +1292,211 @@ function ConversionsTab() {
   );
 }
 
+// ============ Charts Tab ============
+
+function ChartPieCard({
+  title,
+  items,
+  total,
+  isLoading,
+  noDataLabel,
+}: {
+  title: string;
+  items: ChartItem[] | undefined;
+  total: Record<string, string> | undefined;
+  isLoading: boolean;
+  noDataLabel: string;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="flex items-center gap-2 text-muted-foreground py-8 justify-center">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>{t("finance.loading")}</span>
+          </div>
+        ) : !items || items.length === 0 ? (
+          <p className="text-muted-foreground text-sm text-center py-8">
+            {noDataLabel}
+          </p>
+        ) : (
+          <div>
+            <ResponsiveContainer width="100%" height={250}>
+              <RechartsPieChart>
+                <Pie
+                  data={items}
+                  dataKey="value"
+                  nameKey="categoryName"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={90}
+                  innerRadius={45}
+                >
+                  {items.map((item, index) => (
+                    <Cell key={index} fill={item.categoryColor} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value, name) => [
+                    formatMoney(String(value ?? 0), items[0]?.currency ?? ""),
+                    name,
+                  ]}
+                />
+              </RechartsPieChart>
+            </ResponsiveContainer>
+
+            <div className="mt-4 space-y-2">
+              {items.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between text-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="inline-block w-3 h-3 rounded-full flex-shrink-0"
+                      style={{ backgroundColor: item.categoryColor }}
+                    />
+                    <span className="truncate">{item.categoryName}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-right">
+                    <span className="font-medium">
+                      {formatMoney(item.total, item.currency)}
+                    </span>
+                    <span className="text-muted-foreground w-14 text-right">
+                      {item.percentage}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {total && (
+              <div className="mt-3 pt-3 border-t">
+                {Object.entries(total).map(([currency, amount]) => (
+                  <div
+                    key={currency}
+                    className="flex justify-between text-sm font-semibold"
+                  >
+                    <span>{t("finance.total")}</span>
+                    <span>{formatMoney(amount, currency)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function ChartsTab() {
+  const { t } = useTranslation();
+  const [from, setFrom] = useState(() => toDateInputValue(getStartOfMonth()));
+  const [to, setTo] = useState(() => toDateInputValue(getEndOfMonth()));
+  const [baseCurrency, setBaseCurrency] = useState("");
+
+  const chartParams = {
+    from: new Date(from).toISOString(),
+    to: new Date(to).toISOString(),
+    baseCurrency: baseCurrency || undefined,
+  };
+
+  const {
+    data: expenseChart,
+    isLoading: expenseLoading,
+    refetch: refetchExpense,
+  } = useGetExpenseChartQuery(chartParams);
+
+  const {
+    data: incomeChart,
+    isLoading: incomeLoading,
+    refetch: refetchIncome,
+  } = useGetIncomeChartQuery(chartParams);
+
+  const expenseItems = expenseChart?.items.map((item) => ({
+    ...item,
+    value: parseFloat(item.total),
+  }));
+
+  const incomeItems = incomeChart?.items.map((item) => ({
+    ...item,
+    value: parseFloat(item.total),
+  }));
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-end gap-4">
+        <div className="space-y-2">
+          <Label>{t("finance.from")}</Label>
+          <Input
+            type="date"
+            value={from}
+            onChange={(e) => setFrom(e.target.value)}
+            className="w-40"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>{t("finance.to")}</Label>
+          <Input
+            type="date"
+            value={to}
+            onChange={(e) => setTo(e.target.value)}
+            className="w-40"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>{t("finance.baseCurrency")}</Label>
+          <select
+            value={baseCurrency}
+            onChange={(e) => setBaseCurrency(e.target.value)}
+            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("finance.noCurrency")}</option>
+            {COMMON_CURRENCIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </div>
+        <Button
+          variant="outline"
+          onClick={() => {
+            refetchExpense();
+            refetchIncome();
+          }}
+        >
+          <RefreshCw className="h-4 w-4 mr-1" />
+          {t("common.refresh")}
+        </Button>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <ChartPieCard
+          title={t("finance.expensesByCategory")}
+          items={expenseItems}
+          total={expenseChart?.total}
+          isLoading={expenseLoading}
+          noDataLabel={t("finance.noChartData")}
+        />
+        <ChartPieCard
+          title={t("finance.incomeByCategory")}
+          items={incomeItems}
+          total={incomeChart?.total}
+          isLoading={incomeLoading}
+          noDataLabel={t("finance.noChartData")}
+        />
+      </div>
+    </div>
+  );
+}
+
 // ============ Main Finance Page ============
 export default function FinancePage() {
   const { t } = useTranslation();
@@ -1297,10 +1513,14 @@ export default function FinancePage() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="summary" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-5 mb-6">
               <TabsTrigger value="summary">
                 <PieChart className="h-4 w-4 sm:mr-1" />
                 <span className="hidden sm:inline">{t("finance.summary")}</span>
+              </TabsTrigger>
+              <TabsTrigger value="charts">
+                <BarChart3 className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">{t("finance.charts")}</span>
               </TabsTrigger>
               <TabsTrigger value="records">
                 <DollarSign className="h-4 w-4 sm:mr-1" />
@@ -1317,6 +1537,9 @@ export default function FinancePage() {
             </TabsList>
             <TabsContent value="summary">
               <SummaryTab />
+            </TabsContent>
+            <TabsContent value="charts">
+              <ChartsTab />
             </TabsContent>
             <TabsContent value="records">
               <RecordsTab />

@@ -19,6 +19,8 @@ import type {
   ListConversionsParams,
   SummaryParams,
   SummaryResponse,
+  ChartQueryParams,
+  ChartResponse,
 } from "../types/finance";
 
 export const financeApi = api.injectEndpoints({
@@ -263,6 +265,37 @@ export const financeApi = api.injectEndpoints({
       },
       providesTags: [{ type: "Summary", id: "LIST" }],
     }),
+
+    // ============ Charts ============
+    getExpenseChart: builder.query<ChartResponse, ChartQueryParams>({
+      query: (params) => {
+        const search = new URLSearchParams();
+        search.set("from", params.from);
+        search.set("to", params.to);
+        if (params.baseCurrency)
+          search.set("baseCurrency", params.baseCurrency);
+        return {
+          url: `/finance/summary/chart/expenses?${search.toString()}`,
+          method: "GET",
+        };
+      },
+      providesTags: [{ type: "Summary", id: "LIST" }],
+    }),
+
+    getIncomeChart: builder.query<ChartResponse, ChartQueryParams>({
+      query: (params) => {
+        const search = new URLSearchParams();
+        search.set("from", params.from);
+        search.set("to", params.to);
+        if (params.baseCurrency)
+          search.set("baseCurrency", params.baseCurrency);
+        return {
+          url: `/finance/summary/chart/income?${search.toString()}`,
+          method: "GET",
+        };
+      },
+      providesTags: [{ type: "Summary", id: "LIST" }],
+    }),
   }),
 });
 
@@ -290,4 +323,7 @@ export const {
   useDeleteConversionMutation,
   // Summary
   useGetSummaryQuery,
+  // Charts
+  useGetExpenseChartQuery,
+  useGetIncomeChartQuery,
 } = financeApi;

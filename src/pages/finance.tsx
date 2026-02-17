@@ -1399,7 +1399,7 @@ function ChartsTab() {
   const { t } = useTranslation();
   const [from, setFrom] = useState(() => toDateInputValue(getStartOfMonth()));
   const [to, setTo] = useState(() => toDateInputValue(getEndOfMonth()));
-  const [baseCurrency, setBaseCurrency] = useState("");
+  const [baseCurrency, setBaseCurrency] = useState("USD");
 
   const chartParams = {
     from: new Date(from).toISOString(),

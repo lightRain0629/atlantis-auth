@@ -109,7 +109,6 @@ function SummaryTab() {
           />
         </div>
         <div className="space-y-2">
-          <Label>{t("finance.baseCurrency")}</Label>
           <select
             value={baseCurrency}
             onChange={(e) => setBaseCurrency(e.target.value)}
@@ -1451,7 +1450,6 @@ function ChartsTab() {
           />
         </div>
         <div className="space-y-2">
-          <Label>{t("finance.baseCurrency")}</Label>
           <select
             value={baseCurrency}
             onChange={(e) => setBaseCurrency(e.target.value)}

@@ -24,4 +24,7 @@ export type {
   ListConversionsParams,
   SummaryParams,
   SummaryResponse,
+  ChartQueryParams,
+  ChartItem,
+  ChartResponse,
 } from "./finance";

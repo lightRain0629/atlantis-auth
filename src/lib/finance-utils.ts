@@ -40,11 +40,28 @@ export function getStartOfMonth(): string {
 
 export function getEndOfMonth(): string {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).toISOString();
+  return new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59,
+    999,
+  ).toISOString();
 }
 
 export function getToday(): string {
   return new Date().toISOString();
 }
 
-export const COMMON_CURRENCIES = ["USD", "EUR", "TMT", "RUB", "TRY", "CNY", "GBP"];
+export const COMMON_CURRENCIES = [
+  "TMT",
+  "USD",
+  "EUR",
+  "RUB",
+  "TRY",
+  "CNY",
+  "GBP",
+  "KZT",
+];

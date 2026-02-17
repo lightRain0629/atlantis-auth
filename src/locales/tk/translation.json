@@ -267,6 +267,11 @@
     "conversionDeleted": "Konwertasiýa öçürildi",
     "conversionDeleteError": "Konwertasiýany öçürip bolmady",
     "conversionHistory": "Konwertasiýa taryhy",
-    "noConversions": "Konwertasiýa tapylmady."
+    "noConversions": "Konwertasiýa tapylmady.",
+    "charts": "Diagrammalar",
+    "expensesByCategory": "Kategoriýa boýunça çykdajylar",
+    "incomeByCategory": "Kategoriýa boýunça girdejiler",
+    "total": "Jemi",
+    "noChartData": "Saýlanan döwür üçin maglumat ýok"
   }
 }

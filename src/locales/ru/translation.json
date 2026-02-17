@@ -267,6 +267,11 @@
     "conversionDeleted": "Конвертация удалена",
     "conversionDeleteError": "Не удалось удалить конвертацию",
     "conversionHistory": "История конвертаций",
-    "noConversions": "Конвертаций нет."
+    "noConversions": "Конвертаций нет.",
+    "charts": "Графики",
+    "expensesByCategory": "Расходы по категориям",
+    "incomeByCategory": "Доходы по категориям",
+    "total": "Итого",
+    "noChartData": "Нет данных за выбранный период"
   }
 }

@@ -175,3 +175,25 @@ export interface SummaryResponse {
   expenseBaseCurrency?: string;
   netBaseCurrency?: string;
 }
+
+// ============ Charts ============
+
+export interface ChartQueryParams {
+  from: string;
+  to: string;
+  baseCurrency?: string;
+}
+
+export interface ChartItem {
+  articleId: string | null;
+  categoryName: string;
+  categoryColor: string;
+  total: string;
+  currency: string;
+  percentage: number;
+}
+
+export interface ChartResponse {
+  items: ChartItem[];
+  total: Record<string, string>;
+}

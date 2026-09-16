@@ -289,6 +289,8 @@ export interface BalancesParams {
   asOf?: string;
   baseCurrency?: string;
   includeArchived?: boolean;
+  /** Leave money you have lent out of the totals — what is actually on hand. */
+  excludeReceivables?: boolean;
 }
 
 export interface MissingRate {
@@ -331,6 +333,7 @@ export interface NetWorthHistoryParams {
   to: string;
   interval?: NetWorthInterval;
   baseCurrency?: string;
+  excludeReceivables?: boolean;
 }
 
 export interface NetWorthPoint {

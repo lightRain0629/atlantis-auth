@@ -365,7 +365,9 @@
       "owedToYouNow": "How much you are owed now",
       "owedNowHint": "A positive number. It is subtracted from your net worth.",
       "owedToYouNowHint": "A positive number. It counts towards your net worth.",
-      "debtDoubleCountHint": "If the money is still sitting in another account, put 0 here and make a Transfer instead — otherwise it is counted twice."
+      "debtDoubleCountHint": "If the money is still sitting in another account, put 0 here and make a Transfer instead — otherwise it is counted twice.",
+      "excludeReceivables": "Only money on hand",
+      "excludeReceivablesHint": "Leaves out what you have lent to others."
     },
     "flow": {
       "tab": "Money flow",

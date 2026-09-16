@@ -45,6 +45,11 @@ export default function AccountsTab({
 }) {
   const { t } = useTranslation();
   const [showArchived, setShowArchived] = useState(false);
+  // Remembered, because "what is actually on hand" is a lens you keep, not a
+  // one-off glance.
+  const [excludeReceivables, setExcludeReceivables] = useState(
+    () => localStorage.getItem("finance.excludeReceivables") === "true",
+  );
   const [editing, setEditing] = useState<FinanceAccount | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [valuing, setValuing] = useState<FinanceAccount | null>(null);
@@ -58,7 +63,13 @@ export default function AccountsTab({
   } = useGetBalancesQuery({
     baseCurrency: baseCurrency || undefined,
     includeArchived: showArchived,
+    excludeReceivables,
   });
+
+  const toggleExcludeReceivables = (next: boolean) => {
+    setExcludeReceivables(next);
+    localStorage.setItem("finance.excludeReceivables", String(next));
+  };
 
   /**
    * Start the trend where the data actually starts. Opening an account today
@@ -84,6 +95,7 @@ export default function AccountsTab({
       to: historyRange.to,
       interval: "month",
       baseCurrency: baseCurrency || "USD",
+      excludeReceivables,
     },
     { skip: !baseCurrency },
   );
@@ -125,7 +137,7 @@ export default function AccountsTab({
               ))}
             </select>
           </div>
-          <label className="flex min-h-[40px] items-center gap-2 text-sm text-muted-foreground">
+          <label className="flex min-h-[44px] items-center gap-2 text-sm text-muted-foreground">
             <input
               type="checkbox"
               checked={showArchived}
@@ -133,6 +145,18 @@ export default function AccountsTab({
               className="h-4 w-4 rounded border-input"
             />
             {t("finance.accounts.showArchived")}
+          </label>
+          <label
+            className="flex min-h-[44px] items-center gap-2 text-sm text-muted-foreground"
+            title={t("finance.accounts.excludeReceivablesHint")}
+          >
+            <input
+              type="checkbox"
+              checked={excludeReceivables}
+              onChange={(e) => toggleExcludeReceivables(e.target.checked)}
+              className="h-4 w-4 rounded border-input"
+            />
+            {t("finance.accounts.excludeReceivables")}
           </label>
         </div>
         <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
@@ -217,6 +241,7 @@ export default function AccountsTab({
               history={history}
               baseCurrency={baseCurrency}
               windowStart={historyRange.clamped ? historyRange.from : null}
+              excludeReceivables={excludeReceivables}
             />
 
             <div className="mt-6 grid gap-6 lg:grid-cols-3">

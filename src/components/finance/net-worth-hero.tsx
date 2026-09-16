@@ -70,12 +70,15 @@ export default function NetWorthHero({
   history,
   baseCurrency,
   windowStart,
+  excludeReceivables = false,
 }: {
   balances: BalancesResponse;
   history: NetWorthHistoryResponse | undefined;
   baseCurrency: string;
   /** Set when the trend starts at the first account rather than 12 months back. */
   windowStart: string | null;
+  /** Money lent out is left out of these totals. */
+  excludeReceivables?: boolean;
 }) {
   const { t } = useTranslation();
   const isMobile = useIsMobile();
@@ -104,6 +107,11 @@ export default function NetWorthHero({
               <p className="text-sm font-medium text-muted-foreground">
                 {t("finance.accounts.netWorth")}
               </p>
+              {excludeReceivables && (
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  {t("finance.accounts.excludeReceivablesHint")}
+                </p>
+              )}
               <p className="mt-1 text-4xl sm:text-5xl font-semibold tracking-tight">
                 {hasBase
                   ? formatMoneyCompact(balances.netWorth, currency)

@@ -444,6 +444,7 @@ export const financeApi = api.injectEndpoints({
           search.set("baseCurrency", params.baseCurrency);
         if (params?.includeArchived)
           search.set("includeArchived", String(params.includeArchived));
+        if (params?.excludeReceivables) search.set("excludeReceivables", "true");
         const qs = search.toString();
         return {
           url: `/finance/accounts/balances${qs ? `?${qs}` : ""}`,
@@ -464,6 +465,7 @@ export const financeApi = api.injectEndpoints({
         if (params.interval) search.set("interval", params.interval);
         if (params.baseCurrency)
           search.set("baseCurrency", params.baseCurrency);
+        if (params.excludeReceivables) search.set("excludeReceivables", "true");
         return {
           url: `/finance/accounts/net-worth/history?${search.toString()}`,
           method: "GET",

@@ -21,6 +21,19 @@ import type {
   SummaryResponse,
   ChartQueryParams,
   ChartResponse,
+  FinanceAccount,
+  CreateAccountDto,
+  UpdateAccountDto,
+  ListAccountsParams,
+  BalancesParams,
+  BalancesResponse,
+  NetWorthHistoryParams,
+  NetWorthHistoryResponse,
+  DebtsResponse,
+  AccountValuation,
+  CreateValuationDto,
+  CashflowParams,
+  CashflowResponse,
 } from "../types/finance";
 
 export const financeApi = api.injectEndpoints({
@@ -88,6 +101,7 @@ export const financeApi = api.injectEndpoints({
         if (params?.type) search.set("type", params.type);
         if (params?.currency) search.set("currency", params.currency);
         if (params?.articleId) search.set("articleId", params.articleId);
+        if (params?.accountId) search.set("accountId", params.accountId);
         if (params?.from) search.set("from", params.from);
         if (params?.to) search.set("to", params.to);
         if (params?.search) search.set("search", params.search);
@@ -120,6 +134,7 @@ export const financeApi = api.injectEndpoints({
       invalidatesTags: [
         { type: "Record", id: "LIST" },
         { type: "Summary", id: "LIST" },
+        { type: "Balance", id: "LIST" },
       ],
     }),
 
@@ -136,6 +151,7 @@ export const financeApi = api.injectEndpoints({
         { type: "Record", id },
         { type: "Record", id: "LIST" },
         { type: "Summary", id: "LIST" },
+        { type: "Balance", id: "LIST" },
       ],
     }),
 
@@ -145,6 +161,7 @@ export const financeApi = api.injectEndpoints({
         { type: "Record", id },
         { type: "Record", id: "LIST" },
         { type: "Summary", id: "LIST" },
+        { type: "Balance", id: "LIST" },
       ],
     }),
 
@@ -187,6 +204,8 @@ export const financeApi = api.injectEndpoints({
       invalidatesTags: [
         { type: "Rate", id: "LIST" },
         { type: "Rate", id: "LATEST" },
+        { type: "Balance", id: "LIST" },
+        { type: "Summary", id: "LIST" },
       ],
     }),
 
@@ -237,6 +256,7 @@ export const financeApi = api.injectEndpoints({
         invalidatesTags: [
           { type: "Conversion", id: "LIST" },
           { type: "Summary", id: "LIST" },
+          { type: "Balance", id: "LIST" },
         ],
       }
     ),
@@ -247,6 +267,160 @@ export const financeApi = api.injectEndpoints({
         { type: "Conversion", id },
         { type: "Conversion", id: "LIST" },
         { type: "Summary", id: "LIST" },
+        { type: "Balance", id: "LIST" },
+      ],
+    }),
+
+
+    // ============ Accounts ============
+    getAccounts: builder.query<FinanceAccount[], ListAccountsParams | void>({
+      query: (params) => {
+        const search = new URLSearchParams();
+        if (params?.kind) search.set("kind", params.kind);
+        if (params?.includeArchived)
+          search.set("includeArchived", String(params.includeArchived));
+        const qs = search.toString();
+        return { url: `/finance/accounts${qs ? `?${qs}` : ""}`, method: "GET" };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Account" as const, id })),
+              { type: "Account" as const, id: "LIST" },
+            ]
+          : [{ type: "Account" as const, id: "LIST" }],
+    }),
+
+    getAccount: builder.query<FinanceAccount, string>({
+      query: (id) => ({ url: `/finance/accounts/${id}`, method: "GET" }),
+      providesTags: (_result, _err, id) => [{ type: "Account", id }],
+    }),
+
+    createAccount: builder.mutation<FinanceAccount, CreateAccountDto>({
+      query: (body) => ({ url: "/finance/accounts", method: "POST", body }),
+      invalidatesTags: [
+        { type: "Account", id: "LIST" },
+        { type: "Balance", id: "LIST" },
+      ],
+    }),
+
+    updateAccount: builder.mutation<
+      FinanceAccount,
+      { id: string; data: UpdateAccountDto }
+    >({
+      query: ({ id, data }) => ({
+        url: `/finance/accounts/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: (_result, _err, { id }) => [
+        { type: "Account", id },
+        { type: "Account", id: "LIST" },
+        { type: "Balance", id: "LIST" },
+      ],
+    }),
+
+    deleteAccount: builder.mutation<FinanceAccount, string>({
+      query: (id) => ({ url: `/finance/accounts/${id}`, method: "DELETE" }),
+      invalidatesTags: (_result, _err, id) => [
+        { type: "Account", id },
+        { type: "Account", id: "LIST" },
+        { type: "Balance", id: "LIST" },
+        { type: "Record", id: "LIST" },
+      ],
+    }),
+
+    // ============ Balances & net worth ============
+    getBalances: builder.query<BalancesResponse, BalancesParams | void>({
+      query: (params) => {
+        const search = new URLSearchParams();
+        if (params?.asOf) search.set("asOf", params.asOf);
+        if (params?.baseCurrency)
+          search.set("baseCurrency", params.baseCurrency);
+        if (params?.includeArchived)
+          search.set("includeArchived", String(params.includeArchived));
+        const qs = search.toString();
+        return {
+          url: `/finance/accounts/balances${qs ? `?${qs}` : ""}`,
+          method: "GET",
+        };
+      },
+      providesTags: [{ type: "Balance", id: "LIST" }],
+    }),
+
+    getNetWorthHistory: builder.query<
+      NetWorthHistoryResponse,
+      NetWorthHistoryParams
+    >({
+      query: (params) => {
+        const search = new URLSearchParams();
+        search.set("from", params.from);
+        search.set("to", params.to);
+        if (params.interval) search.set("interval", params.interval);
+        if (params.baseCurrency)
+          search.set("baseCurrency", params.baseCurrency);
+        return {
+          url: `/finance/accounts/net-worth/history?${search.toString()}`,
+          method: "GET",
+        };
+      },
+      providesTags: [{ type: "Balance", id: "LIST" }],
+    }),
+
+    getDebts: builder.query<DebtsResponse, BalancesParams | void>({
+      query: (params) => {
+        const search = new URLSearchParams();
+        if (params?.asOf) search.set("asOf", params.asOf);
+        if (params?.baseCurrency)
+          search.set("baseCurrency", params.baseCurrency);
+        if (params?.includeArchived)
+          search.set("includeArchived", String(params.includeArchived));
+        const qs = search.toString();
+        return {
+          url: `/finance/accounts/debts${qs ? `?${qs}` : ""}`,
+          method: "GET",
+        };
+      },
+      providesTags: [{ type: "Balance", id: "DEBTS" }, { type: "Balance", id: "LIST" }],
+    }),
+
+    // ============ Valuations ============
+    getValuations: builder.query<AccountValuation[], string>({
+      query: (accountId) => ({
+        url: `/finance/accounts/${accountId}/valuations`,
+        method: "GET",
+      }),
+      providesTags: (_result, _err, accountId) => [
+        { type: "Valuation", id: accountId },
+      ],
+    }),
+
+    createValuation: builder.mutation<
+      AccountValuation,
+      { accountId: string; data: CreateValuationDto }
+    >({
+      query: ({ accountId, data }) => ({
+        url: `/finance/accounts/${accountId}/valuations`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: (_result, _err, { accountId }) => [
+        { type: "Valuation", id: accountId },
+        { type: "Balance", id: "LIST" },
+      ],
+    }),
+
+    deleteValuation: builder.mutation<
+      AccountValuation,
+      { accountId: string; valuationId: string }
+    >({
+      query: ({ accountId, valuationId }) => ({
+        url: `/finance/accounts/${accountId}/valuations/${valuationId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _err, { accountId }) => [
+        { type: "Valuation", id: accountId },
+        { type: "Balance", id: "LIST" },
       ],
     }),
 
@@ -260,6 +434,23 @@ export const financeApi = api.injectEndpoints({
           search.set("baseCurrency", params.baseCurrency);
         return {
           url: `/finance/summary?${search.toString()}`,
+          method: "GET",
+        };
+      },
+      providesTags: [{ type: "Summary", id: "LIST" }],
+    }),
+
+    // ============ Cashflow ============
+    getCashflow: builder.query<CashflowResponse, CashflowParams>({
+      query: (params) => {
+        const search = new URLSearchParams();
+        search.set("from", params.from);
+        search.set("to", params.to);
+        if (params.interval) search.set("interval", params.interval);
+        if (params.baseCurrency)
+          search.set("baseCurrency", params.baseCurrency);
+        return {
+          url: `/finance/summary/cashflow?${search.toString()}`,
           method: "GET",
         };
       },
@@ -300,6 +491,20 @@ export const financeApi = api.injectEndpoints({
 });
 
 export const {
+  // Accounts
+  useGetAccountsQuery,
+  useGetAccountQuery,
+  useCreateAccountMutation,
+  useUpdateAccountMutation,
+  useDeleteAccountMutation,
+  // Balances & net worth
+  useGetBalancesQuery,
+  useGetNetWorthHistoryQuery,
+  useGetDebtsQuery,
+  // Valuations
+  useGetValuationsQuery,
+  useCreateValuationMutation,
+  useDeleteValuationMutation,
   // Articles
   useGetArticlesQuery,
   useGetArticleQuery,
@@ -323,6 +528,7 @@ export const {
   useDeleteConversionMutation,
   // Summary
   useGetSummaryQuery,
+  useGetCashflowQuery,
   // Charts
   useGetExpenseChartQuery,
   useGetIncomeChartQuery,

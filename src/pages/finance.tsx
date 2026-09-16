@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,7 +16,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useGetArticlesQuery,
   useCreateArticleMutation,
+  useUpdateArticleMutation,
   useDeleteArticleMutation,
+  useGetAccountsQuery,
   useGetRecordsQuery,
   useCreateRecordMutation,
   useUpdateRecordMutation,
@@ -32,6 +34,7 @@ import {
 } from "@/services/api";
 import type {
   FinanceArticle,
+  FinanceAccount,
   FinanceRecord,
   FinanceArticleKind,
   FinanceRecordType,
@@ -60,6 +63,11 @@ import {
   DollarSign,
   PieChart,
   BarChart3,
+  Wallet,
+  Activity,
+  CalendarRange,
+  X,
+  RotateCcw,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useDebouncedValue } from "@/lib/use-debounce";
@@ -71,8 +79,13 @@ import {
   formatDate,
   getStartOfMonth,
   getEndOfMonth,
+  monthsAgo,
+  accountColor,
   COMMON_CURRENCIES,
 } from "@/lib/finance-utils";
+import AccountsTab from "@/components/finance/accounts-tab";
+import FlowTab from "@/components/finance/flow-tab";
+import type { DrillDown } from "@/components/finance/flow-tab";
 
 // ============ Summary Tab ============
 function SummaryTab() {
@@ -237,7 +250,13 @@ function SummaryTab() {
 }
 
 // ============ Records Tab ============
-function RecordsTab() {
+function RecordsTab({
+  drill,
+  onClearDrill,
+}: {
+  drill: DrillDown | null;
+  onClearDrill: () => void;
+}) {
   const { t } = useTranslation();
   const recordSchema = useMemo(
     () =>
@@ -246,6 +265,7 @@ function RecordsTab() {
         amount: z.string().min(1, t("finance.amountRequired")).regex(/^\d+(\.\d{1,4})?$/, t("finance.invalidAmount")),
         currency: z.string().length(3, t("finance.invalidCurrency")),
         articleId: z.string().optional(),
+        accountId: z.string().optional(),
         remark: z.string().max(500).optional(),
         operationDate: z.string().min(1, t("finance.dateRequired")),
       }),
@@ -255,19 +275,65 @@ function RecordsTab() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<FinanceRecordType | "">("");
+  const [accountFilter, setAccountFilter] = useState("");
+  const [articleFilter, setArticleFilter] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const debouncedSearch = useDebouncedValue(search);
   const limit = 10;
+
+  // A drill-down from a chart arrives as a filter set; adopt it wholesale so the
+  // list shows exactly the records behind the number that was tapped.
+  useEffect(() => {
+    if (!drill) return;
+    setTypeFilter(drill.type ?? "");
+    setArticleFilter(drill.articleId ?? "");
+    setAccountFilter(drill.accountId ?? "");
+    setFromDate(drill.from ? toDateInputValue(drill.from) : "");
+    setToDate(drill.to ? toDateInputValue(drill.to) : "");
+    setSearch("");
+    setPage(1);
+  }, [drill]);
 
   const { data, isLoading, isFetching, refetch } = useGetRecordsQuery({
     page,
     limit,
     search: debouncedSearch || undefined,
     type: typeFilter || undefined,
+    accountId: accountFilter || undefined,
+    articleId: articleFilter || undefined,
+    from: fromDate ? new Date(fromDate).toISOString() : undefined,
+    to: toDate ? new Date(`${toDate}T23:59:59.999`).toISOString() : undefined,
     sortBy: "operationDate",
     sortOrder: "desc",
   });
 
   const { data: articles } = useGetArticlesQuery();
+  const { data: accounts } = useGetAccountsQuery();
+
+  const activeFilterCount =
+    (typeFilter ? 1 : 0) +
+    (accountFilter ? 1 : 0) +
+    (articleFilter ? 1 : 0) +
+    (fromDate || toDate ? 1 : 0) +
+    (search ? 1 : 0);
+
+  const resetFilters = () => {
+    setTypeFilter("");
+    setAccountFilter("");
+    setArticleFilter("");
+    setFromDate("");
+    setToDate("");
+    setSearch("");
+    setPage(1);
+    onClearDrill();
+  };
+
+  const applyRange = (months: number) => {
+    setFromDate(toDateInputValue(monthsAgo(months)));
+    setToDate(toDateInputValue(new Date().toISOString()));
+    setPage(1);
+  };
   const [createRecord, { isLoading: isCreating }] = useCreateRecordMutation();
   const [updateRecord, { isLoading: isUpdating }] = useUpdateRecordMutation();
   const [deleteRecord] = useDeleteRecordMutation();
@@ -285,6 +351,7 @@ function RecordsTab() {
       amount: "",
       currency: "TMT",
       articleId: "",
+      accountId: "",
       remark: "",
       operationDate: toDateInputValue(new Date().toISOString()),
     },
@@ -294,7 +361,13 @@ function RecordsTab() {
   const [editingRecord, setEditingRecord] = useState<FinanceRecord | null>(null);
 
   const selectedType = watch("type");
+  const selectedCurrency = watch("currency");
   const filteredArticles = articles?.filter((a) => a.kind === selectedType) ?? [];
+  // A record must sit in an account of the same currency, so only offer those.
+  const eligibleAccounts =
+    accounts?.filter(
+      (a) => a.valuationMode === "TRACKED" && a.currency === selectedCurrency,
+    ) ?? [];
 
   const openCreate = () => {
     reset({
@@ -302,6 +375,7 @@ function RecordsTab() {
       amount: "",
       currency: "TMT",
       articleId: "",
+      accountId: "",
       remark: "",
       operationDate: toDateInputValue(new Date().toISOString()),
     });
@@ -320,6 +394,7 @@ function RecordsTab() {
         amount: toAmountString(parseFloat(values.amount)),
         currency: values.currency.toUpperCase(),
         articleId: values.articleId || undefined,
+        accountId: values.accountId || undefined,
         remark: values.remark || undefined,
         operationDate: new Date(values.operationDate).toISOString(),
       }).unwrap();
@@ -348,6 +423,7 @@ function RecordsTab() {
           amount: values.amount,
           currency: values.currency,
           articleId: values.articleId ?? undefined,
+          accountId: values.accountId ?? null,
           remark: values.remark ?? undefined,
           operationDate: values.operationDate,
         },
@@ -374,42 +450,185 @@ function RecordsTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="h-4 w-4 absolute left-2 top-2.5 text-muted-foreground" />
+      {drill && (
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 py-2 text-sm">
+          <CalendarRange className="h-4 w-4 text-muted-foreground" aria-hidden />
+          <span className="text-muted-foreground">
+            {t("finance.rec.showingFor")}
+          </span>
+          <span className="font-medium">{drill.label}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-auto min-h-[36px]"
+            onClick={resetFilters}
+          >
+            <X className="mr-1 h-4 w-4" />
+            {t("finance.rec.clearFilters")}
+          </Button>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="relative flex-1 min-w-[200px] sm:max-w-sm">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="pl-8 w-48"
-              placeholder={t("finance.searchRecords")}
+              className="pl-8"
+              inputMode="search"
+              placeholder={t("finance.rec.searchPlaceholder")}
             />
           </div>
-          <select
-            value={typeFilter}
-            onChange={(e) => {
-              setTypeFilter(e.target.value as FinanceRecordType | "");
-              setPage(1);
-            }}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-          >
-            <option value="">{t("finance.allTypes")}</option>
-            <option value="INCOME">{t("finance.income")}</option>
-            <option value="EXPENSE">{t("finance.expense")}</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <Button size="sm" onClick={openCreate} className="min-h-[40px]">
+              <Plus className="mr-1 h-4 w-4 text-white" />
+              {t("finance.addRecord")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="min-h-[40px]"
+            >
+              <RefreshCw className="mr-1 h-4 w-4" />
+              {t("common.refresh")}
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Button size="sm" onClick={openCreate}>
-            <Plus className="h-4 w-4 mr-1 text-white" />
-            {t("finance.addRecord")}
-          </Button>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            <RefreshCw className="h-4 w-4 mr-1" />
-            {t("common.refresh")}
-          </Button>
+
+        <p className="text-xs text-muted-foreground">
+          {t("finance.rec.searchHint")}
+        </p>
+
+        {/* Filters sit in one row above the list they scope. */}
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t("finance.type")}</Label>
+            <select
+              value={typeFilter}
+              onChange={(e) => {
+                setTypeFilter(e.target.value as FinanceRecordType | "");
+                setPage(1);
+              }}
+              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">{t("finance.allTypes")}</option>
+              <option value="INCOME">{t("finance.income")}</option>
+              <option value="EXPENSE">{t("finance.expense")}</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t("finance.account")}</Label>
+            <select
+              value={accountFilter}
+              onChange={(e) => {
+                setAccountFilter(e.target.value);
+                setPage(1);
+              }}
+              className="h-10 max-w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">{t("finance.rec.allAccounts")}</option>
+              {accounts?.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t("finance.category")}</Label>
+            <select
+              value={articleFilter}
+              onChange={(e) => {
+                setArticleFilter(e.target.value);
+                setPage(1);
+              }}
+              className="h-10 max-w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">{t("finance.rec.allCategories")}</option>
+              {articles?.map((article) => (
+                <option key={article.id} value={article.id}>
+                  {article.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t("finance.from")}</Label>
+            <Input
+              type="date"
+              value={fromDate}
+              max={toDate || undefined}
+              onChange={(e) => {
+                setFromDate(e.target.value);
+                setPage(1);
+              }}
+              className="w-40"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t("finance.to")}</Label>
+            <Input
+              type="date"
+              value={toDate}
+              min={fromDate || undefined}
+              onChange={(e) => {
+                setToDate(e.target.value);
+                setPage(1);
+              }}
+              className="w-40"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-[40px]"
+              onClick={() => {
+                setFromDate(toDateInputValue(getStartOfMonth()));
+                setToDate(toDateInputValue(getEndOfMonth()));
+                setPage(1);
+              }}
+            >
+              {t("finance.rec.thisMonth")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-[40px]"
+              onClick={() => applyRange(2)}
+            >
+              {t("finance.flow.last3")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-[40px]"
+              onClick={() => applyRange(11)}
+            >
+              {t("finance.flow.last12")}
+            </Button>
+            {activeFilterCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="min-h-[40px]"
+                onClick={resetFilters}
+              >
+                <RotateCcw className="mr-1 h-4 w-4" />
+                {t("finance.rec.clearFilters")}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -458,6 +677,25 @@ function RecordsTab() {
                     }}
                   >
                     {record.article.name}
+                  </span>
+                )}
+                {record.account ? (
+                  <span className="flex items-center gap-1.5 rounded-full border border-border/70 px-2 py-0.5 text-xs text-muted-foreground">
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{
+                        backgroundColor: accountColor(
+                          record.account.color,
+                          record.account.kind,
+                        ),
+                      }}
+                      aria-hidden
+                    />
+                    {record.account.name}
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700">
+                    {t("finance.rec.unassigned")}
                   </span>
                 )}
               </div>
@@ -578,6 +816,27 @@ function RecordsTab() {
                 </select>
               </div>
               <div className="space-y-2">
+                <Label>{t("finance.account")}</Label>
+                <select
+                  {...register("accountId")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">{t("finance.rec.noAccount")}</option>
+                  {eligibleAccounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-muted-foreground">
+                  {eligibleAccounts.length === 0
+                    ? t("finance.rec.noAccountForCurrency", {
+                        currency: selectedCurrency,
+                      })
+                    : t("finance.rec.accountHint")}
+                </p>
+              </div>
+              <div className="space-y-2">
                 <Label>{t("finance.date")}</Label>
                 <Input type="date" {...register("operationDate")} disabled={isCreating} />
                 {errors.operationDate && (
@@ -607,6 +866,7 @@ function RecordsTab() {
         <EditRecordModal
           record={editingRecord}
           articles={articles ?? []}
+          accounts={accounts ?? []}
           onClose={closeEdit}
           onSave={saveEdit}
           isUpdating={isUpdating}
@@ -619,12 +879,14 @@ function RecordsTab() {
 function EditRecordModal({
   record,
   articles,
+  accounts,
   onClose,
   onSave,
   isUpdating,
 }: {
   record: FinanceRecord;
   articles: FinanceArticle[];
+  accounts: FinanceAccount[];
   onClose: () => void;
   onSave: (values: Partial<FinanceRecord>) => void;
   isUpdating: boolean;
@@ -634,10 +896,30 @@ function EditRecordModal({
   const [amount, setAmount] = useState(record.amount);
   const [currency, setCurrency] = useState(record.currency);
   const [articleId, setArticleId] = useState(record.articleId ?? "");
+  const [accountId, setAccountId] = useState(record.accountId ?? "");
   const [remark, setRemark] = useState(record.remark ?? "");
   const [operationDate, setOperationDate] = useState(toDateInputValue(record.operationDate));
 
   const filteredArticles = articles.filter((a) => a.kind === type);
+  const eligibleAccounts = useMemo(
+    () =>
+      accounts.filter(
+        (a) => a.valuationMode === "TRACKED" && a.currency === currency,
+      ),
+    [accounts, currency],
+  );
+
+  /** Switching currency can strand the record on an account it no longer fits. */
+  const changeCurrency = (next: string) => {
+    setCurrency(next);
+    const stillValid = accounts.some(
+      (a) =>
+        a.id === accountId &&
+        a.valuationMode === "TRACKED" &&
+        a.currency === next,
+    );
+    if (!stillValid) setAccountId("");
+  };
 
   const handleSave = () => {
     onSave({
@@ -645,6 +927,7 @@ function EditRecordModal({
       amount: toAmountString(parseFloat(amount)),
       currency: currency.toUpperCase(),
       articleId: articleId || undefined,
+      accountId: accountId || null,
       remark: remark || undefined,
       operationDate: new Date(operationDate).toISOString(),
     });
@@ -679,7 +962,7 @@ function EditRecordModal({
               <Label>{t("finance.currency")}</Label>
               <select
                 value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
+                onChange={(e) => changeCurrency(e.target.value)}
                 className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 {COMMON_CURRENCIES.map((c) => (
@@ -715,6 +998,21 @@ function EditRecordModal({
             </select>
           </div>
           <div className="space-y-2">
+            <Label>{t("finance.account")}</Label>
+            <select
+              value={accountId}
+              onChange={(e) => setAccountId(e.target.value)}
+              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">{t("finance.rec.noAccount")}</option>
+              {eligibleAccounts.map((account) => (
+                <option key={account.id} value={account.id}>
+                  {account.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2">
             <Label>{t("finance.date")}</Label>
             <Input
               type="date"
@@ -745,6 +1043,99 @@ function EditRecordModal({
   );
 }
 
+function EditCategoryModal({
+  article,
+  onClose,
+  onSave,
+  isUpdating,
+}: {
+  article: FinanceArticle;
+  onClose: () => void;
+  onSave: (values: {
+    name: string;
+    color: string;
+    isArchived: boolean;
+  }) => void;
+  isUpdating: boolean;
+}) {
+  const { t } = useTranslation();
+  const [name, setName] = useState(article.name);
+  const [color, setColor] = useState(article.color ?? "#94a3b8");
+  const [isArchived, setIsArchived] = useState(article.isArchived);
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <div
+        className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl sm:max-w-md sm:rounded-2xl sm:p-6"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <h3 className="text-lg font-semibold">
+          {t("finance.cats.editTitle")}
+        </h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {article.kind === "INCOME"
+            ? t("finance.income")
+            : t("finance.expense")}
+        </p>
+
+        <div className="mt-4 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="cat-name">{t("finance.name")}</Label>
+            <Input
+              id="cat-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cat-color">{t("finance.color")}</Label>
+            <Input
+              id="cat-color"
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="h-10 w-20"
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={isArchived}
+              onChange={(e) => setIsArchived(e.target.checked)}
+              className="h-4 w-4 rounded border-input"
+            />
+            {t("finance.cats.archivedFlag")}
+          </label>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              disabled={isUpdating}
+              className="min-h-[44px]"
+            >
+              {t("common.cancel")}
+            </Button>
+            <Button
+              onClick={() => onSave({ name, color, isArchived })}
+              disabled={isUpdating || !name.trim()}
+              className="min-h-[44px]"
+            >
+              {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t("common.save")}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ============ Categories Tab ============
 function CategoriesTab() {
   const { t } = useTranslation();
@@ -759,12 +1150,15 @@ function CategoriesTab() {
   );
 
   const [kindFilter, setKindFilter] = useState<FinanceArticleKind | "">("");
+  const [showAll, setShowAll] = useState(false);
   const { data: articles, isLoading, refetch } = useGetArticlesQuery({
     kind: kindFilter || undefined,
-    includeArchived: false,
+    includeArchived: showAll,
   });
   const [createArticle, { isLoading: isCreating }] = useCreateArticleMutation();
+  const [updateArticle, { isLoading: isUpdating }] = useUpdateArticleMutation();
   const [deleteArticle] = useDeleteArticleMutation();
+  const [editing, setEditing] = useState<FinanceArticle | null>(null);
 
   const {
     register,
@@ -808,10 +1202,50 @@ function CategoriesTab() {
 
   const removeArticle = async (id: string) => {
     try {
-      await deleteArticle(id).unwrap();
-      toast.info(t("finance.categoryDeleted"));
+      const result = await deleteArticle(id).unwrap();
+      toast.info(
+        result.isArchived
+          ? t("finance.cats.archivedToast")
+          : t("finance.categoryDeleted"),
+      );
     } catch (err: any) {
       toast.error(err?.data?.message ?? t("finance.categoryDeleteError"));
+    }
+  };
+
+  const saveEdit = async (values: {
+    name: string;
+    color: string;
+    isArchived: boolean;
+  }) => {
+    if (!editing) return;
+    try {
+      await updateArticle({
+        id: editing.id,
+        data: {
+          name: values.name,
+          color: values.color || undefined,
+          isArchived: values.isArchived,
+        },
+      }).unwrap();
+      toast.success(t("finance.cats.updated"));
+      setEditing(null);
+    } catch (err) {
+      const message = (err as { data?: { message?: string } })?.data?.message;
+      toast.error(message ?? t("finance.cats.updateError"));
+    }
+  };
+
+  const restoreArticle = async (article: FinanceArticle) => {
+    try {
+      await updateArticle({
+        id: article.id,
+        data: { isArchived: false },
+      }).unwrap();
+      toast.success(t("finance.cats.restored"));
+    } catch (err) {
+      const message = (err as { data?: { message?: string } })?.data?.message;
+      toast.error(message ?? t("finance.cats.updateError"));
     }
   };
 
@@ -828,6 +1262,15 @@ function CategoriesTab() {
             <option value="INCOME">{t("finance.income")}</option>
             <option value="EXPENSE">{t("finance.expense")}</option>
           </select>
+          <label className="flex min-h-[40px] items-center gap-2 text-sm text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={showAll}
+              onChange={(e) => setShowAll(e.target.checked)}
+              className="h-4 w-4 rounded border-input"
+            />
+            {t("finance.cats.showAll")}
+          </label>
         </div>
         <div className="flex items-center gap-2">
           <Button size="sm" onClick={openCreate}>
@@ -852,29 +1295,79 @@ function CategoriesTab() {
         {articles?.map((article) => (
           <div
             key={article.id}
-            className="flex items-center justify-between rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm"
+            className={`flex items-center justify-between gap-3 rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm ${
+              article.isArchived ? "opacity-60" : ""
+            }`}
           >
-            <div className="flex items-center gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <div
-                className="w-4 h-4 rounded-full"
+                className="h-4 w-4 flex-shrink-0 rounded-full"
                 style={{ backgroundColor: article.color || "#94a3b8" }}
               />
-              <div>
-                <div className="font-medium">{article.name}</div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="truncate font-medium">{article.name}</span>
+                  {article.isArchived && (
+                    <span className="flex-shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                      {t("finance.cats.archived")}
+                    </span>
+                  )}
+                </div>
                 <div className="text-xs text-muted-foreground">
                   {article.kind === "INCOME" ? t("finance.income") : t("finance.expense")}
                 </div>
               </div>
             </div>
-            <Button variant="destructive" size="sm" onClick={() => removeArticle(article.id)}>
-              <Archive className="h-4 w-4" />
-            </Button>
+            <div className="flex flex-shrink-0 items-center gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                className="min-h-[40px] min-w-[40px] px-2"
+                onClick={() => setEditing(article)}
+                title={t("common.edit")}
+              >
+                <Pencil className="h-4 w-4" />
+                <span className="sr-only">{t("common.edit")}</span>
+              </Button>
+              {article.isArchived ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="min-h-[40px] min-w-[40px] px-2"
+                  onClick={() => restoreArticle(article)}
+                  title={t("finance.cats.restore")}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  <span className="sr-only">{t("finance.cats.restore")}</span>
+                </Button>
+              ) : (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="min-h-[40px] min-w-[40px] px-2"
+                  onClick={() => removeArticle(article.id)}
+                  title={t("finance.cats.archive")}
+                >
+                  <Archive className="h-4 w-4" />
+                  <span className="sr-only">{t("finance.cats.archive")}</span>
+                </Button>
+              )}
+            </div>
           </div>
         ))}
         {(!articles || articles.length === 0) && !isLoading && (
           <p className="text-muted-foreground text-sm col-span-full">{t("finance.noCategories")}</p>
         )}
       </div>
+
+      {editing && (
+        <EditCategoryModal
+          article={editing}
+          onClose={() => setEditing(null)}
+          onSave={saveEdit}
+          isUpdating={isUpdating}
+        />
+      )}
 
       {/* Create Category Modal */}
       {createOpen && (
@@ -943,9 +1436,11 @@ function ConversionsTab() {
   const conversionSchema = useMemo(
     () =>
       z.object({
-        fromAmount: z.string().min(1, t("finance.amountRequired")).regex(/^\d+(\.\d{1,4})?$/, t("finance.invalidAmount")),
-        fromCurrency: z.string().length(3, t("finance.invalidCurrency")),
-        toCurrency: z.string().length(3, t("finance.invalidCurrency")),
+        fromAmount: z.string().min(1, t("finance.amountRequired")).regex(/^\d+(\.\d{1,8})?$/, t("finance.invalidAmount")),
+        fromCurrency: z.string().regex(/^[A-Za-z0-9]{2,10}$/, t("finance.invalidCurrency")),
+        toCurrency: z.string().regex(/^[A-Za-z0-9]{2,10}$/, t("finance.invalidCurrency")),
+        fromAccountId: z.string().optional(),
+        toAccountId: z.string().optional(),
         operationDate: z.string().min(1, t("finance.dateRequired")),
         remark: z.string().max(500).optional(),
       }),
@@ -957,6 +1452,7 @@ function ConversionsTab() {
 
   const { data: conversionsData, isLoading, isFetching, refetch } = useGetConversionsQuery({ page, limit });
   const { data: rates } = useGetRatesQuery();
+  const { data: accounts } = useGetAccountsQuery();
   const [createRate, { isLoading: isCreatingRate }] = useCreateRateMutation();
   const [createConversion, { isLoading: isCreatingConversion }] = useCreateConversionMutation();
   const [deleteConversion] = useDeleteConversionMutation();
@@ -980,10 +1476,25 @@ function ConversionsTab() {
       fromAmount: "",
       fromCurrency: "USD",
       toCurrency: "TMT",
+      fromAccountId: "",
+      toAccountId: "",
       operationDate: toDateInputValue(new Date().toISOString()),
       remark: "",
     },
   });
+
+  const watchedFromCurrency = conversionForm.watch("fromCurrency");
+  const watchedToCurrency = conversionForm.watch("toCurrency");
+  // Same currency on both legs is a plain transfer and needs no FX rate.
+  const sameCurrency = watchedFromCurrency === watchedToCurrency;
+  const trackedAccounts =
+    accounts?.filter((a) => a.valuationMode === "TRACKED") ?? [];
+  const fromAccounts = trackedAccounts.filter(
+    (a) => a.currency === watchedFromCurrency,
+  );
+  const toAccounts = trackedAccounts.filter(
+    (a) => a.currency === watchedToCurrency,
+  );
 
   const onSubmitRate = async (values: z.infer<typeof rateSchema>) => {
     try {
@@ -1007,6 +1518,8 @@ function ConversionsTab() {
         fromAmount: toAmountString(parseFloat(values.fromAmount)),
         fromCurrency: values.fromCurrency.toUpperCase(),
         toCurrency: values.toCurrency.toUpperCase(),
+        fromAccountId: values.fromAccountId || undefined,
+        toAccountId: values.toAccountId || undefined,
         operationDate: new Date(values.operationDate).toISOString(),
         remark: values.remark || undefined,
       }).unwrap();
@@ -1266,6 +1779,39 @@ function ConversionsTab() {
                   </select>
                 </div>
               </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>{t("finance.transfers.fromAccount")}</Label>
+                  <select
+                    {...conversionForm.register("fromAccountId")}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">{t("finance.transfers.noAccount")}</option>
+                    {fromAccounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label>{t("finance.transfers.toAccount")}</Label>
+                  <select
+                    {...conversionForm.register("toAccountId")}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">{t("finance.transfers.noAccount")}</option>
+                    {toAccounts.map((account) => (
+                      <option key={account.id} value={account.id}>
+                        {account.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {t("finance.transfers.accountsHint")}
+              </p>
               <div className="space-y-2">
                 <Label>{t("finance.date")}</Label>
                 <Input type="date" {...conversionForm.register("operationDate")} disabled={isCreatingConversion} />
@@ -1280,7 +1826,7 @@ function ConversionsTab() {
                 </Button>
                 <Button type="submit" disabled={isCreatingConversion}>
                   {isCreatingConversion && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t("finance.convert")}
+                  {sameCurrency ? t("finance.transfers.transfer") : t("finance.convert")}
                 </Button>
               </div>
             </form>
@@ -1498,6 +2044,25 @@ function ChartsTab() {
 // ============ Main Finance Page ============
 export default function FinancePage() {
   const { t } = useTranslation();
+  const [tab, setTab] = useState("accounts");
+  const [drill, setDrill] = useState<DrillDown | null>(null);
+
+  // One base currency for the whole page, remembered between visits so the
+  // totals do not reset to "pick a currency" every time.
+  const [baseCurrency, setBaseCurrency] = useState(
+    () => localStorage.getItem("finance.baseCurrency") ?? "TMT",
+  );
+
+  const changeBaseCurrency = (currency: string) => {
+    setBaseCurrency(currency);
+    localStorage.setItem("finance.baseCurrency", currency);
+  };
+
+  /** Any chart can hand us a filter set; we switch to the records behind it. */
+  const drillInto = (next: DrillDown) => {
+    setDrill(next);
+    setTab("records");
+  };
 
   return (
     <div className="space-y-6">
@@ -1510,8 +2075,16 @@ export default function FinancePage() {
           <CardDescription>{t("finance.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="summary" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-6">
+          <Tabs value={tab} onValueChange={setTab} className="w-full">
+            <TabsList className="mb-6 grid w-full grid-cols-4 gap-1 sm:grid-cols-7">
+              <TabsTrigger value="accounts">
+                <Wallet className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">{t("finance.accounts.tab")}</span>
+              </TabsTrigger>
+              <TabsTrigger value="flow">
+                <Activity className="h-4 w-4 sm:mr-1" />
+                <span className="hidden sm:inline">{t("finance.flow.tab")}</span>
+              </TabsTrigger>
               <TabsTrigger value="summary">
                 <PieChart className="h-4 w-4 sm:mr-1" />
                 <span className="hidden sm:inline">{t("finance.summary")}</span>
@@ -1533,6 +2106,22 @@ export default function FinancePage() {
                 <span className="hidden sm:inline">{t("finance.conversions")}</span>
               </TabsTrigger>
             </TabsList>
+            <TabsContent value="accounts">
+              <AccountsTab
+                baseCurrency={baseCurrency}
+                onBaseCurrencyChange={changeBaseCurrency}
+                onDrillDown={(account) =>
+                  drillInto({ accountId: account.id, label: account.name })
+                }
+              />
+            </TabsContent>
+            <TabsContent value="flow">
+              <FlowTab
+                baseCurrency={baseCurrency}
+                onBaseCurrencyChange={changeBaseCurrency}
+                onDrillDown={drillInto}
+              />
+            </TabsContent>
             <TabsContent value="summary">
               <SummaryTab />
             </TabsContent>
@@ -1540,7 +2129,7 @@ export default function FinancePage() {
               <ChartsTab />
             </TabsContent>
             <TabsContent value="records">
-              <RecordsTab />
+              <RecordsTab drill={drill} onClearDrill={() => setDrill(null)} />
             </TabsContent>
             <TabsContent value="categories">
               <CategoriesTab />

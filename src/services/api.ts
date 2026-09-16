@@ -55,6 +55,14 @@ export type {
   CashflowPoint,
   FlowLeg,
   CashflowResponse,
+  FinancePlanKind,
+  FinancePlanPeriod,
+  FinancePlan,
+  CreatePlanDto,
+  UpdatePlanDto,
+  ListPlansParams,
+  PlanProgressParams,
+  PlanProgress,
 } from "./types";
 export * from "./endpoints/auth";
 export * from "./endpoints/sessions";

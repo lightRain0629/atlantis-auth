@@ -11,6 +11,12 @@ import type {
   ListRecordsParams,
   CurrencyRate,
   CreateRateDto,
+  FinancePlan,
+  CreatePlanDto,
+  UpdatePlanDto,
+  ListPlansParams,
+  PlanProgressParams,
+  PlanProgress,
   UpdateRateDto,
   ListRatesParams,
   LatestRateParams,
@@ -239,6 +245,72 @@ export const financeApi = api.injectEndpoints({
         { type: "Conversion", id: "LIST" },
         { type: "Balance", id: "LIST" },
         { type: "Summary", id: "LIST" },
+      ],
+    }),
+
+    // ============ Plans ============
+    getPlans: builder.query<FinancePlan[], ListPlansParams | void>({
+      query: (params) => {
+        const search = new URLSearchParams();
+        if (params?.kind) search.set("kind", params.kind);
+        if (params?.includeArchived) search.set("includeArchived", "true");
+        const qs = search.toString();
+        return { url: `/finance/plans${qs ? `?${qs}` : ""}`, method: "GET" };
+      },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.map(({ id }) => ({ type: "Plan" as const, id })),
+              { type: "Plan" as const, id: "LIST" },
+            ]
+          : [{ type: "Plan" as const, id: "LIST" }],
+    }),
+
+    getPlanProgress: builder.query<PlanProgress[], PlanProgressParams | void>({
+      query: (params) => {
+        const search = new URLSearchParams();
+        if (params?.from) search.set("from", params.from);
+        if (params?.to) search.set("to", params.to);
+        if (params?.baseCurrency) search.set("baseCurrency", params.baseCurrency);
+        const qs = search.toString();
+        return {
+          url: `/finance/plans/progress${qs ? `?${qs}` : ""}`,
+          method: "GET",
+        };
+      },
+      providesTags: [{ type: "Plan", id: "PROGRESS" }],
+    }),
+
+    createPlan: builder.mutation<FinancePlan, CreatePlanDto>({
+      query: (body) => ({ url: "/finance/plans", method: "POST", body }),
+      invalidatesTags: [
+        { type: "Plan", id: "LIST" },
+        { type: "Plan", id: "PROGRESS" },
+      ],
+    }),
+
+    updatePlan: builder.mutation<
+      FinancePlan,
+      { id: string; data: UpdatePlanDto }
+    >({
+      query: ({ id, data }) => ({
+        url: `/finance/plans/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: (_result, _err, { id }) => [
+        { type: "Plan", id },
+        { type: "Plan", id: "LIST" },
+        { type: "Plan", id: "PROGRESS" },
+      ],
+    }),
+
+    deletePlan: builder.mutation<FinancePlan, string>({
+      query: (id) => ({ url: `/finance/plans/${id}`, method: "DELETE" }),
+      invalidatesTags: (_result, _err, id) => [
+        { type: "Plan", id },
+        { type: "Plan", id: "LIST" },
+        { type: "Plan", id: "PROGRESS" },
       ],
     }),
 
@@ -554,6 +626,11 @@ export const {
   useGetRatesQuery,
   useGetLatestRateQuery,
   useCreateRateMutation,
+  useGetPlansQuery,
+  useGetPlanProgressQuery,
+  useCreatePlanMutation,
+  useUpdatePlanMutation,
+  useDeletePlanMutation,
   useUpdateRateMutation,
   useDeleteRateMutation,
   // Conversions

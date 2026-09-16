@@ -421,3 +421,64 @@ export interface CashflowResponse {
   expenseByAccount: FlowLeg[];
   missingRates: MissingRate[];
 }
+
+// ============ Plans ============
+
+export type FinancePlanKind = "LIMIT" | "GOAL" | "SAVING";
+export type FinancePlanPeriod = "MONTH" | "QUARTER" | "YEAR" | "CUSTOM";
+
+export interface FinancePlan {
+  id: string;
+  kind: FinancePlanKind;
+  name: string;
+  amount: string;
+  currency: string;
+  period: FinancePlanPeriod;
+  startDate: string;
+  endDate: string | null;
+  articleId: string | null;
+  accountId: string | null;
+  isArchived: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreatePlanDto {
+  kind: FinancePlanKind;
+  name: string;
+  amount: string;
+  currency: string;
+  period: FinancePlanPeriod;
+  startDate: string;
+  endDate?: string;
+  articleId?: string;
+  accountId?: string;
+}
+
+export type UpdatePlanDto = Partial<CreatePlanDto> & { isArchived?: boolean };
+
+export interface ListPlansParams {
+  kind?: FinancePlanKind;
+  includeArchived?: boolean;
+}
+
+export interface PlanProgressParams {
+  from?: string;
+  to?: string;
+  baseCurrency?: string;
+}
+
+export interface PlanProgress {
+  plan: FinancePlan;
+  periodStart: string;
+  periodEnd: string;
+  /** Target for this window; a recurring rule is scaled to fit it. */
+  planned: string;
+  actual: string;
+  /** Negative once a limit is exceeded. */
+  remaining: string;
+  progress: number;
+  isOverBudget: boolean;
+  isAchieved: boolean;
+  rateMissing: boolean;
+}

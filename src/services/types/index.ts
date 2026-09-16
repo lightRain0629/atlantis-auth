@@ -52,4 +52,12 @@ export type {
   CashflowPoint,
   FlowLeg,
   CashflowResponse,
+  FinancePlanKind,
+  FinancePlanPeriod,
+  FinancePlan,
+  CreatePlanDto,
+  UpdatePlanDto,
+  ListPlansParams,
+  PlanProgressParams,
+  PlanProgress,
 } from "./finance";

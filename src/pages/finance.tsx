@@ -70,6 +70,7 @@ import {
   BarChart3,
   Wallet,
   Activity,
+  Target,
   CalendarRange,
   X,
   RotateCcw,
@@ -90,6 +91,7 @@ import {
 } from "@/lib/finance-utils";
 import AccountsTab from "@/components/finance/accounts-tab";
 import TransferModal from "@/components/finance/transfer-modal";
+import PlansTab from "@/components/finance/plans-tab";
 import FlowTab from "@/components/finance/flow-tab";
 import type { DrillDown } from "@/components/finance/flow-tab";
 
@@ -2259,7 +2261,7 @@ export default function FinancePage() {
           <Tabs value={tab} onValueChange={setTab} className="w-full">
             {/* A phone scrolls the strip sideways with the labels intact; seven
                 unlabelled icons on two squashed rows told nobody anything. */}
-            <TabsList className="no-scrollbar mb-6 flex w-full justify-start gap-1 overflow-x-auto sm:grid sm:grid-cols-7">
+            <TabsList className="no-scrollbar mb-6 flex w-full justify-start gap-1 overflow-x-auto sm:grid sm:grid-cols-8">
               <TabsTrigger value="accounts" className="flex-shrink-0">
                 <Wallet className="mr-1.5 h-4 w-4 flex-shrink-0" />
                 {t("finance.accounts.tab")}
@@ -2275,6 +2277,10 @@ export default function FinancePage() {
               <TabsTrigger value="charts" className="flex-shrink-0">
                 <BarChart3 className="mr-1.5 h-4 w-4 flex-shrink-0" />
                 {t("finance.charts")}
+              </TabsTrigger>
+              <TabsTrigger value="plans" className="flex-shrink-0">
+                <Target className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t("finance.plans.tab")}
               </TabsTrigger>
               <TabsTrigger value="records" className="flex-shrink-0">
                 <DollarSign className="mr-1.5 h-4 w-4 flex-shrink-0" />
@@ -2310,6 +2316,12 @@ export default function FinancePage() {
             </TabsContent>
             <TabsContent value="charts">
               <ChartsTab />
+            </TabsContent>
+            <TabsContent value="plans">
+              <PlansTab
+                baseCurrency={baseCurrency}
+                onBaseCurrencyChange={changeBaseCurrency}
+              />
             </TabsContent>
             <TabsContent value="records">
               <RecordsTab drill={drill} onClearDrill={() => setDrill(null)} />

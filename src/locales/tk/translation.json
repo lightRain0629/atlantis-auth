@@ -418,6 +418,18 @@
       "noAccount": "Baglanyşyksyz",
       "accountsHint": "Iki tarapy hem baglasaňyz, balanslar öz-özünden üýtgär. Bir walýuta üçin kurs gerek däl.",
       "transfer": "Geçir"
+    },
+    "rates": {
+      "editTitle": "Kursy üýtget",
+      "editDesc": "Kursy üýtgetmek ony ulanýan ähli balanslary we konwertasiýalary täzeden hasaplaýar.",
+      "deleteConfirm": "Bu kurs pozulsynmy? Geçen konwertasiýalar öz kurslaryny saklaýar.",
+      "updated": "Kurs täzelendi",
+      "updateError": "Kursy täzeläp bolmady",
+      "deleted": "Kurs pozuldy",
+      "deleteError": "Kursy pozup bolmady",
+      "source": "Çeşme",
+      "sourcePlaceholder": "elde",
+      "empty": "Heniz kurs ýok. Balanslaryň öwrülmegi üçin kurs goşuň."
     }
   }
 }

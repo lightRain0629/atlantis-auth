@@ -26,6 +26,8 @@ import {
   useDeleteRecordMutation,
   useGetRatesQuery,
   useCreateRateMutation,
+  useUpdateRateMutation,
+  useDeleteRateMutation,
   useGetConversionsQuery,
   useCreateConversionMutation,
   useDeleteConversionMutation,
@@ -40,6 +42,8 @@ import type {
   FinanceArticleKind,
   FinanceRecordType,
   ChartItem,
+  CurrencyRate,
+  UpdateRateDto,
 } from "@/services/types";
 import {
   PieChart as RechartsPieChart,
@@ -1396,6 +1400,124 @@ function CategoriesTab() {
   );
 }
 
+function EditRateModal({
+  rate,
+  onClose,
+  onSave,
+  isUpdating,
+}: {
+  rate: CurrencyRate;
+  onClose: () => void;
+  onSave: (values: UpdateRateDto) => void;
+  isUpdating: boolean;
+}) {
+  const { t } = useTranslation();
+  const [baseCurrency, setBaseCurrency] = useState(rate.baseCurrency);
+  const [quoteCurrency, setQuoteCurrency] = useState(rate.quoteCurrency);
+  const [value, setValue] = useState(rate.rate);
+  const [source, setSource] = useState(rate.source ?? "");
+  const [effectiveAt, setEffectiveAt] = useState(
+    toDateInputValue(rate.effectiveAt),
+  );
+
+  // Mirrors the API contract: a positive decimal, up to 8 places.
+  const valid = /^\d+(\.\d{1,8})?$/.test(value) && parseFloat(value) > 0;
+
+  return (
+    <Modal
+      title={t("finance.rates.editTitle")}
+      description={t("finance.rates.editDesc")}
+      onClose={onClose}
+    >
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label htmlFor="rate-base">{t("finance.baseCurrency")}</Label>
+            <select
+              id="rate-base"
+              value={baseCurrency}
+              onChange={(e) => setBaseCurrency(e.target.value)}
+              className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10"
+            >
+              {COMMON_CURRENCIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="rate-quote">{t("finance.quoteCurrency")}</Label>
+            <select
+              id="rate-quote"
+              value={quoteCurrency}
+              onChange={(e) => setQuoteCurrency(e.target.value)}
+              className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10"
+            >
+              {COMMON_CURRENCIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="rate-value">{t("finance.rate")}</Label>
+          <Input
+            id="rate-value"
+            inputMode="decimal"
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+          />
+          {!valid && value.length > 0 && (
+            <p className="text-sm text-red-500">{t("finance.invalidRate")}</p>
+          )}
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="rate-date">{t("finance.effectiveDate")}</Label>
+          <Input
+            id="rate-date"
+            type="date"
+            value={effectiveAt}
+            onChange={(e) => setEffectiveAt(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="rate-source">{t("finance.rates.source")}</Label>
+          <Input
+            id="rate-source"
+            value={source}
+            placeholder={t("finance.rates.sourcePlaceholder")}
+            onChange={(e) => setSource(e.target.value)}
+          />
+        </div>
+
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose} disabled={isUpdating}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            onClick={() =>
+              onSave({
+                baseCurrency,
+                quoteCurrency,
+                rate: value,
+                source: source.trim() || undefined,
+                effectiveAt: new Date(effectiveAt).toISOString(),
+              })
+            }
+            disabled={isUpdating || !valid || !effectiveAt}
+          >
+            {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t("common.save")}
+          </Button>
+        </ModalFooter>
+      </div>
+    </Modal>
+  );
+}
+
 // ============ Conversions Tab ============
 function ConversionsTab() {
   const { t } = useTranslation();
@@ -1431,11 +1553,37 @@ function ConversionsTab() {
   const { data: rates } = useGetRatesQuery();
   const { data: accounts } = useGetAccountsQuery();
   const [createRate, { isLoading: isCreatingRate }] = useCreateRateMutation();
+  const [updateRate, { isLoading: isUpdatingRate }] = useUpdateRateMutation();
+  const [deleteRate] = useDeleteRateMutation();
   const [createConversion, { isLoading: isCreatingConversion }] = useCreateConversionMutation();
   const [deleteConversion] = useDeleteConversionMutation();
 
   const [rateOpen, setRateOpen] = useState(false);
+  const [editingRate, setEditingRate] = useState<CurrencyRate | null>(null);
   const [conversionOpen, setConversionOpen] = useState(false);
+
+  const saveRate = async (values: UpdateRateDto) => {
+    if (!editingRate) return;
+    try {
+      await updateRate({ id: editingRate.id, data: values }).unwrap();
+      toast.success(t("finance.rates.updated"));
+      setEditingRate(null);
+    } catch (err) {
+      const message = (err as { data?: { message?: string } })?.data?.message;
+      toast.error(message ?? t("finance.rates.updateError"));
+    }
+  };
+
+  const removeRate = async (id: string) => {
+    if (!window.confirm(t("finance.rates.deleteConfirm"))) return;
+    try {
+      await deleteRate(id).unwrap();
+      toast.info(t("finance.rates.deleted"));
+    } catch (err) {
+      const message = (err as { data?: { message?: string } })?.data?.message;
+      toast.error(message ?? t("finance.rates.deleteError"));
+    }
+  };
 
   const rateForm = useForm({
     resolver: zodResolver(rateSchema),
@@ -1545,24 +1693,53 @@ function ConversionsTab() {
       </div>
 
       {/* Recent Rates */}
-      {rates && rates.length > 0 && (
-        <div>
-          <h4 className="text-sm font-medium mb-2">{t("finance.recentRates")}</h4>
-          <div className="flex flex-wrap gap-2">
+      <div>
+        <h4 className="mb-2 text-sm font-medium">{t("finance.recentRates")}</h4>
+        {!rates || rates.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            {t("finance.rates.empty")}
+          </p>
+        ) : (
+          <div className="grid gap-2">
             {rates.slice(0, 5).map((rate) => (
               <div
                 key={rate.id}
-                className="px-3 py-1.5 rounded-md bg-slate-100 text-sm"
+                className="flex items-center justify-between gap-3 rounded-md bg-slate-100 px-3 py-2 text-sm"
               >
-                {rate.baseCurrency}/{rate.quoteCurrency}: {rate.rate}
-                <span className="text-xs text-muted-foreground ml-2">
-                  ({formatDate(rate.effectiveAt)})
-                </span>
+                <div className="min-w-0">
+                  <span className="font-medium tabular-nums">
+                    {rate.baseCurrency}/{rate.quoteCurrency}: {rate.rate}
+                  </span>
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    ({formatDate(rate.effectiveAt)}
+                    {rate.source ? ` · ${rate.source}` : ""})
+                  </span>
+                </div>
+                <div className="flex flex-shrink-0 items-center gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-11 w-11 flex-shrink-0 p-0 sm:h-9 sm:w-9"
+                    onClick={() => setEditingRate(rate)}
+                    aria-label={t("common.edit")}
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="h-11 w-11 flex-shrink-0 p-0 sm:h-9 sm:w-9"
+                    onClick={() => removeRate(rate.id)}
+                    aria-label={t("common.delete")}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Conversions List */}
       <div>
@@ -1703,6 +1880,16 @@ function ConversionsTab() {
             </ModalFooter>
           </form>
         </Modal>
+      )}
+
+      {/* Edit Rate Modal */}
+      {editingRate && (
+        <EditRateModal
+          rate={editingRate}
+          onClose={() => setEditingRate(null)}
+          onSave={saveRate}
+          isUpdating={isUpdatingRate}
+        />
       )}
 
       {/* Convert Currency Modal */}

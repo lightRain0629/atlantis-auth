@@ -11,6 +11,7 @@ import type {
   ListRecordsParams,
   CurrencyRate,
   CreateRateDto,
+  UpdateRateDto,
   ListRatesParams,
   LatestRateParams,
   LatestRateResponse,
@@ -204,6 +205,38 @@ export const financeApi = api.injectEndpoints({
       invalidatesTags: [
         { type: "Rate", id: "LIST" },
         { type: "Rate", id: "LATEST" },
+        { type: "Balance", id: "LIST" },
+        { type: "Summary", id: "LIST" },
+      ],
+    }),
+
+    updateRate: builder.mutation<
+      CurrencyRate,
+      { id: string; data: UpdateRateDto }
+    >({
+      query: ({ id, data }) => ({
+        url: `/finance/rates/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      // A corrected rate re-values balances and every conversion that reads it.
+      invalidatesTags: (_result, _err, { id }) => [
+        { type: "Rate", id },
+        { type: "Rate", id: "LIST" },
+        { type: "Rate", id: "LATEST" },
+        { type: "Conversion", id: "LIST" },
+        { type: "Balance", id: "LIST" },
+        { type: "Summary", id: "LIST" },
+      ],
+    }),
+
+    deleteRate: builder.mutation<CurrencyRate, string>({
+      query: (id) => ({ url: `/finance/rates/${id}`, method: "DELETE" }),
+      invalidatesTags: (_result, _err, id) => [
+        { type: "Rate", id },
+        { type: "Rate", id: "LIST" },
+        { type: "Rate", id: "LATEST" },
+        { type: "Conversion", id: "LIST" },
         { type: "Balance", id: "LIST" },
         { type: "Summary", id: "LIST" },
       ],
@@ -521,6 +554,8 @@ export const {
   useGetRatesQuery,
   useGetLatestRateQuery,
   useCreateRateMutation,
+  useUpdateRateMutation,
+  useDeleteRateMutation,
   // Conversions
   useGetConversionsQuery,
   useGetConversionQuery,

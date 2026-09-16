@@ -418,6 +418,18 @@
       "noAccount": "Not linked",
       "accountsHint": "Link both sides and the balances move automatically. Same currency on both sides needs no rate.",
       "transfer": "Transfer"
+    },
+    "rates": {
+      "editTitle": "Edit Rate",
+      "editDesc": "Correcting a rate re-values every balance and conversion that reads it.",
+      "deleteConfirm": "Delete this rate? Past conversions keep the rate they were booked at.",
+      "updated": "Rate updated",
+      "updateError": "Failed to update rate",
+      "deleted": "Rate deleted",
+      "deleteError": "Failed to delete rate",
+      "source": "Source",
+      "sourcePlaceholder": "manual",
+      "empty": "No rates yet. Add one so balances can be converted."
     }
   }
 }

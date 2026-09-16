@@ -114,6 +114,10 @@ export interface CreateRateDto {
   effectiveAt: string;
 }
 
+/** Every field optional, the pair included: a rate typed against the wrong pair
+ * is exactly the mistake this corrects. */
+export type UpdateRateDto = Partial<CreateRateDto>;
+
 export interface ListRatesParams {
   base?: string;
   quote?: string;

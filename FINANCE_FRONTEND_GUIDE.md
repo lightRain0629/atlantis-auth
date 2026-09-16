@@ -128,6 +128,8 @@ export interface CreateRateDto {
   effectiveAt: string;
 }
 
+export type UpdateRateDto = Partial<CreateRateDto>;
+
 export interface ListRatesParams {
   base?: string;
   quote?: string;
@@ -232,6 +234,7 @@ import {
   ListRecordsParams,
   CurrencyRate,
   CreateRateDto,
+  UpdateRateDto,
   ListRatesParams,
   LatestRateParams,
   LatestRateResponse,
@@ -346,6 +349,16 @@ class FinanceApiService {
     return data;
   }
 
+  async updateRate(id: string, dto: UpdateRateDto): Promise<CurrencyRate> {
+    const { data } = await this.api.patch(`/finance/rates/${id}`, dto);
+    return data;
+  }
+
+  async deleteRate(id: string): Promise<CurrencyRate> {
+    const { data } = await this.api.delete(`/finance/rates/${id}`);
+    return data;
+  }
+
   // ============ Conversions ============
 
   async getConversions(params?: ListConversionsParams): Promise<PaginatedResponse<CurrencyConversion>> {
@@ -457,6 +470,8 @@ export const financeApi = new FinanceApiService();
 | `POST` | `/finance/rates` | Create rate |
 | `GET` | `/finance/rates` | List rates |
 | `GET` | `/finance/rates/latest` | Get latest rate for pair |
+| `PATCH` | `/finance/rates/:id` | Update rate (all fields optional) |
+| `DELETE` | `/finance/rates/:id` | Delete rate |
 
 **Query Parameters for List:**
 | Parameter | Type | Description |
@@ -1043,6 +1058,12 @@ is the mirror — money you lent out, counted as an asset.
   happens, so "cash → bank" works with no rate data at all.
 - Transfer fees are deducted from the source account, and only when the fee
   currency matches that account's currency.
+- **Editing or deleting a rate is safe for history.** A conversion snapshots the
+  rate it was booked at into `rateUsed`, and its `rateId` is nullable with
+  `ON DELETE SET NULL`. Past conversions keep their amounts; only the
+  back-reference goes. Balances and net worth *are* recomputed, which is the
+  point — a mistyped rate keeps being applied to every date it covers until it
+  is corrected, so invalidate balance and summary caches after either call.
 
 ### `missingRates` — do not ignore it
 

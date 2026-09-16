@@ -16,6 +16,7 @@ export type {
   ListRecordsParams,
   CurrencyRate,
   CreateRateDto,
+  UpdateRateDto,
   ListRatesParams,
   LatestRateParams,
   LatestRateResponse,

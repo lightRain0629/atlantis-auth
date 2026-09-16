@@ -360,7 +360,12 @@
         "CREDIT_CARD": "Credit card",
         "OTHER": "Other"
       },
-      "sinceDate": "since {{date}}"
+      "sinceDate": "since {{date}}",
+      "owedNow": "How much you owe now",
+      "owedToYouNow": "How much you are owed now",
+      "owedNowHint": "A positive number. It is subtracted from your net worth.",
+      "owedToYouNowHint": "A positive number. It counts towards your net worth.",
+      "debtDoubleCountHint": "If the money is still sitting in another account, put 0 here and make a Transfer instead — otherwise it is counted twice."
     },
     "flow": {
       "tab": "Money flow",

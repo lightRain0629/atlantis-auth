@@ -360,7 +360,12 @@
         "CREDIT_CARD": "Kredit karty",
         "OTHER": "Beýleki"
       },
-      "sinceDate": "{{date}} bäri"
+      "sinceDate": "{{date}} bäri",
+      "owedNow": "Häzir näçe bergiňiz bar",
+      "owedToYouNow": "Häzir size näçe bergi bar",
+      "owedNowHint": "Položitel san. Ol arassa maýadan aýrylýar.",
+      "owedToYouNowHint": "Položitel san. Ol arassa maýa goşulýar.",
+      "debtDoubleCountHint": "Pul başga hasapda dursa, bu ýere 0 ýazyň we «Geçirim» ediň — ýogsam möçber iki gezek hasaplanar."
     },
     "flow": {
       "tab": "Pul hereketi",

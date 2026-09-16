@@ -21,10 +21,24 @@ import {
   ACCOUNT_KINDS,
   COMMON_CURRENCIES,
   VALUED_BY_DEFAULT_KINDS,
+  accountKindMeta,
   toDateInputValue,
 } from "@/lib/finance-utils";
 
 const DEBT_KINDS: FinanceAccountKind[] = ["LOAN", "CREDIT_CARD", "RECEIVABLE"];
+
+/**
+ * A liability is stored as a negative balance, so that spending on a card
+ * pushes it down and a repayment pulls it back towards zero. Nobody types
+ * their debt as a negative number though — asking for "how much you owe" and
+ * flipping the sign here keeps the ledger honest without leaking the
+ * convention into the form.
+ */
+function flipSign(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed || parseFloat(trimmed) === 0) return "0";
+  return trimmed.startsWith("-") ? trimmed.slice(1) : `-${trimmed}`;
+}
 
 export function AccountFormModal({
   account,
@@ -73,7 +87,11 @@ export function AccountFormModal({
       kind: account?.kind ?? "CASH",
       currency: account?.currency ?? "TMT",
       valuationMode: account?.valuationMode ?? "TRACKED",
-      openingBalance: account?.openingBalance ?? "0",
+      openingBalance: account
+        ? accountKindMeta(account.kind).liability
+          ? flipSign(account.openingBalance)
+          : account.openingBalance
+        : "0",
       openingDate: toDateInputValue(
         account?.openingDate ?? new Date().toISOString(),
       ),
@@ -92,6 +110,7 @@ export function AccountFormModal({
 
   const kind = watch("kind") as FinanceAccountKind;
   const isDebt = DEBT_KINDS.includes(kind);
+  const isLiability = accountKindMeta(kind).liability;
   const valuationMode = watch("valuationMode");
 
   // Property and investments are worth what they are appraised at, not what the
@@ -109,7 +128,9 @@ export function AccountFormModal({
       name: values.name,
       kind: values.kind as FinanceAccountKind,
       valuationMode: values.valuationMode,
-      openingBalance: values.openingBalance || "0",
+      openingBalance: isLiability
+        ? flipSign(values.openingBalance || "0")
+        : values.openingBalance || "0",
       openingDate: new Date(values.openingDate).toISOString(),
       institution: values.institution || undefined,
       counterparty: values.counterparty || undefined,
@@ -251,17 +272,34 @@ export function AccountFormModal({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label htmlFor="acc-opening">
-              {t("finance.accounts.openingBalance")}
+              {isLiability
+                ? t("finance.accounts.owedNow")
+                : kind === "RECEIVABLE"
+                  ? t("finance.accounts.owedToYouNow")
+                  : t("finance.accounts.openingBalance")}
             </Label>
-            <Input id="acc-opening" {...register("openingBalance")} />
+            <Input
+              id="acc-opening"
+              inputMode="decimal"
+              {...register("openingBalance")}
+            />
             {errors.openingBalance && (
               <p className="text-xs text-destructive">
                 {errors.openingBalance.message}
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              {t("finance.accounts.openingBalanceHint")}
+              {isLiability
+                ? t("finance.accounts.owedNowHint")
+                : kind === "RECEIVABLE"
+                  ? t("finance.accounts.owedToYouNowHint")
+                  : t("finance.accounts.openingBalanceHint")}
             </p>
+            {isDebt && (
+              <p className="text-xs text-amber-700">
+                {t("finance.accounts.debtDoubleCountHint")}
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="acc-opening-date">

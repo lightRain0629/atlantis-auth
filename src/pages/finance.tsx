@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Modal, ModalFooter } from "@/components/ui/modal";
 import {
   useGetArticlesQuery,
   useCreateArticleMutation,
@@ -102,14 +103,14 @@ function SummaryTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end gap-4">
+      <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap sm:gap-4">
         <div className="space-y-2">
           <Label>{t("finance.from")}</Label>
           <Input
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="w-40"
+            className="w-full sm:w-40"
           />
         </div>
         <div className="space-y-2">
@@ -118,14 +119,14 @@ function SummaryTab() {
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="w-40"
+            className="w-full sm:w-40"
           />
         </div>
         <div className="space-y-2">
           <select
             value={baseCurrency}
             onChange={(e) => setBaseCurrency(e.target.value)}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:w-auto"
           >
             <option value="">{t("finance.noCurrency")}</option>
             {COMMON_CURRENCIES.map((c) => (
@@ -135,7 +136,11 @@ function SummaryTab() {
             ))}
           </select>
         </div>
-        <Button variant="outline" onClick={() => refetch()}>
+        <Button
+          variant="outline"
+          className="col-span-2 sm:col-auto"
+          onClick={() => refetch()}
+        >
           <RefreshCw className="h-4 w-4 mr-1" />
           {t("common.refresh")}
         </Button>
@@ -484,7 +489,7 @@ function RecordsTab({
               placeholder={t("finance.rec.searchPlaceholder")}
             />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full items-center gap-2 sm:w-auto [&>button]:flex-1 sm:[&>button]:flex-none">
             <Button size="sm" onClick={openCreate} className="min-h-[40px]">
               <Plus className="mr-1 h-4 w-4 text-white" />
               {t("finance.addRecord")}
@@ -506,7 +511,7 @@ function RecordsTab({
         </p>
 
         {/* Filters sit in one row above the list they scope. */}
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap">
           <div className="space-y-1.5">
             <Label className="text-xs">{t("finance.type")}</Label>
             <select
@@ -515,7 +520,7 @@ function RecordsTab({
                 setTypeFilter(e.target.value as FinanceRecordType | "");
                 setPage(1);
               }}
-              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:w-auto"
             >
               <option value="">{t("finance.allTypes")}</option>
               <option value="INCOME">{t("finance.income")}</option>
@@ -531,7 +536,7 @@ function RecordsTab({
                 setAccountFilter(e.target.value);
                 setPage(1);
               }}
-              className="h-10 max-w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:max-w-[180px]"
             >
               <option value="">{t("finance.rec.allAccounts")}</option>
               {accounts?.map((account) => (
@@ -550,7 +555,7 @@ function RecordsTab({
                 setArticleFilter(e.target.value);
                 setPage(1);
               }}
-              className="h-10 max-w-[180px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:max-w-[180px]"
             >
               <option value="">{t("finance.rec.allCategories")}</option>
               {articles?.map((article) => (
@@ -571,7 +576,7 @@ function RecordsTab({
                 setFromDate(e.target.value);
                 setPage(1);
               }}
-              className="w-40"
+              className="w-full sm:w-40"
             />
           </div>
           <div className="space-y-1.5">
@@ -584,15 +589,15 @@ function RecordsTab({
                 setToDate(e.target.value);
                 setPage(1);
               }}
-              className="w-40"
+              className="w-full sm:w-40"
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="col-span-2 sm:col-auto flex flex-wrap gap-2">
             <Button
               variant="outline"
               size="sm"
-              className="min-h-[40px]"
+              className="min-h-[40px] flex-1 sm:flex-none"
               onClick={() => {
                 setFromDate(toDateInputValue(getStartOfMonth()));
                 setToDate(toDateInputValue(getEndOfMonth()));
@@ -646,7 +651,7 @@ function RecordsTab({
             className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm"
           >
             <div className="flex flex-col gap-1 min-w-0 flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <div
                   className={`p-1.5 rounded-full flex-shrink-0 ${
                     record.type === "INCOME" ? "bg-green-100" : "bg-red-100"
@@ -705,10 +710,22 @@ function RecordsTab({
               </p>
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
-              <Button variant="outline" size="sm" onClick={() => openEdit(record)}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-11 w-11 flex-shrink-0 p-0 sm:h-9 sm:w-9"
+                onClick={() => openEdit(record)}
+                aria-label={t("common.edit")}
+              >
                 <Pencil className="h-4 w-4" />
               </Button>
-              <Button variant="destructive" size="sm" onClick={() => removeRecord(record.id)}>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-11 w-11 flex-shrink-0 p-0 sm:h-9 sm:w-9"
+                onClick={() => removeRecord(record.id)}
+                aria-label={t("common.delete")}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
@@ -719,7 +736,7 @@ function RecordsTab({
         )}
       </div>
 
-      <div className="flex items-center justify-between text-sm text-muted-foreground">
+      <div className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <div>
           {t("common.pageOf", {
             current: data?.current_page ?? 1,
@@ -727,7 +744,7 @@ function RecordsTab({
           })}{" "}
           · {t("common.total", { count: data?.count ?? 0 })}
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
           <Button
             variant="outline"
             size="sm"
@@ -751,114 +768,107 @@ function RecordsTab({
 
       {/* Create Record Modal */}
       {createOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <div>
-                <h3 className="text-lg font-semibold">{t("finance.newRecord")}</h3>
-                <p className="text-sm text-muted-foreground">{t("finance.newRecordDesc")}</p>
+        <Modal
+          title={t("finance.newRecord")}
+          description={t("finance.newRecordDesc")}
+          onClose={closeCreate}
+        >
+          <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>{t("finance.type")}</Label>
+                <select
+                  {...register("type")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="EXPENSE">{t("finance.expense")}</option>
+                  <option value="INCOME">{t("finance.income")}</option>
+                </select>
               </div>
-              <Button variant="ghost" size="sm" onClick={closeCreate} disabled={isCreating}>
-                {t("common.cancel")}
-              </Button>
+              <div className="space-y-2">
+                <Label>{t("finance.currency")}</Label>
+                <select
+                  {...register("currency")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {COMMON_CURRENCIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <form className="space-y-3 px-4 py-4" onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>{t("finance.type")}</Label>
-                  <select
-                    {...register("type")}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="EXPENSE">{t("finance.expense")}</option>
-                    <option value="INCOME">{t("finance.income")}</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("finance.currency")}</Label>
-                  <select
-                    {...register("currency")}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    {COMMON_CURRENCIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.amount")}</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  {...register("amount")}
-                  disabled={isCreating}
-                />
-                {errors.amount && (
-                  <p className="text-sm text-red-500">{errors.amount.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.category")}</Label>
-                <select
-                  {...register("articleId")}
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="">{t("finance.noCategory")}</option>
-                  {filteredArticles.map((a) => (
-                    <option key={a.id} value={a.id}>
-                      {a.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.account")}</Label>
-                <select
-                  {...register("accountId")}
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="">{t("finance.rec.noAccount")}</option>
-                  {eligibleAccounts.map((account) => (
-                    <option key={account.id} value={account.id}>
-                      {account.name}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-muted-foreground">
-                  {eligibleAccounts.length === 0
-                    ? t("finance.rec.noAccountForCurrency", {
-                        currency: selectedCurrency,
-                      })
-                    : t("finance.rec.accountHint")}
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.date")}</Label>
-                <Input type="date" {...register("operationDate")} disabled={isCreating} />
-                {errors.operationDate && (
-                  <p className="text-sm text-red-500">{errors.operationDate.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.remark")}</Label>
-                <Input placeholder={t("finance.remarkPlaceholder")} {...register("remark")} disabled={isCreating} />
-              </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" type="button" onClick={closeCreate} disabled={isCreating}>
-                  {t("common.close")}
-                </Button>
-                <Button type="submit" disabled={isCreating}>
-                  {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t("common.save")}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
+            <div className="space-y-2">
+              <Label>{t("finance.amount")}</Label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                {...register("amount")}
+                disabled={isCreating}
+              />
+              {errors.amount && (
+                <p className="text-sm text-red-500">{errors.amount.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>{t("finance.category")}</Label>
+              <select
+                {...register("articleId")}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">{t("finance.noCategory")}</option>
+                {filteredArticles.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label>{t("finance.account")}</Label>
+              <select
+                {...register("accountId")}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="">{t("finance.rec.noAccount")}</option>
+                {eligibleAccounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {account.name}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-muted-foreground">
+                {eligibleAccounts.length === 0
+                  ? t("finance.rec.noAccountForCurrency", {
+                      currency: selectedCurrency,
+                    })
+                  : t("finance.rec.accountHint")}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label>{t("finance.date")}</Label>
+              <Input type="date" {...register("operationDate")} disabled={isCreating} />
+              {errors.operationDate && (
+                <p className="text-sm text-red-500">{errors.operationDate.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>{t("finance.remark")}</Label>
+              <Input placeholder={t("finance.remarkPlaceholder")} {...register("remark")} disabled={isCreating} />
+            </div>
+            <ModalFooter>
+              <Button variant="outline" type="button" onClick={closeCreate} disabled={isCreating}>
+                {t("common.close")}
+              </Button>
+              <Button type="submit" disabled={isCreating}>
+                {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t("common.save")}
+              </Button>
+            </ModalFooter>
+          </form>
+        </Modal>
       )}
 
       {/* Edit Record Modal */}
@@ -934,112 +944,105 @@ function EditRecordModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-      <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b px-4 py-3">
-          <div>
-            <h3 className="text-lg font-semibold">{t("finance.editRecord")}</h3>
-            <p className="text-sm text-muted-foreground">{t("finance.editRecordDesc")}</p>
+    <Modal
+      title={t("finance.editRecord")}
+      description={t("finance.editRecordDesc")}
+      onClose={onClose}
+    >
+      <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="space-y-2">
+            <Label>{t("finance.type")}</Label>
+            <select
+              value={type}
+              onChange={(e) => setType(e.target.value as FinanceRecordType)}
+              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="EXPENSE">{t("finance.expense")}</option>
+              <option value="INCOME">{t("finance.income")}</option>
+            </select>
           </div>
-          <Button variant="ghost" size="sm" onClick={onClose} disabled={isUpdating}>
-            {t("common.cancel")}
+          <div className="space-y-2">
+            <Label>{t("finance.currency")}</Label>
+            <select
+              value={currency}
+              onChange={(e) => changeCurrency(e.target.value)}
+              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              {COMMON_CURRENCIES.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="space-y-2">
+          <Label>{t("finance.amount")}</Label>
+          <Input
+            type="number"
+            step="0.01"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>{t("finance.category")}</Label>
+          <select
+            value={articleId}
+            onChange={(e) => setArticleId(e.target.value)}
+            className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("finance.noCategory")}</option>
+            {filteredArticles.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <Label>{t("finance.account")}</Label>
+          <select
+            value={accountId}
+            onChange={(e) => setAccountId(e.target.value)}
+            className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="">{t("finance.rec.noAccount")}</option>
+            {eligibleAccounts.map((account) => (
+              <option key={account.id} value={account.id}>
+                {account.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <Label>{t("finance.date")}</Label>
+          <Input
+            type="date"
+            value={operationDate}
+            onChange={(e) => setOperationDate(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>{t("finance.remark")}</Label>
+          <Input
+            value={remark}
+            onChange={(e) => setRemark(e.target.value)}
+            placeholder={t("finance.remarkPlaceholder")}
+          />
+        </div>
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose} disabled={isUpdating}>
+            {t("common.close")}
           </Button>
-        </div>
-        <div className="space-y-3 px-4 py-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2">
-              <Label>{t("finance.type")}</Label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value as FinanceRecordType)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                <option value="EXPENSE">{t("finance.expense")}</option>
-                <option value="INCOME">{t("finance.income")}</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <Label>{t("finance.currency")}</Label>
-              <select
-                value={currency}
-                onChange={(e) => changeCurrency(e.target.value)}
-                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                {COMMON_CURRENCIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label>{t("finance.amount")}</Label>
-            <Input
-              type="number"
-              step="0.01"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>{t("finance.category")}</Label>
-            <select
-              value={articleId}
-              onChange={(e) => setArticleId(e.target.value)}
-              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              <option value="">{t("finance.noCategory")}</option>
-              {filteredArticles.map((a) => (
-                <option key={a.id} value={a.id}>
-                  {a.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-2">
-            <Label>{t("finance.account")}</Label>
-            <select
-              value={accountId}
-              onChange={(e) => setAccountId(e.target.value)}
-              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              <option value="">{t("finance.rec.noAccount")}</option>
-              {eligibleAccounts.map((account) => (
-                <option key={account.id} value={account.id}>
-                  {account.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="space-y-2">
-            <Label>{t("finance.date")}</Label>
-            <Input
-              type="date"
-              value={operationDate}
-              onChange={(e) => setOperationDate(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>{t("finance.remark")}</Label>
-            <Input
-              value={remark}
-              onChange={(e) => setRemark(e.target.value)}
-              placeholder={t("finance.remarkPlaceholder")}
-            />
-          </div>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={onClose} disabled={isUpdating}>
-              {t("common.close")}
-            </Button>
-            <Button onClick={handleSave} disabled={isUpdating || !amount}>
-              {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("common.save")}
-            </Button>
-          </div>
-        </div>
+          <Button onClick={handleSave} disabled={isUpdating || !amount}>
+            {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t("common.save")}
+          </Button>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -1064,26 +1067,14 @@ function EditCategoryModal({
   const [isArchived, setIsArchived] = useState(article.isArchived);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
+    <Modal
+      title={t("finance.cats.editTitle")}
+      description={
+        article.kind === "INCOME" ? t("finance.income") : t("finance.expense")
+      }
+      onClose={onClose}
     >
-      <div
-        className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl sm:max-w-md sm:rounded-2xl sm:p-6"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h3 className="text-lg font-semibold">
-          {t("finance.cats.editTitle")}
-        </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {article.kind === "INCOME"
-            ? t("finance.income")
-            : t("finance.expense")}
-        </p>
-
-        <div className="mt-4 space-y-4">
+      <div className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="cat-name">{t("finance.name")}</Label>
             <Input
@@ -1112,27 +1103,20 @@ function EditCategoryModal({
             {t("finance.cats.archivedFlag")}
           </label>
 
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={isUpdating}
-              className="min-h-[44px]"
-            >
-              {t("common.cancel")}
-            </Button>
-            <Button
-              onClick={() => onSave({ name, color, isArchived })}
-              disabled={isUpdating || !name.trim()}
-              className="min-h-[44px]"
-            >
-              {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t("common.save")}
-            </Button>
-          </div>
-        </div>
+        <ModalFooter>
+          <Button variant="outline" onClick={onClose} disabled={isUpdating}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            onClick={() => onSave({ name, color, isArchived })}
+            disabled={isUpdating || !name.trim()}
+          >
+            {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t("common.save")}
+          </Button>
+        </ModalFooter>
       </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -1251,12 +1235,12 @@ function CategoriesTab() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
           <select
             value={kindFilter}
             onChange={(e) => setKindFilter(e.target.value as FinanceArticleKind | "")}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="h-11 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:flex-none"
           >
             <option value="">{t("finance.allKinds")}</option>
             <option value="INCOME">{t("finance.income")}</option>
@@ -1272,7 +1256,7 @@ function CategoriesTab() {
             {t("finance.cats.showAll")}
           </label>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
           <Button size="sm" onClick={openCreate}>
             <Plus className="h-4 w-4 mr-1 text-white" />
             {t("finance.addCategory")}
@@ -1371,49 +1355,42 @@ function CategoriesTab() {
 
       {/* Create Category Modal */}
       {createOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <div>
-                <h3 className="text-lg font-semibold">{t("finance.newCategory")}</h3>
-                <p className="text-sm text-muted-foreground">{t("finance.newCategoryDesc")}</p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={closeCreate} disabled={isCreating}>
-                {t("common.cancel")}
-              </Button>
+        <Modal
+          title={t("finance.newCategory")}
+          description={t("finance.newCategoryDesc")}
+          onClose={closeCreate}
+        >
+          <form className="space-y-3" onSubmit={handleSubmit(onSubmit)}>
+            <div className="space-y-2">
+              <Label>{t("finance.kind")}</Label>
+              <select
+                {...register("kind")}
+                className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="EXPENSE">{t("finance.expense")}</option>
+                <option value="INCOME">{t("finance.income")}</option>
+              </select>
             </div>
-            <form className="space-y-3 px-4 py-4" onSubmit={handleSubmit(onSubmit)}>
-              <div className="space-y-2">
-                <Label>{t("finance.kind")}</Label>
-                <select
-                  {...register("kind")}
-                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                >
-                  <option value="EXPENSE">{t("finance.expense")}</option>
-                  <option value="INCOME">{t("finance.income")}</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.name")}</Label>
-                <Input placeholder={t("finance.categoryNamePlaceholder")} {...register("name")} disabled={isCreating} />
-                {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.color")}</Label>
-                <Input type="color" {...register("color")} disabled={isCreating} className="h-10 w-20" />
-              </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" type="button" onClick={closeCreate} disabled={isCreating}>
-                  {t("common.close")}
-                </Button>
-                <Button type="submit" disabled={isCreating}>
-                  {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t("common.save")}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
+            <div className="space-y-2">
+              <Label>{t("finance.name")}</Label>
+              <Input placeholder={t("finance.categoryNamePlaceholder")} {...register("name")} disabled={isCreating} />
+              {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label>{t("finance.color")}</Label>
+              <Input type="color" {...register("color")} disabled={isCreating} className="h-10 w-20" />
+            </div>
+            <ModalFooter>
+              <Button variant="outline" type="button" onClick={closeCreate} disabled={isCreating}>
+                {t("common.close")}
+              </Button>
+              <Button type="submit" disabled={isCreating}>
+                {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t("common.save")}
+              </Button>
+            </ModalFooter>
+          </form>
+        </Modal>
       )}
     </div>
   );
@@ -1547,7 +1524,7 @@ function ConversionsTab() {
   return (
     <div className="space-y-6">
       {/* Actions */}
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
         <Button size="sm" onClick={() => setRateOpen(true)}>
           <Plus className="h-4 w-4 mr-1 text-white" />
           {t("finance.addRate")}
@@ -1556,7 +1533,12 @@ function ConversionsTab() {
           <ArrowRightLeft className="h-4 w-4 mr-1 text-white" />
           {t("finance.convertCurrency")}
         </Button>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="col-span-2 sm:col-auto"
+          onClick={() => refetch()}
+        >
           <RefreshCw className="h-4 w-4 mr-1" />
           {t("common.refresh")}
         </Button>
@@ -1595,12 +1577,12 @@ function ConversionsTab() {
           {conversions.map((conv) => (
             <div
               key={conv.id}
-              className="flex items-center justify-between rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm"
+              className="flex items-start justify-between gap-3 rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm"
             >
-              <div className="flex items-center gap-3">
-                <ArrowRightLeft className="h-5 w-5 text-muted-foreground" />
-                <div>
-                  <div className="font-medium">
+              <div className="flex min-w-0 items-start gap-3">
+                <ArrowRightLeft className="mt-0.5 h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                <div className="min-w-0">
+                  <div className="break-words font-medium">
                     {formatMoney(conv.fromAmount, conv.fromCurrency)} → {formatMoney(conv.toAmount, conv.toCurrency)}
                   </div>
                   <div className="text-xs text-muted-foreground">
@@ -1609,7 +1591,13 @@ function ConversionsTab() {
                   </div>
                 </div>
               </div>
-              <Button variant="destructive" size="sm" onClick={() => removeConversion(conv.id)}>
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-11 w-11 flex-shrink-0 p-0 sm:h-9 sm:w-9"
+                onClick={() => removeConversion(conv.id)}
+                aria-label={t("common.delete")}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>
@@ -1620,7 +1608,7 @@ function ConversionsTab() {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between text-sm text-muted-foreground mt-4">
+        <div className="mt-4 flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <div>
             {t("common.pageOf", {
               current: conversionsData?.current_page ?? 1,
@@ -1628,7 +1616,7 @@ function ConversionsTab() {
             })}{" "}
             · {t("common.total", { count: conversionsData?.count ?? 0 })}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
             <Button
               variant="outline"
               size="sm"
@@ -1653,185 +1641,171 @@ function ConversionsTab() {
 
       {/* Add Rate Modal */}
       {rateOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <div>
-                <h3 className="text-lg font-semibold">{t("finance.newRate")}</h3>
-                <p className="text-sm text-muted-foreground">{t("finance.newRateDesc")}</p>
+        <Modal
+          title={t("finance.newRate")}
+          description={t("finance.newRateDesc")}
+          onClose={() => setRateOpen(false)}
+        >
+          <form className="space-y-3" onSubmit={rateForm.handleSubmit(onSubmitRate)}>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label>{t("finance.baseCurrency")}</Label>
+                <select
+                  {...rateForm.register("baseCurrency")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {COMMON_CURRENCIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <Button variant="ghost" size="sm" onClick={() => setRateOpen(false)} disabled={isCreatingRate}>
-                {t("common.cancel")}
-              </Button>
+              <div className="space-y-2">
+                <Label>{t("finance.quoteCurrency")}</Label>
+                <select
+                  {...rateForm.register("quoteCurrency")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {COMMON_CURRENCIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
-            <form className="space-y-3 px-4 py-4" onSubmit={rateForm.handleSubmit(onSubmitRate)}>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>{t("finance.baseCurrency")}</Label>
-                  <select
-                    {...rateForm.register("baseCurrency")}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    {COMMON_CURRENCIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("finance.quoteCurrency")}</Label>
-                  <select
-                    {...rateForm.register("quoteCurrency")}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    {COMMON_CURRENCIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.rate")}</Label>
-                <Input
-                  type="number"
-                  step="0.000001"
-                  placeholder="1.0000"
-                  {...rateForm.register("rate")}
-                  disabled={isCreatingRate}
-                />
-                {rateForm.formState.errors.rate && (
-                  <p className="text-sm text-red-500">{rateForm.formState.errors.rate.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label>{t("finance.effectiveDate")}</Label>
-                <Input type="date" {...rateForm.register("effectiveAt")} disabled={isCreatingRate} />
-              </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" type="button" onClick={() => setRateOpen(false)} disabled={isCreatingRate}>
-                  {t("common.close")}
-                </Button>
-                <Button type="submit" disabled={isCreatingRate}>
-                  {isCreatingRate && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t("common.save")}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
+            <div className="space-y-2">
+              <Label>{t("finance.rate")}</Label>
+              <Input
+                type="number"
+                step="0.000001"
+                placeholder="1.0000"
+                {...rateForm.register("rate")}
+                disabled={isCreatingRate}
+              />
+              {rateForm.formState.errors.rate && (
+                <p className="text-sm text-red-500">{rateForm.formState.errors.rate.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label>{t("finance.effectiveDate")}</Label>
+              <Input type="date" {...rateForm.register("effectiveAt")} disabled={isCreatingRate} />
+            </div>
+            <ModalFooter>
+              <Button variant="outline" type="button" onClick={() => setRateOpen(false)} disabled={isCreatingRate}>
+                {t("common.close")}
+              </Button>
+              <Button type="submit" disabled={isCreatingRate}>
+                {isCreatingRate && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t("common.save")}
+              </Button>
+            </ModalFooter>
+          </form>
+        </Modal>
       )}
 
       {/* Convert Currency Modal */}
       {conversionOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <div>
-                <h3 className="text-lg font-semibold">{t("finance.convertCurrency")}</h3>
-                <p className="text-sm text-muted-foreground">{t("finance.convertDesc")}</p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => setConversionOpen(false)} disabled={isCreatingConversion}>
-                {t("common.cancel")}
-              </Button>
+        <Modal
+          title={t("finance.convertCurrency")}
+          description={t("finance.convertDesc")}
+          onClose={() => setConversionOpen(false)}
+        >
+          <form className="space-y-3" onSubmit={conversionForm.handleSubmit(onSubmitConversion)}>
+            <div className="space-y-2">
+              <Label>{t("finance.fromAmount")}</Label>
+              <Input
+                type="number"
+                step="0.01"
+                placeholder="100.00"
+                {...conversionForm.register("fromAmount")}
+                disabled={isCreatingConversion}
+              />
+              {conversionForm.formState.errors.fromAmount && (
+                <p className="text-sm text-red-500">{conversionForm.formState.errors.fromAmount.message}</p>
+              )}
             </div>
-            <form className="space-y-3 px-4 py-4" onSubmit={conversionForm.handleSubmit(onSubmitConversion)}>
+            <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <Label>{t("finance.fromAmount")}</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="100.00"
-                  {...conversionForm.register("fromAmount")}
-                  disabled={isCreatingConversion}
-                />
-                {conversionForm.formState.errors.fromAmount && (
-                  <p className="text-sm text-red-500">{conversionForm.formState.errors.fromAmount.message}</p>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-2">
-                  <Label>{t("finance.fromCurrency")}</Label>
-                  <select
-                    {...conversionForm.register("fromCurrency")}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    {COMMON_CURRENCIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("finance.toCurrency")}</Label>
-                  <select
-                    {...conversionForm.register("toCurrency")}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    {COMMON_CURRENCIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>{t("finance.transfers.fromAccount")}</Label>
-                  <select
-                    {...conversionForm.register("fromAccountId")}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">{t("finance.transfers.noAccount")}</option>
-                    {fromAccounts.map((account) => (
-                      <option key={account.id} value={account.id}>
-                        {account.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label>{t("finance.transfers.toAccount")}</Label>
-                  <select
-                    {...conversionForm.register("toAccountId")}
-                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-                  >
-                    <option value="">{t("finance.transfers.noAccount")}</option>
-                    {toAccounts.map((account) => (
-                      <option key={account.id} value={account.id}>
-                        {account.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                {t("finance.transfers.accountsHint")}
-              </p>
-              <div className="space-y-2">
-                <Label>{t("finance.date")}</Label>
-                <Input type="date" {...conversionForm.register("operationDate")} disabled={isCreatingConversion} />
+                <Label>{t("finance.fromCurrency")}</Label>
+                <select
+                  {...conversionForm.register("fromCurrency")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {COMMON_CURRENCIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="space-y-2">
-                <Label>{t("finance.remark")}</Label>
-                <Input placeholder={t("finance.remarkPlaceholder")} {...conversionForm.register("remark")} disabled={isCreatingConversion} />
+                <Label>{t("finance.toCurrency")}</Label>
+                <select
+                  {...conversionForm.register("toCurrency")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {COMMON_CURRENCIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
               </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" type="button" onClick={() => setConversionOpen(false)} disabled={isCreatingConversion}>
-                  {t("common.close")}
-                </Button>
-                <Button type="submit" disabled={isCreatingConversion}>
-                  {isCreatingConversion && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {sameCurrency ? t("finance.transfers.transfer") : t("finance.convert")}
-                </Button>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>{t("finance.transfers.fromAccount")}</Label>
+                <select
+                  {...conversionForm.register("fromAccountId")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">{t("finance.transfers.noAccount")}</option>
+                  {fromAccounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </form>
-          </div>
-        </div>
+              <div className="space-y-2">
+                <Label>{t("finance.transfers.toAccount")}</Label>
+                <select
+                  {...conversionForm.register("toAccountId")}
+                  className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="">{t("finance.transfers.noAccount")}</option>
+                  {toAccounts.map((account) => (
+                    <option key={account.id} value={account.id}>
+                      {account.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {t("finance.transfers.accountsHint")}
+            </p>
+            <div className="space-y-2">
+              <Label>{t("finance.date")}</Label>
+              <Input type="date" {...conversionForm.register("operationDate")} disabled={isCreatingConversion} />
+            </div>
+            <div className="space-y-2">
+              <Label>{t("finance.remark")}</Label>
+              <Input placeholder={t("finance.remarkPlaceholder")} {...conversionForm.register("remark")} disabled={isCreatingConversion} />
+            </div>
+            <ModalFooter>
+              <Button variant="outline" type="button" onClick={() => setConversionOpen(false)} disabled={isCreatingConversion}>
+                {t("common.close")}
+              </Button>
+              <Button type="submit" disabled={isCreatingConversion}>
+                {isCreatingConversion && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {sameCurrency ? t("finance.transfers.transfer") : t("finance.convert")}
+              </Button>
+            </ModalFooter>
+          </form>
+        </Modal>
       )}
     </div>
   );
@@ -1899,17 +1873,17 @@ function ChartPieCard({
               {items.map((item, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-between text-sm"
+                  className="flex items-center justify-between gap-3 text-sm"
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex min-w-0 items-center gap-2">
                     <span
                       className="inline-block w-3 h-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: item.categoryColor }}
                     />
                     <span className="truncate">{item.categoryName}</span>
                   </div>
-                  <div className="flex items-center gap-3 text-right">
-                    <span className="font-medium">
+                  <div className="flex flex-shrink-0 items-center gap-3 text-right">
+                    <span className="font-medium tabular-nums">
                       {formatMoney(item.total, item.currency)}
                     </span>
                     <span className="text-muted-foreground w-14 text-right">
@@ -1976,14 +1950,14 @@ function ChartsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end gap-4">
+      <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap sm:gap-4">
         <div className="space-y-2">
           <Label>{t("finance.from")}</Label>
           <Input
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="w-40"
+            className="w-full sm:w-40"
           />
         </div>
         <div className="space-y-2">
@@ -1992,14 +1966,14 @@ function ChartsTab() {
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="w-40"
+            className="w-full sm:w-40"
           />
         </div>
         <div className="space-y-2">
           <select
             value={baseCurrency}
             onChange={(e) => setBaseCurrency(e.target.value)}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:w-auto"
           >
             <option value="">{t("finance.noCurrency")}</option>
             {COMMON_CURRENCIES.map((c) => (
@@ -2011,6 +1985,7 @@ function ChartsTab() {
         </div>
         <Button
           variant="outline"
+          className="col-span-2 sm:col-auto"
           onClick={() => {
             refetchExpense();
             refetchIncome();
@@ -2076,34 +2051,36 @@ export default function FinancePage() {
         </CardHeader>
         <CardContent>
           <Tabs value={tab} onValueChange={setTab} className="w-full">
-            <TabsList className="mb-6 grid w-full grid-cols-4 gap-1 sm:grid-cols-7">
-              <TabsTrigger value="accounts">
-                <Wallet className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">{t("finance.accounts.tab")}</span>
+            {/* A phone scrolls the strip sideways with the labels intact; seven
+                unlabelled icons on two squashed rows told nobody anything. */}
+            <TabsList className="no-scrollbar mb-6 flex w-full justify-start gap-1 overflow-x-auto sm:grid sm:grid-cols-7">
+              <TabsTrigger value="accounts" className="flex-shrink-0">
+                <Wallet className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t("finance.accounts.tab")}
               </TabsTrigger>
-              <TabsTrigger value="flow">
-                <Activity className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">{t("finance.flow.tab")}</span>
+              <TabsTrigger value="flow" className="flex-shrink-0">
+                <Activity className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t("finance.flow.tab")}
               </TabsTrigger>
-              <TabsTrigger value="summary">
-                <PieChart className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">{t("finance.summary")}</span>
+              <TabsTrigger value="summary" className="flex-shrink-0">
+                <PieChart className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t("finance.summary")}
               </TabsTrigger>
-              <TabsTrigger value="charts">
-                <BarChart3 className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">{t("finance.charts")}</span>
+              <TabsTrigger value="charts" className="flex-shrink-0">
+                <BarChart3 className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t("finance.charts")}
               </TabsTrigger>
-              <TabsTrigger value="records">
-                <DollarSign className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">{t("finance.records")}</span>
+              <TabsTrigger value="records" className="flex-shrink-0">
+                <DollarSign className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t("finance.records")}
               </TabsTrigger>
-              <TabsTrigger value="categories">
-                <Archive className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">{t("finance.categories")}</span>
+              <TabsTrigger value="categories" className="flex-shrink-0">
+                <Archive className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t("finance.categories")}
               </TabsTrigger>
-              <TabsTrigger value="conversions">
-                <ArrowRightLeft className="h-4 w-4 sm:mr-1" />
-                <span className="hidden sm:inline">{t("finance.conversions")}</span>
+              <TabsTrigger value="conversions" className="flex-shrink-0">
+                <ArrowRightLeft className="mr-1.5 h-4 w-4 flex-shrink-0" />
+                {t("finance.conversions")}
               </TabsTrigger>
             </TabsList>
             <TabsContent value="accounts">

@@ -35,6 +35,7 @@ import {
   monthsAgo,
   toDateInputValue,
 } from "@/lib/finance-utils";
+import { useIsMobile } from "@/lib/use-media-query";
 import { ChartCard, ShareBreakdown, TooltipShell } from "./chart-parts";
 import type { ShareRow } from "./chart-parts";
 
@@ -113,6 +114,7 @@ export default function FlowTab({
   onDrillDown: (drill: DrillDown) => void;
 }) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
   const [from, setFrom] = useState(() => toDateInputValue(monthsAgo(5)));
   const [to, setTo] = useState(() =>
     toDateInputValue(new Date().toISOString()),
@@ -157,14 +159,14 @@ export default function FlowTab({
   return (
     <div className="space-y-6">
       {/* Filters live in one row above everything they scope. */}
-      <div className="flex flex-wrap items-end gap-3">
-        <div className="flex flex-wrap gap-2">
+      <div className="grid grid-cols-2 items-end gap-3 sm:flex sm:flex-wrap">
+        <div className="col-span-2 sm:col-auto flex flex-wrap gap-2">
           {presets.map((preset) => (
             <Button
               key={preset.label}
               variant="outline"
               size="sm"
-              className="min-h-[40px]"
+              className="min-h-[40px] flex-1 sm:flex-none"
               onClick={() => {
                 setFrom(toDateInputValue(monthsAgo(preset.months)));
                 setTo(toDateInputValue(new Date().toISOString()));
@@ -182,7 +184,7 @@ export default function FlowTab({
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            className="w-40"
+            className="w-full sm:w-40"
           />
         </div>
         <div className="space-y-1.5">
@@ -191,7 +193,7 @@ export default function FlowTab({
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            className="w-40"
+            className="w-full sm:w-40"
           />
         </div>
         <div className="space-y-1.5">
@@ -199,7 +201,7 @@ export default function FlowTab({
           <select
             value={interval}
             onChange={(e) => setInterval(e.target.value as CashflowInterval)}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:w-auto"
           >
             <option value="day">{t("finance.flow.byDay")}</option>
             <option value="week">{t("finance.flow.byWeek")}</option>
@@ -211,7 +213,7 @@ export default function FlowTab({
           <select
             value={currency}
             onChange={(e) => onBaseCurrencyChange(e.target.value)}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+            className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:w-auto"
           >
             {COMMON_CURRENCIES.map((c) => (
               <option key={c} value={c}>
@@ -223,7 +225,7 @@ export default function FlowTab({
         <Button
           variant="outline"
           size="sm"
-          className="min-h-[40px]"
+          className="col-span-2 sm:col-auto min-h-[40px]"
           onClick={() => refetch()}
         >
           <RefreshCw className="h-4 w-4 mr-1" />
@@ -339,7 +341,7 @@ export default function FlowTab({
                     minTickGap={12}
                   />
                   <YAxis
-                    width={56}
+                    width={isMobile ? 40 : 56}
                     tickLine={false}
                     axisLine={false}
                     tick={{ fill: CHART_INK.muted, fontSize: 12 }}
@@ -518,7 +520,7 @@ export default function FlowTab({
                     <YAxis
                       type="category"
                       dataKey="name"
-                      width={110}
+                      width={isMobile ? 82 : 110}
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: CHART_INK.muted, fontSize: 12 }}

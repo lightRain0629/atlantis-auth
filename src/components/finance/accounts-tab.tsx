@@ -99,14 +99,14 @@ export default function AccountsTab({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex flex-wrap items-end gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+        <div className="grid w-full grid-cols-2 items-end gap-3 sm:flex sm:w-auto sm:flex-wrap">
           <div className="space-y-1.5">
             <Label className="text-xs">{t("finance.baseCurrency")}</Label>
             <select
               value={baseCurrency}
               onChange={(e) => onBaseCurrencyChange(e.target.value)}
-              className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              className="h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10 sm:w-auto"
             >
               <option value="">{t("finance.accounts.pickBase")}</option>
               {COMMON_CURRENCIES.map((c) => (
@@ -126,7 +126,7 @@ export default function AccountsTab({
             {t("finance.accounts.showArchived")}
           </label>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
           <Button size="sm" onClick={openCreate} className="min-h-[40px]">
             <Plus className="mr-1 h-4 w-4 text-white" />
             {t("finance.accounts.add")}

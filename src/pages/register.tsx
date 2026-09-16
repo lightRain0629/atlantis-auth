@@ -75,6 +75,11 @@ export default function RegisterPage() {
               <Input
                 id="email"
                 placeholder="you@example.com"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
                 {...register("email")}
               />
               {errors.email && (
@@ -86,6 +91,7 @@ export default function RegisterPage() {
               <Input
                 id="password"
                 type="password"
+                autoComplete="new-password"
                 placeholder="••••••"
                 {...register("password")}
               />
@@ -102,6 +108,7 @@ export default function RegisterPage() {
               <Input
                 id="passwordRepeat"
                 type="password"
+                autoComplete="new-password"
                 placeholder="••••••"
                 {...register("passwordRepeat")}
               />

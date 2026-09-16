@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Loader2, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Modal, ModalFooter } from "@/components/ui/modal";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,48 +23,6 @@ import {
   VALUED_BY_DEFAULT_KINDS,
   toDateInputValue,
 } from "@/lib/finance-utils";
-
-/** Shared shell so every finance dialog behaves the same on phone and desktop. */
-export function ModalShell({
-  title,
-  description,
-  onClose,
-  children,
-}: {
-  title: string;
-  description?: string;
-  onClose: () => void;
-  children: React.ReactNode;
-}) {
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 sm:items-center sm:p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label={title}
-      onClick={onClose}
-    >
-      <div
-        className="max-h-[92vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl sm:max-w-lg sm:rounded-2xl sm:p-6"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h3 className="text-lg font-semibold">{title}</h3>
-        {description && (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        )}
-        <div className="mt-4">{children}</div>
-      </div>
-    </div>
-  );
-}
 
 const DEBT_KINDS: FinanceAccountKind[] = ["LOAN", "CREDIT_CARD", "RECEIVABLE"];
 
@@ -204,7 +163,8 @@ export function AccountFormModal({
   const busy = isCreating || isUpdating;
 
   return (
-    <ModalShell
+    <Modal
+      size="lg"
       title={
         isEdit ? t("finance.accounts.editTitle") : t("finance.accounts.addTitle")
       }
@@ -371,7 +331,7 @@ export function AccountFormModal({
           {t("finance.accounts.excludeFromNetWorth")}
         </label>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2">
+        <ModalFooter className="sm:justify-between">
           {isEdit ? (
             <Button
               type="button"
@@ -385,23 +345,23 @@ export function AccountFormModal({
           ) : (
             <span />
           )}
-          <div className="flex gap-2">
+          <div className="flex w-full gap-2 sm:w-auto">
             <Button
               type="button"
               variant="outline"
               onClick={onClose}
-              className="min-h-[44px]"
+              className="flex-1 sm:flex-none"
             >
               {t("common.cancel")}
             </Button>
-            <Button type="submit" disabled={busy} className="min-h-[44px]">
+            <Button type="submit" disabled={busy} className="flex-1 sm:flex-none">
               {busy && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
               {t("common.save")}
             </Button>
           </div>
-        </div>
+        </ModalFooter>
       </form>
-    </ModalShell>
+    </Modal>
   );
 }
 
@@ -459,7 +419,8 @@ export function ValuationModal({
   });
 
   return (
-    <ModalShell
+    <Modal
+      size="lg"
       title={t("finance.accounts.updateValueFor", { name: account.name })}
       description={t("finance.accounts.valuationHint")}
       onClose={onClose}
@@ -484,21 +445,16 @@ export function ValuationModal({
           <Label htmlFor="val-remark">{t("finance.remark")}</Label>
           <Input id="val-remark" {...register("remark")} />
         </div>
-        <div className="flex justify-end gap-2 pt-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            className="min-h-[44px]"
-          >
+        <ModalFooter>
+          <Button type="button" variant="outline" onClick={onClose}>
             {t("common.cancel")}
           </Button>
-          <Button type="submit" disabled={isLoading} className="min-h-[44px]">
+          <Button type="submit" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-1 h-4 w-4 animate-spin" />}
             {t("common.save")}
           </Button>
-        </div>
+        </ModalFooter>
       </form>
-    </ModalShell>
+    </Modal>
   );
 }

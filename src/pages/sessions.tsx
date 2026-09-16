@@ -54,17 +54,26 @@ export default function SessionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="text-2xl font-semibold">{t("sessions.title")}</h1>
-        <Button variant="outline" size="sm" onClick={() => refetch()}>
-          <RefreshCw className="h-4 w-4 sm:mr-1" />
-          <span className="hidden sm:inline">{t("common.refresh")}</span>
-        </Button>
-        <div className="flex gap-2">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex items-center justify-between gap-3">
+          <h1 className="text-2xl font-semibold">{t("sessions.title")}</h1>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            aria-label={t("common.refresh")}
+          >
+            <RefreshCw className="h-4 w-4 sm:mr-1" />
+            <span className="hidden sm:inline">{t("common.refresh")}</span>
+          </Button>
+        </div>
+        {/* Labels collapse on a phone, so each icon carries its own name. */}
+        <div className="flex gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
           <Button
             variant="outline"
             size="sm"
             onClick={revokeOthers}
+            aria-label={t("sessions.logoutOthers")}
             disabled={loggingOutOthers}
           >
             {loggingOutOthers ? (
@@ -78,6 +87,7 @@ export default function SessionsPage() {
             variant="destructive"
             size="sm"
             onClick={revokeAll}
+            aria-label={t("sessions.logoutAll")}
             disabled={loggingOutAll}
           >
             {loggingOutAll ? (
@@ -91,6 +101,7 @@ export default function SessionsPage() {
             variant="outline"
             size="sm"
             onClick={revokeCurrent}
+            aria-label={t("sessions.logoutCurrent")}
             disabled={loggingOutCurrent}
           >
             {loggingOutCurrent ? (
@@ -122,9 +133,9 @@ export default function SessionsPage() {
           {data?.sessions?.map((session) => (
             <div
               key={session.sessionId}
-              className="flex flex-wrap items-start justify-between gap-2 py-3"
+              className="flex flex-col gap-2 py-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between"
             >
-              <div className="space-y-1">
+              <div className="min-w-0 space-y-1">
                 <p className="font-medium">
                   {session.device ?? "Unknown device"}{" "}
                   {session.isCurrent && (
@@ -133,14 +144,14 @@ export default function SessionsPage() {
                     </span>
                   )}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="break-words text-xs text-muted-foreground">
                   {session.userAgent}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   IP: {session.ip ?? "—"} · DeviceId: {session.deviceId ?? "—"}
                 </p>
               </div>
-              <div className="text-right text-xs text-muted-foreground">
+              <div className="flex-shrink-0 text-xs text-muted-foreground sm:text-right">
                 <p>
                   {t("sessions.created")}:{" "}
                   {new Date(session.createdAt).toLocaleString()}

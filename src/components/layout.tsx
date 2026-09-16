@@ -57,10 +57,27 @@ export default function Layout({ children }: LayoutProps) {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
+  // A drawer that lets the page scroll underneath reads as a broken overlay.
+  React.useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMobileMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.body.style.overflow = previous;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900">
-      <header className="border-b bg-white/80 backdrop-blur sticky top-0 z-40">
-        <div className="container flex items-center justify-between py-4 gap-4">
+      <header className="sticky top-0 z-40 border-b bg-white/80 pt-[env(safe-area-inset-top)] backdrop-blur">
+        <div className="container flex items-center justify-between gap-3 py-3 sm:gap-4 sm:py-4">
           <div className="flex items-center gap-3">
             <Link
               to="/"
@@ -152,7 +169,7 @@ export default function Layout({ children }: LayoutProps) {
           onClick={() => setIsMobileMenuOpen(false)}
         >
           <div
-            className="absolute right-0 top-0 flex h-full w-80 max-w-[85vw] flex-col bg-white shadow-xl"
+            className="absolute right-0 top-0 flex h-full w-80 max-w-[85vw] flex-col bg-white pt-[env(safe-area-inset-top)] shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between border-b px-4 py-3">
@@ -177,14 +194,14 @@ export default function Layout({ children }: LayoutProps) {
               </Button>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-4 py-5">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
               <div className="flex flex-col gap-2">
                 {visibleLinks.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
                     className={cn(
-                      "rounded-md px-3 py-2 text-base transition hover:bg-slate-100",
+                      "flex min-h-[48px] items-center rounded-md px-3 py-2 text-base transition hover:bg-slate-100",
                       location.pathname === link.to &&
                         "bg-slate-900 text-white hover:bg-slate-900"
                     )}
@@ -246,7 +263,9 @@ export default function Layout({ children }: LayoutProps) {
           </div>
         </div>
       )}
-      <main className="container py-8">{children}</main>
+      <main className="container py-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:py-8">
+        {children}
+      </main>
     </div>
   );
 }

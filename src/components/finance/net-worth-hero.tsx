@@ -22,6 +22,7 @@ import {
   formatMoneyCompact,
   formatMonth,
 } from "@/lib/finance-utils";
+import { useIsMobile } from "@/lib/use-media-query";
 
 function DeltaBadge({
   change,
@@ -77,6 +78,7 @@ export default function NetWorthHero({
   windowStart: string | null;
 }) {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const series = useMemo(
     () =>
@@ -186,7 +188,7 @@ export default function NetWorthHero({
                       minTickGap={16}
                     />
                     <YAxis
-                      width={56}
+                      width={isMobile ? 40 : 56}
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: CHART_INK.muted, fontSize: 12 }}

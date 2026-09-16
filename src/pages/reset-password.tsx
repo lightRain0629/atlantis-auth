@@ -75,6 +75,9 @@ export default function ResetPasswordPage() {
               <Input
                 id="token"
                 placeholder={t("common.resetToken")}
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
                 {...register("token")}
               />
               {errors.token && (
@@ -83,7 +86,12 @@ export default function ResetPasswordPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">{t("common.newPassword")}</Label>
-              <Input id="password" type="password" {...register("password")} />
+              <Input
+                id="password"
+                type="password"
+                autoComplete="new-password"
+                {...register("password")}
+              />
               {errors.password && (
                 <p className="text-sm text-red-500">
                   {errors.password.message}
@@ -97,6 +105,7 @@ export default function ResetPasswordPage() {
               <Input
                 id="passwordRepeat"
                 type="password"
+                autoComplete="new-password"
                 {...register("passwordRepeat")}
               />
               {errors.passwordRepeat && (

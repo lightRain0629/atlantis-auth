@@ -77,6 +77,11 @@ export default function LoginPage() {
               <Input
                 id="email"
                 placeholder="you@example.com"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
                 {...register("email")}
               />
               {errors.email && (
@@ -88,6 +93,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
+                autoComplete="current-password"
                 placeholder="••••••"
                 {...register("password")}
               />

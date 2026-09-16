@@ -59,6 +59,11 @@ export default function ForgotPasswordPage() {
               <Input
                 id="email"
                 placeholder="you@example.com"
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                autoCapitalize="none"
+                autoCorrect="off"
                 {...register("email")}
               />
               {errors.email && (

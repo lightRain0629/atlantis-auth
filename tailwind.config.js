@@ -5,7 +5,11 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "1.5rem",
+      // 24px of gutter on each side is a lot of a 360px viewport.
+      padding: {
+        DEFAULT: "1rem",
+        sm: "1.5rem",
+      },
       screens: {
         "2xl": "1200px",
       },

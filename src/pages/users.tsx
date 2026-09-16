@@ -75,7 +75,7 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">{t("users.title")}</h1>
           <p className="text-sm text-muted-foreground">
@@ -90,11 +90,18 @@ export default function UsersPage() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="max-w-xs"
+            type="search"
+            inputMode="search"
+            className="flex-1 sm:max-w-xs"
           />
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            <RefreshCw className="h-4 w-4 mr-1" />
-            {t("common.refresh")}
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-shrink-0"
+            onClick={() => refetch()}
+          >
+            <RefreshCw className="h-4 w-4 sm:mr-1" />
+            <span className="hidden sm:inline">{t("common.refresh")}</span>
           </Button>
         </div>
       </div>
@@ -119,7 +126,7 @@ export default function UsersPage() {
             return (
               <div
                 key={user.id}
-                className="flex flex-wrap items-center justify-between gap-3 py-4"
+                className="flex flex-col gap-3 py-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
               >
                 <div>
                   <p className="font-medium">{user.email}</p>
@@ -131,7 +138,7 @@ export default function UsersPage() {
                       : "—"}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
                   <Button
                     variant={isAdmin ? "outline" : "default"}
                     onClick={() => toggleAdmin(user)}
@@ -161,7 +168,7 @@ export default function UsersPage() {
               </div>
             );
           })}
-          <div className="flex items-center justify-between pt-4 text-sm text-muted-foreground">
+          <div className="flex flex-col gap-3 pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <div>
               {t("common.pageOf", {
                 current: data?.current_page ?? 1,
@@ -169,7 +176,7 @@ export default function UsersPage() {
               })}{" "}
               · {t("common.total", { count: data?.count ?? 0 })}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
               <Button
                 variant="outline"
                 size="sm"

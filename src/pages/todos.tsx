@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Modal, ModalFooter } from "@/components/ui/modal";
 import {
   useCreateTodoMutation,
   useDeleteTodoMutation,
@@ -146,32 +147,44 @@ export default function TodosPage() {
   return (
     <div className="space-y-6">
       <Card className="shadow-sm border-slate-200">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
           <div>
             <CardTitle>{t("todos.heading")}</CardTitle>
             <CardDescription>{t("todos.description")}</CardDescription>
           </div>
+          {/* The search field owns the row on a phone; the actions sit beside it. */}
           <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search className="h-4 w-4 absolute left-2 top-2 text-muted-foreground" />
+            <div className="relative flex-1 sm:w-44 sm:flex-none">
+              <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
-                className="pl-7 w-44"
+                className="pl-8"
+                type="search"
+                inputMode="search"
                 placeholder={t("todos.searchPlaceholder")}
-                aria-label="Search todos"
+                aria-label={t("todos.searchPlaceholder")}
               />
             </div>
-            <Button size="sm" className="text-white" onClick={openCreate}>
-              <Plus className="h-4 w-4 sm:mr-1 text-white" />
+            <Button
+              size="sm"
+              className="flex-shrink-0 text-white"
+              onClick={openCreate}
+            >
+              <Plus className="h-4 w-4 text-white sm:mr-1" />
               <span className="hidden sm:inline text-white">
                 {t("todos.add")}
               </span>
             </Button>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-shrink-0"
+              onClick={() => refetch()}
+            >
               <RefreshCw className="h-4 w-4 sm:mr-1" />
               <span className="hidden sm:inline">{t("common.refresh")}</span>
             </Button>
@@ -193,9 +206,12 @@ export default function TodosPage() {
                 <div className="flex flex-col gap-1 min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <button
-                      className="text-primary flex-shrink-0"
+                      type="button"
+                      className="-m-2 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full text-primary transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                       onClick={() => toggleComplete(todo.id, todo.isCompleted)}
-                      aria-label="Toggle complete"
+                      aria-label={t("todos.toggleComplete", {
+                        defaultValue: "Toggle complete",
+                      })}
                     >
                       {todo.isCompleted ? (
                         <CheckCircle className="h-5 w-5 text-green-600" />
@@ -222,14 +238,20 @@ export default function TodosPage() {
                   <Button
                     variant="outline"
                     size="sm"
+                    className="h-11 w-11 flex-shrink-0 p-0 sm:h-9 sm:w-9"
                     onClick={() => openEdit(todo)}
+                    aria-label={t("todos.edit")}
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
+                    className="h-11 w-11 flex-shrink-0 p-0 sm:h-9 sm:w-9"
                     onClick={() => toggleComplete(todo.id, todo.isCompleted)}
+                    aria-label={t("todos.toggleComplete", {
+                      defaultValue: "Toggle complete",
+                    })}
                   >
                     {isUpdating && updateArgs?.id === todo.id ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -242,7 +264,9 @@ export default function TodosPage() {
                   <Button
                     variant="destructive"
                     size="sm"
+                    className="h-11 w-11 flex-shrink-0 p-0 sm:h-9 sm:w-9"
                     onClick={() => removeTodo(todo.id)}
+                    aria-label={t("common.delete")}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -255,7 +279,7 @@ export default function TodosPage() {
               </p>
             )}
           </div>
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <div>
               {t("common.pageOf", {
                 current: data?.current_page ?? 1,
@@ -263,7 +287,7 @@ export default function TodosPage() {
               })}{" "}
               · {t("common.total", { count: data?.count ?? 0 })}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 [&>button]:flex-1 sm:[&>button]:flex-none">
               <Button
                 variant="outline"
                 size="sm"
@@ -287,104 +311,81 @@ export default function TodosPage() {
         </CardContent>
       </Card>
       {createOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <div>
-                <h3 className="text-lg font-semibold">{t("todos.newTitle")}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {t("todos.newDescription")}
-                </p>
-              </div>
+        <Modal
+          title={t("todos.newTitle")}
+          description={t("todos.newDescription")}
+          onClose={closeCreate}
+        >
+          <form
+            className="space-y-3"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <div className="space-y-2">
+              <Label htmlFor="title">{t("todos.titleLabel")}</Label>
+              <Input
+                id="title"
+                placeholder={t("todos.titlePlaceholder")}
+                {...register("title")}
+                disabled={isCreating || optimistic}
+                autoFocus
+              />
+              {errors.title && (
+                <p className="text-sm text-red-500">{errors.title.message}</p>
+              )}
+            </div>
+            <ModalFooter>
               <Button
-                variant="ghost"
-                size="sm"
+                variant="outline"
+                type="button"
                 onClick={closeCreate}
                 disabled={isCreating || optimistic}
               >
-                {t("common.cancel")}
+                {t("common.close")}
               </Button>
-            </div>
-            <form
-              className="space-y-3 px-4 py-4"
-              onSubmit={handleSubmit(onSubmit)}
-            >
-              <div className="space-y-2">
-                <Label htmlFor="title">{t("todos.titleLabel")}</Label>
-                <Input
-                  id="title"
-                  placeholder={t("todos.titlePlaceholder")}
-                  {...register("title")}
-                  disabled={isCreating || optimistic}
-                  autoFocus
-                />
-                {errors.title && (
-                  <p className="text-sm text-red-500">{errors.title.message}</p>
+              <Button type="submit" disabled={isCreating || optimistic}>
+                {(isCreating || optimistic) && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-              </div>
-              <div className="flex justify-end gap-2 pt-1">
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={closeCreate}
-                  disabled={isCreating || optimistic}
-                >
-                  {t("common.close")}
-                </Button>
-                <Button type="submit" disabled={isCreating || optimistic}>
-                  {(isCreating || optimistic) && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {t("todos.save")}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
+                {t("todos.save")}
+              </Button>
+            </ModalFooter>
+          </form>
+        </Modal>
       )}
       {editing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 px-4">
-          <div className="w-full max-w-md rounded-lg border border-border bg-white shadow-xl">
-            <div className="flex items-center justify-between border-b px-4 py-3">
-              <div>
-                <h3 className="text-lg font-semibold">{t("todos.edit")}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {t("todos.editDescription")}
-                </p>
-              </div>
-              <Button variant="ghost" size="sm" onClick={closeEdit}>
-                {t("common.cancel")}
+        <Modal
+          title={t("todos.edit")}
+          description={t("todos.editDescription")}
+          onClose={closeEdit}
+        >
+          <div className="space-y-3">
+            <Label htmlFor="edit-title">{t("todos.titleLabel")}</Label>
+            <Input
+              id="edit-title"
+              value={editValue}
+              onChange={(e) => setEditValue(e.target.value)}
+              autoFocus
+            />
+            <ModalFooter>
+              <Button
+                variant="outline"
+                onClick={closeEdit}
+                disabled={isUpdating}
+              >
+                {t("common.close")}
               </Button>
-            </div>
-            <div className="space-y-3 px-4 py-4">
-              <Label htmlFor="edit-title">{t("todos.titleLabel")}</Label>
-              <Input
-                id="edit-title"
-                value={editValue}
-                onChange={(e) => setEditValue(e.target.value)}
-                autoFocus
-              />
-              <div className="flex justify-end gap-2 pt-1">
-                <Button
-                  variant="outline"
-                  onClick={closeEdit}
-                  disabled={isUpdating}
-                >
-                  {t("common.close")}
-                </Button>
-                <Button
-                  onClick={saveEdit}
-                  disabled={isUpdating || !editValue.trim()}
-                >
-                  {isUpdating && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  {t("common.save")}
-                </Button>
-              </div>
-            </div>
+              <Button
+                onClick={saveEdit}
+                disabled={isUpdating || !editValue.trim()}
+              >
+                {isUpdating && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                {t("common.save")}
+              </Button>
+            </ModalFooter>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   );

@@ -417,7 +417,18 @@
       "toAccount": "To account",
       "noAccount": "Not linked",
       "accountsHint": "Link both sides and the balances move automatically. Same currency on both sides needs no rate.",
-      "transfer": "Transfer"
+      "transfer": "Transfer",
+      "title": "Transfer",
+      "description": "Move money between your own accounts.",
+      "openButton": "Transfer",
+      "amountIn": "Amount in {{currency}}",
+      "sameAccount": "Pick two different accounts.",
+      "needTwoAccounts": "You need at least two tracked accounts to make a transfer.",
+      "willArrive": "Will arrive as",
+      "rateApplied": "The two accounts hold different currencies; the latest rate will be applied.",
+      "noRate": "No rate on file for {{from}}/{{to}}. Add one in Conversions first.",
+      "created": "Transfer saved",
+      "createError": "Failed to save transfer"
     },
     "rates": {
       "editTitle": "Edit Rate",

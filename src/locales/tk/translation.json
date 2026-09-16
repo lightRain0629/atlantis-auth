@@ -417,7 +417,18 @@
       "toAccount": "Haýsy hasaba",
       "noAccount": "Baglanyşyksyz",
       "accountsHint": "Iki tarapy hem baglasaňyz, balanslar öz-özünden üýtgär. Bir walýuta üçin kurs gerek däl.",
-      "transfer": "Geçir"
+      "transfer": "Geçir",
+      "title": "Geçirim",
+      "description": "Öz hasaplaryňyzyň arasynda pul geçiriň.",
+      "openButton": "Geçirim",
+      "amountIn": "{{currency}} möçberi",
+      "sameAccount": "Iki dürli hasap saýlaň.",
+      "needTwoAccounts": "Geçirim üçin iň azyndan iki sany yzarlanýan hasap gerek.",
+      "willArrive": "Geler",
+      "rateApplied": "Hasaplaryň walýutalary dürli — iň soňky kurs ulanylar.",
+      "noRate": "{{from}}/{{to}} üçin kurs ýok. Ilki «Konwertasiýalar» bölüminde goşuň.",
+      "created": "Geçirim ýatda saklandy",
+      "createError": "Geçirimi ýatda saklap bolmady"
     },
     "rates": {
       "editTitle": "Kursy üýtget",

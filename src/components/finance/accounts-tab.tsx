@@ -1,6 +1,13 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, Loader2, Plus, RefreshCw, Wallet } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowRightLeft,
+  Loader2,
+  Plus,
+  RefreshCw,
+  Wallet,
+} from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -23,6 +30,7 @@ import {
   DebtsCard,
 } from "./account-cards";
 import { AccountFormModal, ValuationModal } from "./account-form-modal";
+import TransferModal from "./transfer-modal";
 
 const GROUP_ORDER = ["liquid", "savings", "assets", "debts"] as const;
 
@@ -40,6 +48,7 @@ export default function AccountsTab({
   const [editing, setEditing] = useState<FinanceAccount | null>(null);
   const [formOpen, setFormOpen] = useState(false);
   const [valuing, setValuing] = useState<FinanceAccount | null>(null);
+  const [transferOpen, setTransferOpen] = useState(false);
 
   const {
     data: balances,
@@ -131,14 +140,25 @@ export default function AccountsTab({
             <Plus className="mr-1 h-4 w-4 text-white" />
             {t("finance.accounts.add")}
           </Button>
+          {/* Moving money between accounts belongs where the accounts are. */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setTransferOpen(true)}
+            className="min-h-[40px]"
+          >
+            <ArrowRightLeft className="mr-1 h-4 w-4" />
+            {t("finance.transfers.openButton")}
+          </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={() => refetch()}
             className="min-h-[40px]"
+            aria-label={t("common.refresh")}
           >
-            <RefreshCw className="mr-1 h-4 w-4" />
-            {t("common.refresh")}
+            <RefreshCw className="h-4 w-4 sm:mr-1" />
+            <span className="hidden sm:inline">{t("common.refresh")}</span>
           </Button>
         </div>
       </div>
@@ -269,6 +289,13 @@ export default function AccountsTab({
 
       {valuing && (
         <ValuationModal account={valuing} onClose={() => setValuing(null)} />
+      )}
+
+      {transferOpen && (
+        <TransferModal
+          accounts={(balances?.accounts ?? []).map((entry) => entry.account)}
+          onClose={() => setTransferOpen(false)}
+        />
       )}
     </div>
   );

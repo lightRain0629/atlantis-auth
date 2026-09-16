@@ -89,6 +89,7 @@ import {
   COMMON_CURRENCIES,
 } from "@/lib/finance-utils";
 import AccountsTab from "@/components/finance/accounts-tab";
+import TransferModal from "@/components/finance/transfer-modal";
 import FlowTab from "@/components/finance/flow-tab";
 import type { DrillDown } from "@/components/finance/flow-tab";
 
@@ -367,6 +368,7 @@ function RecordsTab({
   });
 
   const [createOpen, setCreateOpen] = useState(false);
+  const [transferOpen, setTransferOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<FinanceRecord | null>(null);
 
   const selectedType = watch("type");
@@ -501,11 +503,21 @@ function RecordsTab({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => refetch()}
+              onClick={() => setTransferOpen(true)}
               className="min-h-[40px]"
             >
-              <RefreshCw className="mr-1 h-4 w-4" />
-              {t("common.refresh")}
+              <ArrowRightLeft className="mr-1 h-4 w-4" />
+              {t("finance.transfers.openButton")}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="min-h-[40px]"
+              aria-label={t("common.refresh")}
+            >
+              <RefreshCw className="h-4 w-4 sm:mr-1" />
+              <span className="hidden sm:inline">{t("common.refresh")}</span>
             </Button>
           </div>
         </div>
@@ -873,6 +885,13 @@ function RecordsTab({
             </ModalFooter>
           </form>
         </Modal>
+      )}
+
+      {transferOpen && (
+        <TransferModal
+          accounts={accounts ?? []}
+          onClose={() => setTransferOpen(false)}
+        />
       )}
 
       {/* Edit Record Modal */}

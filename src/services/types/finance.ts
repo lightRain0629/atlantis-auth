@@ -38,6 +38,10 @@ export interface FinanceRecord {
   type: FinanceRecordType;
   amount: string;
   currency: string;
+  /** Currency `baseRate` converts into; null when no override is set. */
+  baseCurrency: string | null;
+  /** A rate the user typed, used instead of the rate table for this record. */
+  baseRate: string | null;
   articleId: string | null;
   accountId: string | null;
   remark: string | null;
@@ -63,6 +67,9 @@ export interface CreateRecordDto {
   type: FinanceRecordType;
   amount: string;
   currency: string;
+  /** Send with `baseRate` or not at all — the API rejects one without the other. */
+  baseCurrency?: string;
+  baseRate?: string;
   articleId?: string;
   accountId?: string;
   remark?: string;
@@ -73,9 +80,13 @@ export interface UpdateRecordDto {
   type?: FinanceRecordType;
   amount?: string;
   currency?: string;
+  /** Both null clears the override; both set replaces it. */
+  baseCurrency?: string | null;
+  baseRate?: string | null;
   articleId?: string | null;
   accountId?: string | null;
-  remark?: string;
+  /** `null` clears the note; omitting it leaves what is already stored. */
+  remark?: string | null;
   operationDate?: string;
 }
 
@@ -147,6 +158,8 @@ export interface CurrencyConversion {
   toCurrency: string;
   rateUsed: string;
   rateId: string | null;
+  /** `rateUsed` was typed by the user, which is why `rateId` is null. */
+  isCustomRate: boolean;
   fromAccountId: string | null;
   toAccountId: string | null;
   feeAmount: string | null;
@@ -162,12 +175,39 @@ export interface CreateConversionDto {
   fromCurrency: string;
   toCurrency: string;
   operationDate: string;
+  /** Books at this rate instead of the rate table. Rejected on a same-currency transfer. */
+  rate?: string;
   fromAccountId?: string;
   toAccountId?: string;
   feeAmount?: string;
   feeCurrency?: string;
   remark?: string;
 }
+
+/**
+ * Every field optional. Omitting `rate` keeps whatever the transfer already
+ * booked at, so correcting a remark never silently re-rates it; `null` drops a
+ * custom rate and goes back to the rate table.
+ */
+export type UpdateConversionDto = Partial<
+  Omit<
+    CreateConversionDto,
+    | "rate"
+    | "feeAmount"
+    | "feeCurrency"
+    | "remark"
+    | "fromAccountId"
+    | "toAccountId"
+  >
+> & {
+  rate?: string | null;
+  /** `null` clears the value; omitting it leaves what is already stored. */
+  feeAmount?: string | null;
+  feeCurrency?: string | null;
+  remark?: string | null;
+  fromAccountId?: string | null;
+  toAccountId?: string | null;
+};
 
 export interface ListConversionsParams {
   fromCurrency?: string;
@@ -484,4 +524,35 @@ export interface PlanProgress {
   isOverBudget: boolean;
   isAchieved: boolean;
   rateMissing: boolean;
+}
+
+// ============ Transactions (the unified timeline) ============
+
+export type TransactionKind = "INCOME" | "EXPENSE" | "TRANSFER";
+
+/**
+ * Records and transfers are different enough that flattening them into shared
+ * columns would lose half of each, so `kind` discriminates and the matching
+ * side carries the full detail.
+ */
+export type FinanceTransaction = {
+  id: string;
+  operationDate: string;
+} & (
+  | { kind: "INCOME" | "EXPENSE"; record: FinanceRecord; transfer: null }
+  | { kind: "TRANSFER"; record: null; transfer: CurrencyConversion }
+);
+
+export interface ListTransactionsParams {
+  kind?: TransactionKind;
+  currency?: string;
+  articleId?: string;
+  /** Matches either side of a transfer. */
+  accountId?: string;
+  from?: string;
+  to?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortOrder?: "asc" | "desc";
 }

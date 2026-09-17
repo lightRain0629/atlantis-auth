@@ -23,7 +23,10 @@ import type {
   LatestRateResponse,
   CurrencyConversion,
   CreateConversionDto,
+  UpdateConversionDto,
   ListConversionsParams,
+  FinanceTransaction,
+  ListTransactionsParams,
   SummaryParams,
   SummaryResponse,
   ChartQueryParams,
@@ -140,6 +143,7 @@ export const financeApi = api.injectEndpoints({
       query: (body) => ({ url: "/finance/records", method: "POST", body }),
       invalidatesTags: [
         { type: "Record", id: "LIST" },
+        { type: "Transaction", id: "LIST" },
         { type: "Summary", id: "LIST" },
         { type: "Balance", id: "LIST" },
       ],
@@ -157,6 +161,7 @@ export const financeApi = api.injectEndpoints({
       invalidatesTags: (_result, _err, { id }) => [
         { type: "Record", id },
         { type: "Record", id: "LIST" },
+        { type: "Transaction", id: "LIST" },
         { type: "Summary", id: "LIST" },
         { type: "Balance", id: "LIST" },
       ],
@@ -167,6 +172,7 @@ export const financeApi = api.injectEndpoints({
       invalidatesTags: (_result, _err, id) => [
         { type: "Record", id },
         { type: "Record", id: "LIST" },
+        { type: "Transaction", id: "LIST" },
         { type: "Summary", id: "LIST" },
         { type: "Balance", id: "LIST" },
       ],
@@ -360,22 +366,78 @@ export const financeApi = api.injectEndpoints({
         }),
         invalidatesTags: [
           { type: "Conversion", id: "LIST" },
+          { type: "Transaction", id: "LIST" },
           { type: "Summary", id: "LIST" },
           { type: "Balance", id: "LIST" },
         ],
       }
     ),
 
-    deleteConversion: builder.mutation<CurrencyConversion, string>({
-      query: (id) => ({ url: `/finance/conversions/${id}`, method: "DELETE" }),
-      invalidatesTags: (_result, _err, id) => [
+    updateConversion: builder.mutation<
+      CurrencyConversion,
+      { id: string; data: UpdateConversionDto }
+    >({
+      query: ({ id, data }) => ({
+        url: `/finance/conversions/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: (_result, _err, { id }) => [
         { type: "Conversion", id },
         { type: "Conversion", id: "LIST" },
+        { type: "Transaction", id: "LIST" },
         { type: "Summary", id: "LIST" },
         { type: "Balance", id: "LIST" },
       ],
     }),
 
+    deleteConversion: builder.mutation<CurrencyConversion, string>({
+      query: (id) => ({ url: `/finance/conversions/${id}`, method: "DELETE" }),
+      invalidatesTags: (_result, _err, id) => [
+        { type: "Conversion", id },
+        { type: "Conversion", id: "LIST" },
+        { type: "Transaction", id: "LIST" },
+        { type: "Summary", id: "LIST" },
+        { type: "Balance", id: "LIST" },
+      ],
+    }),
+
+
+    // ============ Transactions (the unified timeline) ============
+    getTransactions: builder.query<
+      Pagination<FinanceTransaction>,
+      ListTransactionsParams | void
+    >({
+      query: (params) => {
+        const search = new URLSearchParams();
+        if (params?.kind) search.set("kind", params.kind);
+        if (params?.currency) search.set("currency", params.currency);
+        if (params?.articleId) search.set("articleId", params.articleId);
+        if (params?.accountId) search.set("accountId", params.accountId);
+        if (params?.from) search.set("from", params.from);
+        if (params?.to) search.set("to", params.to);
+        if (params?.search) search.set("search", params.search);
+        if (params?.page) search.set("page", String(params.page));
+        if (params?.limit) search.set("limit", String(params.limit));
+        if (params?.sortOrder) search.set("sortOrder", params.sortOrder);
+        const qs = search.toString();
+        return {
+          url: `/finance/transactions${qs ? `?${qs}` : ""}`,
+          method: "GET",
+        };
+      },
+      // Ids are only unique within a kind, so the tag carries both.
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.results.map((entry) => ({
+                type: "Transaction" as const,
+                id: `${entry.kind}:${entry.id}`,
+              })),
+              { type: "Transaction" as const, id: "LIST" },
+            ]
+          : [{ type: "Transaction" as const, id: "LIST" }],
+    }),
 
     // ============ Accounts ============
     getAccounts: builder.query<FinanceAccount[], ListAccountsParams | void>({
@@ -635,10 +697,13 @@ export const {
   useDeletePlanMutation,
   useUpdateRateMutation,
   useDeleteRateMutation,
+  // Transactions
+  useGetTransactionsQuery,
   // Conversions
   useGetConversionsQuery,
   useGetConversionQuery,
   useCreateConversionMutation,
+  useUpdateConversionMutation,
   useDeleteConversionMutation,
   // Summary
   useGetSummaryQuery,

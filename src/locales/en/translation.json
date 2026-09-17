@@ -405,7 +405,14 @@
       "unassigned": "No account",
       "clearFilters": "Clear filters",
       "showingFor": "Showing records for",
-      "thisMonth": "This month"
+      "thisMonth": "This month",
+      "tab": "Records",
+      "deleteConfirm": "Delete this record?",
+      "ownRate": "Use my own rate into {{currency}}",
+      "ownRateHint": "Used instead of the rate table whenever totals are shown in {{currency}}.",
+      "atOwnRate": "own rate {{rate}} {{currency}}",
+      "countsAs": "Counts as",
+      "otherBaseRate": "This record also carries an own rate of {{rate}} into {{currency}}. Switch the page to {{currency}} to change it."
     },
     "cats": {
       "showAll": "Show archived",
@@ -435,7 +442,22 @@
       "rateApplied": "The two accounts hold different currencies; the latest rate will be applied.",
       "noRate": "No rate on file for {{from}}/{{to}}. Add one in Conversions first.",
       "created": "Transfer saved",
-      "createError": "Failed to save transfer"
+      "createError": "Failed to save transfer",
+      "tab": "Transfers",
+      "editTitle": "Edit transfer",
+      "editDescription": "Correct the accounts, amount, rate or note. Balances are recalculated.",
+      "updated": "Transfer updated",
+      "updateError": "Could not update the transfer",
+      "deleted": "Transfer deleted",
+      "deleteError": "Could not delete the transfer",
+      "deleteConfirm": "Delete this transfer? Both account balances will be recalculated.",
+      "ownRate": "Use my own rate",
+      "ownRateLabel": "1 {{from}} = ? {{to}}",
+      "ownRateHint": "Booked at this rate instead of the rate table. Only this transfer is affected.",
+      "ownRateBadge": "own rate",
+      "noRateTickOwn": "No {{from}}/{{to}} rate on file. Tick \"Use my own rate\" to enter the rate you got.",
+      "fee": "fee",
+      "feeIn": "Fee ({{currency}}, optional)"
     },
     "rates": {
       "editTitle": "Edit Rate",
@@ -447,7 +469,9 @@
       "deleteError": "Failed to delete rate",
       "source": "Source",
       "sourcePlaceholder": "manual",
-      "empty": "No rates yet. Add one so balances can be converted."
+      "empty": "No rates yet. Add one so balances can be converted.",
+      "tab": "Rates",
+      "transfersMoved": "Transfers and conversions now live in the Records timeline."
     },
     "plans": {
       "tab": "Plans",

@@ -405,7 +405,14 @@
       "unassigned": "Hasapsyz",
       "clearFilters": "Süzgüçleri arassala",
       "showingFor": "Ýazgylar",
-      "thisMonth": "Şu aý"
+      "thisMonth": "Şu aý",
+      "tab": "Amallar",
+      "deleteConfirm": "Bu ýazgy pozulsynmy?",
+      "ownRate": "{{currency}} üçin öz kursumy ulan",
+      "ownRateHint": "Jemler {{currency}} görkezilende kurs tablisasynyň ýerine ulanylar.",
+      "atOwnRate": "öz kursy {{rate}} {{currency}}",
+      "countsAs": "Hasaplanýar",
+      "otherBaseRate": "Bu ýazgyda {{currency}} üçin {{rate}} öz kursy hem bar. Üýtgetmek üçin sahypany {{currency}} geçir."
     },
     "cats": {
       "showAll": "Arhiwi görkez",
@@ -435,7 +442,22 @@
       "rateApplied": "Hasaplaryň walýutalary dürli — iň soňky kurs ulanylar.",
       "noRate": "{{from}}/{{to}} üçin kurs ýok. Ilki «Konwertasiýalar» bölüminde goşuň.",
       "created": "Geçirim ýatda saklandy",
-      "createError": "Geçirimi ýatda saklap bolmady"
+      "createError": "Geçirimi ýatda saklap bolmady",
+      "tab": "Geçirimler",
+      "editTitle": "Geçirimi üýtget",
+      "editDescription": "Hasaplary, möçberi, kursy ýa-da bellligi düzet. Balanslar täzeden hasaplanar.",
+      "updated": "Geçirim üýtgedildi",
+      "updateError": "Geçirimi üýtgedip bolmady",
+      "deleted": "Geçirim pozuldy",
+      "deleteError": "Geçirimi pozup bolmady",
+      "deleteConfirm": "Bu geçirim pozulsynmy? Iki hasabyň balansy täzeden hasaplanar.",
+      "ownRate": "Öz kursumy ulan",
+      "ownRateLabel": "1 {{from}} = ? {{to}}",
+      "ownRateHint": "Kurs tablisasynyň ýerine şu kurs ulanylar. Diňe şu geçirime degişli.",
+      "ownRateBadge": "öz kursy",
+      "noRateTickOwn": "{{from}}/{{to}} kursy ýok. «Öz kursumy ulan» belläp, alan kursuňy ýaz.",
+      "fee": "ýygym",
+      "feeIn": "Ýygym ({{currency}}, hökman däl)"
     },
     "rates": {
       "editTitle": "Kursy üýtget",
@@ -447,7 +469,9 @@
       "deleteError": "Kursy pozup bolmady",
       "source": "Çeşme",
       "sourcePlaceholder": "elde",
-      "empty": "Heniz kurs ýok. Balanslaryň öwrülmegi üçin kurs goşuň."
+      "empty": "Heniz kurs ýok. Balanslaryň öwrülmegi üçin kurs goşuň.",
+      "tab": "Kurslar",
+      "transfersMoved": "Geçirimler we çalşyklar indi «Amallar» lentasynda."
     },
     "plans": {
       "tab": "Meýilnamalar",

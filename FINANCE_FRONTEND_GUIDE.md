@@ -517,6 +517,7 @@ export const financeApi = new FinanceApiService();
 | `POST` | `/finance/conversions` | Create conversion |
 | `GET` | `/finance/conversions` | List conversions (paginated) |
 | `GET` | `/finance/conversions/:id` | Get single conversion |
+| `PATCH` | `/finance/conversions/:id` | Update conversion |
 | `DELETE` | `/finance/conversions/:id` | Delete conversion |
 
 **Query Parameters for List:**
@@ -536,13 +537,18 @@ export const financeApi = new FinanceApiService();
   fromCurrency: string,    // Required, e.g. "USD"
   toCurrency: string,      // Required, e.g. "EUR"
   operationDate: string,   // Required, ISO 8601
+  rate?: string,           // Optional: book at your own rate
+  fromAccountId?: string,  // Optional, must hold fromCurrency
+  toAccountId?: string,    // Optional, must hold toCurrency
   feeAmount?: string,      // Optional conversion fee
   feeCurrency?: string,    // Optional fee currency
   remark?: string          // Optional note
 }
 ```
 
-> **Note:** The `toAmount` and `rateUsed` are calculated automatically based on the rate effective at `operationDate`.
+> **Note:** `toAmount` and `rateUsed` are calculated automatically from the rate
+> effective at `operationDate` — unless you send `rate`, which overrides the
+> table for this conversion alone.
 
 **Error Response (422):**
 ```json
@@ -1106,3 +1112,99 @@ nullable columns, and type widening. It contains no `DROP` or `TRUNCATE`, so it
 is safe against a populated production database. Verified by applying it to a
 database seeded with pre-existing records, rates and conversions: all values and
 row counts were preserved (only trailing zeros were added by the wider scale).
+
+---
+
+## Custom FX rates
+
+Added by `20260917000000_add_custom_fx_rates`. Additive only — two nullable
+columns and one defaulted boolean, no `DROP` and no type narrowing, so it is
+safe against a populated database. Existing rows keep their old behaviour.
+
+The problem it solves: the rate you actually transacted at is often not the
+published one. Previously the only way to record that was to edit the global
+rate table, which silently re-valued every other record and transfer that the
+rate covered.
+
+### On a transfer — `rate`
+
+`POST /finance/conversions` and `PATCH /finance/conversions/:id` accept an
+optional `rate`. When present the lookup is skipped entirely:
+
+- `rateUsed` is your rate, `rateId` is `null`, and `isCustomRate` is `true` —
+  so a null `rateId` reads as deliberate rather than as a deleted rate.
+- **It works with no rate on file at all.** The usual 422 for a missing pair
+  only fires when no `rate` was sent.
+- Rejected with 422 on a same-currency transfer, which always books at 1.
+
+### On a record — `baseCurrency` + `baseRate`
+
+`POST /finance/records` and `PATCH /finance/records/:id` accept the pair
+`baseCurrency` + `baseRate`. It is the rate that record converts at when a
+report is asked for **exactly** that base currency; any other base falls back to
+the rate table rather than applying a rate that means nothing there.
+
+Honoured by `/finance/summary`, both chart endpoints, and
+`/finance/summary/cashflow`. The raw per-currency `income`/`expense` totals are
+untouched — only the `*BaseCurrency` figures change.
+
+Rules (422 on each):
+
+- The two fields must be sent together. One without the other is rejected.
+- `baseCurrency` may not equal the record's own `currency`.
+- `baseRate` must be greater than zero.
+- Changing a record's `currency` re-validates the override against the new one,
+  so a record cannot end up holding a rate into its own currency.
+
+### Editing keeps what you typed
+
+`PATCH /finance/conversions/:id` re-books the transfer from the merged state —
+amounts, currencies, accounts and rate are all recomputed so they stay
+consistent. A transfer booked at a custom rate **keeps it** through any edit
+that leaves the currency pair alone, so fixing a remark never silently re-rates
+it. To change that:
+
+| You send | What happens |
+|---|---|
+| nothing | keeps the rate it already booked at |
+| `rate: "21"` | re-books at 21, stays custom |
+| `rate: null` | drops the override, goes back to the rate table |
+| a different currency | re-rates from the table (422 if the pair has none) |
+
+---
+
+## The unified transaction timeline
+
+`GET /finance/transactions` merges records and conversions into one
+date-ordered, paginated list, so expenses, incomes and transfers can be shown
+together instead of living in separate tabs.
+
+Query: `kind` (`INCOME|EXPENSE|TRANSFER`), `currency`, `articleId`, `accountId`,
+`from`, `to`, `search`, `page`, `limit`, `sortOrder`.
+
+```typescript
+{
+  kind: 'INCOME' | 'EXPENSE' | 'TRANSFER',
+  id: string,               // of the underlying record or conversion
+  operationDate: string,
+  record: RecordResponse | null,      // set when kind is INCOME or EXPENSE
+  transfer: ConversionResponse | null // set when kind is TRANSFER
+}
+```
+
+`id` is only unique **within** a kind, so key a list on both.
+
+Filter behaviour worth knowing:
+
+- `accountId` matches **either side** of a transfer, so an account's history
+  includes money moved both in and out of it.
+- `articleId` excludes transfers entirely — they have no category — and the
+  conversions table is not queried at all in that case.
+- `currency` matches either leg of a transfer.
+- `search` parses as an amount the same way record search does, and on a
+  transfer it is matched against both `fromAmount` and `toAmount`.
+
+Paging is exact despite spanning two tables: the n-th entry of a merge of two
+sorted lists is within the first n of either, so each side is fetched
+`skip + limit` deep and the page is cut from the merge. No approximation, and
+nothing is dropped whatever the split between the two.

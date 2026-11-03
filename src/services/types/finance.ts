@@ -61,6 +61,8 @@ export interface FinanceRecord {
     currency: string;
     color: string | null;
   } | null;
+  /** How many files are attached; fetch them with the attachments endpoint. */
+  attachmentCount: number;
 }
 
 export interface CreateRecordDto {
@@ -168,6 +170,8 @@ export interface CurrencyConversion {
   operationDate: string;
   createdAt: string;
   updatedAt: string;
+  /** How many files are attached; fetch them with the attachments endpoint. */
+  attachmentCount: number;
 }
 
 export interface CreateConversionDto {
@@ -556,3 +560,22 @@ export interface ListTransactionsParams {
   limit?: number;
   sortOrder?: "asc" | "desc";
 }
+
+// ============ Attachments ============
+
+/** A file kept with a record or a transfer. Exactly one of the two ids is set. */
+export interface FinanceAttachment {
+  id: string;
+  recordId: string | null;
+  conversionId: string | null;
+  originalName: string;
+  mimeType: string;
+  sizeBytes: number;
+  sha256: string;
+  createdAt: string;
+}
+
+/** What an attachment hangs off. */
+export type AttachmentTarget =
+  | { kind: "record"; id: string }
+  | { kind: "conversion"; id: string };

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Modal, ModalFooter } from "@/components/ui/modal";
+import AttachmentsSection from "./attachments-section";
 import type {
   FinanceAccount,
   FinanceArticle,
@@ -335,6 +336,14 @@ export default function RecordFormModal({
             disabled={isSaving}
           />
         </div>
+
+        {record ? (
+          <AttachmentsSection target={{ kind: "record", id: record.id }} />
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            {t("finance.attachments.afterSave")}
+          </p>
+        )}
 
         <ModalFooter>
           <Button variant="outline" onClick={onClose} disabled={isSaving}>

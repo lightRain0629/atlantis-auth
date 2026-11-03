@@ -1208,3 +1208,80 @@ Paging is exact despite spanning two tables: the n-th entry of a merge of two
 sorted lists is within the first n of either, so each side is fetched
 `skip + limit` deep and the page is cut from the merge. No approximation, and
 nothing is dropped whatever the split between the two.
+
+---
+
+## Attachments
+
+Added by `20261103000000_add_finance_attachments`. Additive only — one new
+table, no `DROP`, no change to existing columns, so it is safe against a
+populated database.
+
+Files — a monthly sales report, an exchange statement, a receipt — can be kept
+with a record or a transfer. Each attachment belongs to exactly one of the two
+(a DB `CHECK` enforces it), and is deleted with it, file included.
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/finance/records/:id/attachments` | Upload to a record (multipart, field `file`) |
+| `GET` | `/finance/records/:id/attachments` | List a record's attachments |
+| `POST` | `/finance/conversions/:id/attachments` | Upload to a transfer (multipart, field `file`) |
+| `GET` | `/finance/conversions/:id/attachments` | List a transfer's attachments |
+| `GET` | `/finance/attachments/:attachmentId/download` | The file itself |
+| `DELETE` | `/finance/attachments/:attachmentId` | Delete the row and the file |
+
+```typescript
+{
+  id: string,
+  recordId: string | null,      // exactly one of these two is set
+  conversionId: string | null,
+  originalName: string,         // as uploaded, UTF-8 names preserved
+  mimeType: string,             // the type it is served as
+  sizeBytes: number,
+  sha256: string,               // hex digest of the stored bytes
+  createdAt: string
+}
+```
+
+Records and conversions — and therefore every `record` / `transfer` in
+`/finance/transactions` — now carry **`attachmentCount: number`**. It comes from
+the same query as the list (no per-row lookups), so use it for the paperclip
+indicator and only fetch the list when the entry is opened.
+
+### Rules the API enforces
+
+| Status | When |
+|---|---|
+| `400` | no `file` part, or an empty file |
+| `404` | the record / conversion / attachment does not exist **or is another user's** |
+| `413` | larger than **20 MB** |
+| `415` | extension not in `xlsx, xls, csv, pdf, png, jpg, jpeg, webp, txt`; the client type contradicts it; or the content does not match it (a `.pdf` that is not a PDF) |
+
+Check size and extension before uploading (see `src/lib/attachments.ts`) so the
+user is told immediately, but treat the server as the authority — it also
+checks the content. Send the request as `FormData` and let the browser set the
+`Content-Type` boundary; do not set it yourself.
+
+### Downloading
+
+The download needs the `Authorization` header, so an `<a href>` will not work.
+Fetch it, read the body as a blob, and save that under `originalName` from the
+metadata you already have (reading `Content-Disposition` cross-origin would need
+it exposed via CORS). `downloadAttachment` in `src/services/endpoints/finance.ts`
+does this through the normal base query, so the silent token refresh still
+applies and no `Blob` ends up in the Redux store.
+
+The response is `Content-Disposition: attachment` with an RFC 5987
+`filename*`, `X-Content-Type-Options: nosniff` and `Cache-Control: private,
+no-store`.
+
+### Deploying
+
+- Files are stored on local disk under `FINANCE_ATTACHMENTS_DIR` (default
+  `./storage/finance-attachments`), named by random UUID — never the user's
+  filename — and never under a static-served path. In Docker this is a named
+  volume (`finance_attachments`) mounted at `/app/storage/finance-attachments`;
+  back it up alongside the database.
+- A proxy in front must allow the body: `client_max_body_size 21m;` in nginx.

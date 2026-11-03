@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Modal, ModalFooter } from "@/components/ui/modal";
+import AttachmentsSection from "./attachments-section";
 import {
   useCreateConversionMutation,
   useUpdateConversionMutation,
@@ -431,6 +432,14 @@ export default function TransferModal({
             onChange={(e) => setRemark(e.target.value)}
           />
         </div>
+
+        {transfer ? (
+          <AttachmentsSection target={{ kind: "conversion", id: transfer.id }} />
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            {t("finance.attachments.afterSave")}
+          </p>
+        )}
 
         <ModalFooter>
           <Button variant="outline" onClick={onClose} disabled={isLoading}>

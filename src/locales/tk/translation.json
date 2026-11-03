@@ -521,6 +521,25 @@
       "needCategory": "Çägiň degişli kategoriýasyny saýlaň.",
       "needAccount": "Maksady doldurýan hasaby saýlaň.",
       "plannedForWindow": "Döwür üçin meýilnama"
+    },
+    "attachments": {
+      "title": "Goşundylar",
+      "add": "Faýl goş",
+      "uploading": "Ýüklenýär…",
+      "empty": "Heniz faýl goşulmady.",
+      "hint": "Her biri 20 MB çenli: {{types}}.",
+      "afterSave": "Ilki ýatda saklaň, soňra hasabat ýa-da göçürme goşmak üçin täzeden açyň.",
+      "uploaded": "{{name}} goşuldy",
+      "uploadError": "Faýly goşup bolmady",
+      "tooLarge": "{{name}} 20 MB-dan uly",
+      "badType": "{{name}} faýlynyň görnüşine rugsat berilmeýär. Rugsat berilýänler: {{types}}",
+      "download": "Ýükläp al",
+      "downloadError": "Faýly ýükläp alyp bolmady",
+      "deleteConfirm": "{{name}} pozulsynmy? Faýl düýbünden pozular.",
+      "deleted": "Goşundy pozuldy",
+      "deleteError": "Goşundyny pozup bolmady",
+      "count": "Goşundylar: {{count}}",
+      "emptyFile": "{{name}} faýly boş"
     }
   }
 }

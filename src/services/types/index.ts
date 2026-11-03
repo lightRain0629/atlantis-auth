@@ -64,4 +64,6 @@ export type {
   ListPlansParams,
   PlanProgressParams,
   PlanProgress,
+  FinanceAttachment,
+  AttachmentTarget,
 } from "./finance";

@@ -521,6 +521,25 @@
       "needCategory": "Pick the category this limit caps.",
       "needAccount": "Pick the account this goal fills.",
       "plannedForWindow": "Target for this window"
+    },
+    "attachments": {
+      "title": "Attachments",
+      "add": "Attach file",
+      "uploading": "Uploading…",
+      "empty": "No files attached yet.",
+      "hint": "Up to 20 MB each: {{types}}.",
+      "afterSave": "Save first, then reopen to attach files such as statements or reports.",
+      "uploaded": "{{name}} attached",
+      "uploadError": "Could not attach the file",
+      "tooLarge": "{{name}} is larger than 20 MB",
+      "badType": "{{name}} is not an allowed type. Allowed: {{types}}",
+      "download": "Download",
+      "downloadError": "Could not download the file",
+      "deleteConfirm": "Delete {{name}}? The file will be removed for good.",
+      "deleted": "Attachment deleted",
+      "deleteError": "Could not delete the attachment",
+      "count": "Attachments: {{count}}",
+      "emptyFile": "{{name}} is empty"
     }
   }
 }

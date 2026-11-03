@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { CurrencyConversion, FinanceAccount, FinanceRecord } from "@/services/types";
 import { accountColor, formatDate, formatMoney } from "@/lib/finance-utils";
+import { AttachmentBadge } from "./attachments-section";
 
 const ROW =
   "flex flex-col gap-3 rounded-lg border border-border/70 bg-white px-4 py-3 shadow-sm sm:flex-row sm:items-start sm:justify-between";
@@ -147,6 +148,7 @@ export function RecordRow({
               })}
             </span>
           )}
+          <AttachmentBadge count={record.attachmentCount} />
         </div>
         <p className="text-xs text-muted-foreground">
           {formatDate(record.operationDate)}
@@ -234,6 +236,7 @@ export function TransferRow({
               {t("finance.transfers.ownRateBadge")}
             </span>
           )}
+          <AttachmentBadge count={transfer.attachmentCount} />
         </div>
 
         <p className="text-xs text-muted-foreground">

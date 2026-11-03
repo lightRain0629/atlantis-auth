@@ -67,6 +67,8 @@ export type {
   ListPlansParams,
   PlanProgressParams,
   PlanProgress,
+  FinanceAttachment,
+  AttachmentTarget,
 } from "./types";
 export * from "./endpoints/auth";
 export * from "./endpoints/sessions";

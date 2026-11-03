@@ -44,7 +44,32 @@ import type {
   CreateValuationDto,
   CashflowParams,
   CashflowResponse,
+  FinanceAttachment,
+  AttachmentTarget,
 } from "../types/finance";
+import { saveBlob } from "@/lib/attachments";
+
+const attachmentsUrl = (target: AttachmentTarget) =>
+  `/finance/${target.kind === "record" ? "records" : "conversions"}/${target.id}/attachments`;
+
+const attachmentListTag = (target: AttachmentTarget) => ({
+  type: "Attachment" as const,
+  id: `${target.kind}:${target.id}`,
+});
+
+/** The parent's `attachmentCount` changes, so its lists go stale too. */
+const parentTags = (target: AttachmentTarget) =>
+  target.kind === "record"
+    ? [
+        { type: "Record" as const, id: target.id },
+        { type: "Record" as const, id: "LIST" },
+        { type: "Transaction" as const, id: "LIST" },
+      ]
+    : [
+        { type: "Conversion" as const, id: target.id },
+        { type: "Conversion" as const, id: "LIST" },
+        { type: "Transaction" as const, id: "LIST" },
+      ];
 
 export const financeApi = api.injectEndpoints({
   overrideExisting: false,
@@ -403,6 +428,63 @@ export const financeApi = api.injectEndpoints({
     }),
 
 
+    // ============ Attachments ============
+    getAttachments: builder.query<FinanceAttachment[], AttachmentTarget>({
+      query: (target) => ({ url: attachmentsUrl(target), method: "GET" }),
+      providesTags: (_result, _err, target) => [attachmentListTag(target)],
+    }),
+
+    uploadAttachment: builder.mutation<
+      FinanceAttachment,
+      { target: AttachmentTarget; file: File }
+    >({
+      query: ({ target, file }) => {
+        const body = new FormData();
+        body.append("file", file);
+        return { url: attachmentsUrl(target), method: "POST", body };
+      },
+      invalidatesTags: (_result, _err, { target }) => [
+        attachmentListTag(target),
+        ...parentTags(target),
+      ],
+    }),
+
+    deleteAttachment: builder.mutation<
+      FinanceAttachment,
+      { id: string; target: AttachmentTarget }
+    >({
+      query: ({ id }) => ({
+        url: `/finance/attachments/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _err, { target }) => [
+        attachmentListTag(target),
+        ...parentTags(target),
+      ],
+    }),
+
+    /**
+     * The download needs the Authorization header, so a plain link cannot do
+     * it. This goes through the same base query — token and silent refresh
+     * included — reads the body as a blob and hands it straight to the
+     * browser, so nothing non-serialisable ever reaches the store.
+     */
+    downloadAttachment: builder.mutation<null, FinanceAttachment>({
+      async queryFn(attachment, _api, _extra, baseQuery) {
+        const result = await baseQuery({
+          url: `/finance/attachments/${attachment.id}/download`,
+          method: "GET",
+          // Errors stay JSON so their message reads like any other.
+          responseHandler: (response) =>
+            response.ok ? response.blob() : response.json(),
+          cache: "no-store",
+        });
+        if (result.error) return { error: result.error };
+        saveBlob(result.data as Blob, attachment.originalName);
+        return { data: null };
+      },
+    }),
+
     // ============ Transactions (the unified timeline) ============
     getTransactions: builder.query<
       Pagination<FinanceTransaction>,
@@ -705,6 +787,11 @@ export const {
   useCreateConversionMutation,
   useUpdateConversionMutation,
   useDeleteConversionMutation,
+  // Attachments
+  useGetAttachmentsQuery,
+  useUploadAttachmentMutation,
+  useDeleteAttachmentMutation,
+  useDownloadAttachmentMutation,
   // Summary
   useGetSummaryQuery,
   useGetCashflowQuery,

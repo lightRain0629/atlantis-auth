@@ -889,6 +889,25 @@ export function parseAmount(value: string): number {
 }
 ```
 
+#### Hide amounts (privacy toggle)
+
+The app has a global "hide amounts" toggle (eye button in the Finance header,
+or `Shift+H` outside text fields), held in the `privacy` Redux slice and
+remembered per browser under the `finance.amountsHidden` localStorage key.
+`formatMoney`, `formatMoneyCompact` and `formatAxisAmount` in
+`src/lib/finance-utils.ts` take `{ hidden: true }` and then return a mask that
+keeps the currency (`$•••••`, `TMT •••••`, `••••• BTC`).
+
+Components never pass that flag themselves: they get the bound formatters from
+`useMoneyFormatter()` (`src/lib/use-money-formatter.ts`), which re-renders them
+when the toggle flips. Use it for every read-only amount, including recharts
+axis `tickFormatter`s and tooltips. Form inputs keep their raw values.
+
+```tsx
+const { formatMoney } = useMoneyFormatter();
+return <span>{formatMoney(record.amount, record.currency)}</span>;
+```
+
 ### Date Formatting
 
 ```typescript

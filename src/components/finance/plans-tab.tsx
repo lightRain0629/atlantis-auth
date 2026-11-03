@@ -23,7 +23,8 @@ import type {
   FinancePlanKind,
   PlanProgress,
 } from "@/services/types";
-import { COMMON_CURRENCIES, formatMoney } from "@/lib/finance-utils";
+import { COMMON_CURRENCIES } from "@/lib/finance-utils";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 import { Meter } from "./chart-parts";
 import PlanFormModal from "./plan-form-modal";
 
@@ -68,6 +69,7 @@ function PlanRow({
   onDelete: (id: string) => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
   const remaining = parseFloat(row.remaining);
   const isLimit = row.plan.kind === "LIMIT";
 

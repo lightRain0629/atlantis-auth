@@ -64,7 +64,6 @@ import {
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import {
-  formatMoney,
   toAmountString,
   toDateInputValue,
   formatDate,
@@ -76,11 +75,14 @@ import AccountsTab from "@/components/finance/accounts-tab";
 import PlansTab from "@/components/finance/plans-tab";
 import RecordsTab from "@/components/finance/records-tab";
 import FlowTab from "@/components/finance/flow-tab";
+import AmountsVisibilityToggle from "@/components/finance/amounts-visibility-toggle";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 import type { DrillDown } from "@/components/finance/flow-tab";
 
 // ============ Summary Tab ============
 function SummaryTab() {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
   const [from, setFrom] = useState(() => toDateInputValue(getStartOfMonth()));
   const [to, setTo] = useState(() => toDateInputValue(getEndOfMonth()));
   const [baseCurrency, setBaseCurrency] = useState("");
@@ -1129,6 +1131,7 @@ function ChartPieCard({
   noDataLabel: string;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
 
   return (
     <Card>
@@ -1345,11 +1348,16 @@ export default function FinancePage() {
     <div className="space-y-6">
       <Card className="shadow-sm border-slate-200">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <PieChart className="h-5 w-5" />
-            {t("finance.title")}
-          </CardTitle>
-          <CardDescription>{t("finance.description")}</CardDescription>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 space-y-1.5">
+              <CardTitle className="flex items-center gap-2">
+                <PieChart className="h-5 w-5" />
+                {t("finance.title")}
+              </CardTitle>
+              <CardDescription>{t("finance.description")}</CardDescription>
+            </div>
+            <AmountsVisibilityToggle />
+          </div>
         </CardHeader>
         <CardContent>
           <Tabs value={tab} onValueChange={setTab} className="w-full">

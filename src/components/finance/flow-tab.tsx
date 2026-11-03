@@ -30,20 +30,13 @@ import {
   CHART_INK,
   COMMON_CURRENCIES,
   MAX_CHART_SLICES,
-  formatMoney,
-  formatMoneyCompact,
   monthsAgo,
   toDateInputValue,
 } from "@/lib/finance-utils";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 import { useIsMobile } from "@/lib/use-media-query";
 import { ChartCard, ShareBreakdown, TooltipShell } from "./chart-parts";
 import type { ShareRow } from "./chart-parts";
-
-const compact = (value: number) =>
-  new Intl.NumberFormat("en-US", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
 
 function StatTile({
   label,
@@ -114,6 +107,7 @@ export default function FlowTab({
   onDrillDown: (drill: DrillDown) => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney, formatMoneyCompact, formatAxisAmount } = useMoneyFormatter();
   const isMobile = useIsMobile();
   const [from, setFrom] = useState(() => toDateInputValue(monthsAgo(5)));
   const [to, setTo] = useState(() =>
@@ -345,7 +339,7 @@ export default function FlowTab({
                     tickLine={false}
                     axisLine={false}
                     tick={{ fill: CHART_INK.muted, fontSize: 12 }}
-                    tickFormatter={(value: number) => compact(Math.abs(value))}
+                    tickFormatter={(value: number) => formatAxisAmount(Math.abs(value))}
                   />
                   <Tooltip
                     cursor={{ fill: "rgba(11,11,11,0.04)" }}
@@ -515,7 +509,7 @@ export default function FlowTab({
                       tickLine={false}
                       axisLine={{ stroke: CHART_INK.axis }}
                       tick={{ fill: CHART_INK.muted, fontSize: 12 }}
-                      tickFormatter={compact}
+                      tickFormatter={formatAxisAmount}
                     />
                     <YAxis
                       type="category"

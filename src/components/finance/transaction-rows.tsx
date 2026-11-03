@@ -10,7 +10,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import type { CurrencyConversion, FinanceAccount, FinanceRecord } from "@/services/types";
-import { accountColor, formatDate, formatMoney } from "@/lib/finance-utils";
+import { accountColor, formatDate } from "@/lib/finance-utils";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 import { AttachmentBadge } from "./attachments-section";
 
 const ROW =
@@ -85,6 +86,7 @@ export function RecordRow({
   onDelete: () => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
   const isIncome = record.type === "INCOME";
 
   // Only worth showing when it is the rate this page is actually reporting in.
@@ -182,6 +184,7 @@ export function TransferRow({
   onDelete: () => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
   const from = accounts.find((a) => a.id === transfer.fromAccountId);
   const to = accounts.find((a) => a.id === transfer.toAccountId);
   const crossCurrency = transfer.fromCurrency !== transfer.toCurrency;

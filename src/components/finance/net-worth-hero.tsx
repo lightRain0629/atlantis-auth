@@ -16,12 +16,8 @@ import type {
   BalancesResponse,
   NetWorthHistoryResponse,
 } from "@/services/types";
-import {
-  CHART_INK,
-  formatMoney,
-  formatMoneyCompact,
-  formatMonth,
-} from "@/lib/finance-utils";
+import { CHART_INK, formatMonth } from "@/lib/finance-utils";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 import { useIsMobile } from "@/lib/use-media-query";
 
 function DeltaBadge({
@@ -34,6 +30,7 @@ function DeltaBadge({
   currency: string;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
   const value = parseFloat(change);
   const flat = Math.abs(value) < 0.005;
   const Icon = flat ? Minus : value > 0 ? ArrowUpRight : ArrowDownRight;
@@ -81,6 +78,8 @@ export default function NetWorthHero({
   excludeReceivables?: boolean;
 }) {
   const { t } = useTranslation();
+  const { formatMoney, formatMoneyCompact, formatAxisAmount } =
+    useMoneyFormatter();
   const isMobile = useIsMobile();
 
   const series = useMemo(
@@ -200,12 +199,7 @@ export default function NetWorthHero({
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: CHART_INK.muted, fontSize: 12 }}
-                      tickFormatter={(value: number) =>
-                        new Intl.NumberFormat("en-US", {
-                          notation: "compact",
-                          maximumFractionDigits: 1,
-                        }).format(value)
-                      }
+                      tickFormatter={formatAxisAmount}
                     />
                     <Tooltip
                       // A vertical hairline so a finger aims at a month, not a 2px line.

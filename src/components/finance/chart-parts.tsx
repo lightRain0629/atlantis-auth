@@ -9,7 +9,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { formatMoney, CHART_INK, OTHER_SLICE_COLOR } from "@/lib/finance-utils";
+import { CHART_INK, OTHER_SLICE_COLOR } from "@/lib/finance-utils";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 
 export function ChartCard({
   title,
@@ -96,6 +97,7 @@ export function ShareBreakdown({
   onSelect?: (row: { id: string | null; name: string }) => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
 
   const head = rows.slice(0, maxSlices);
   const tail = rows.slice(maxSlices);

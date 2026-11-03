@@ -25,8 +25,8 @@ import {
   MAX_CHART_SLICES,
   accountColor,
   accountKindMeta,
-  formatMoney,
 } from "@/lib/finance-utils";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 import { Meter, ShareBreakdown } from "./chart-parts";
 import type { ShareRow } from "./chart-parts";
 
@@ -46,6 +46,7 @@ export function AccountGroupCard({
   onDrillDown: (account: FinanceAccount) => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
 
   const groupTotal = entries.reduce(
     (sum, entry) => sum + parseFloat(entry.balanceInBase ?? "0"),
@@ -241,6 +242,7 @@ export function DebtsCard({
   onDrillDown: (account: FinanceAccount) => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
   const currency = debts.baseCurrency ?? "";
 
   const section = (

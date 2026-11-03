@@ -192,6 +192,8 @@
   "finance": {
     "title": "Maliýe",
     "description": "Girdejileri, çykdajylary we walýuta konwertasiýalaryny yzarlaň",
+    "hideAmounts": "Pul mukdarlaryny gizle",
+    "showAmounts": "Pul mukdarlaryny görkez",
     "summary": "Gysgaça",
     "records": "Ýazgylar",
     "categories": "Kategoriýalar",

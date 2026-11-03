@@ -192,6 +192,8 @@
   "finance": {
     "title": "Финансы",
     "description": "Отслеживайте доходы, расходы и конвертации валют",
+    "hideAmounts": "Скрыть суммы",
+    "showAmounts": "Показать суммы",
     "summary": "Сводка",
     "records": "Записи",
     "categories": "Категории",

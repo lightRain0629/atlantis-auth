@@ -192,6 +192,8 @@
   "finance": {
     "title": "Finance",
     "description": "Track your income, expenses, and currency conversions",
+    "hideAmounts": "Hide amounts",
+    "showAmounts": "Show amounts",
     "summary": "Summary",
     "records": "Records",
     "categories": "Categories",

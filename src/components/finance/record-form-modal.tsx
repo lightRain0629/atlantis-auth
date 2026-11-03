@@ -15,10 +15,10 @@ import type {
 } from "@/services/types";
 import {
   COMMON_CURRENCIES,
-  formatMoney,
   toAmountString,
   toDateInputValue,
 } from "@/lib/finance-utils";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 
 const SELECT =
   "h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10";
@@ -66,6 +66,7 @@ export default function RecordFormModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
   const isEdit = Boolean(record);
 
   const [type, setType] = useState<FinanceRecordType>(record?.type ?? "EXPENSE");

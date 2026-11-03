@@ -16,10 +16,10 @@ import {
 import type { CurrencyConversion, FinanceAccount } from "@/services/types";
 import {
   accountColor,
-  formatMoney,
   toAmountString,
   toDateInputValue,
 } from "@/lib/finance-utils";
+import { useMoneyFormatter } from "@/lib/use-money-formatter";
 
 const SELECT =
   "h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:h-10";
@@ -45,6 +45,7 @@ export default function TransferModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
+  const { formatMoney } = useMoneyFormatter();
   const [createConversion, { isLoading: isCreating }] =
     useCreateConversionMutation();
   const [updateConversion, { isLoading: isUpdating }] =

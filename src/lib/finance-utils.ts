@@ -33,7 +33,43 @@ function isIsoCurrency(currency: string): boolean {
   return supported;
 }
 
-export function formatMoney(amount: string, currency: string): string {
+/** What every money figure collapses to while amounts are hidden. */
+export const AMOUNT_MASK = "•••••";
+
+export type MoneyFormatOptions = {
+  /**
+   * Replace the figure with {@link AMOUNT_MASK}, keeping the currency so the
+   * reader still knows what is being counted. The sign goes too: whether a
+   * total is negative is itself something a shoulder-surfer should not learn.
+   */
+  hidden?: boolean;
+};
+
+/** The currency symbol where it would sit, with the number swapped for the mask. */
+function maskedMoney(currency: string): string {
+  if (!currency) return AMOUNT_MASK;
+  if (!isIsoCurrency(currency)) return `${AMOUNT_MASK} ${currency}`;
+
+  const NUMBER_PARTS = new Set(["integer", "group", "decimal", "fraction"]);
+  let maskPlaced = false;
+  return new Intl.NumberFormat("en-US", { style: "currency", currency })
+    .formatToParts(0)
+    .map((part) => {
+      if (!NUMBER_PARTS.has(part.type)) return part.value;
+      if (maskPlaced) return "";
+      maskPlaced = true;
+      return AMOUNT_MASK;
+    })
+    .join("");
+}
+
+export function formatMoney(
+  amount: string,
+  currency: string,
+  options: MoneyFormatOptions = {},
+): string {
+  if (options.hidden) return maskedMoney(currency);
+
   const num = parseFloat(amount);
   if (isNaN(num)) return `${amount} ${currency}`;
 
@@ -58,7 +94,13 @@ export function formatMoney(amount: string, currency: string): string {
 }
 
 /** Compact form for hero figures: 1.2M instead of 1,234,567.00 */
-export function formatMoneyCompact(amount: string, currency: string): string {
+export function formatMoneyCompact(
+  amount: string,
+  currency: string,
+  options: MoneyFormatOptions = {},
+): string {
+  if (options.hidden) return maskedMoney(currency);
+
   const num = parseFloat(amount);
   if (isNaN(num)) return `${amount} ${currency}`;
   if (Math.abs(num) < 100000) return formatMoney(amount, currency);
@@ -74,6 +116,21 @@ export function formatMoneyCompact(amount: string, currency: string): string {
       .formatToParts(0)
       .find((part) => part.type === "currency")?.value ?? currency;
   return `${num < 0 ? "-" : ""}${symbol}${compact.replace("-", "")}`;
+}
+
+/**
+ * Bare compact number for chart axis ticks (1.2K, 3M). Hidden, every tick
+ * reads as the mask: the gridlines stay, the scale they mark does not.
+ */
+export function formatAxisAmount(
+  value: number,
+  options: MoneyFormatOptions = {},
+): string {
+  if (options.hidden) return AMOUNT_MASK;
+  return new Intl.NumberFormat("en-US", {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
 }
 
 export function toAmountString(value: number): string {
